@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.5 2003/10/31 06:23:02 andrewziem Exp $
+ * $Id: index.php,v 1.6 2003/10/31 17:10:53 andrewziem Exp $
  *
  */
 
@@ -309,7 +309,10 @@ foreach ($custom as $key => $value)
     }
 
 }
+
 $sql .= "WHERE volunteer_id = $vid LIMIT 1";
+
+$success_extended = TRUE;
 
 if ($extended_count > 0)
 {
@@ -456,7 +459,7 @@ $phone_cell = $volunteer['phone_cell'];
 $result_ext = $db->query("SELECT * FROM extended WHERE volunteer_id = $vid");
 if ($result_ext)
 {
-    $row_ext = $db->fetcharray($result_ext);
+    $row_ext = $db->fetch_array($result_ext);
 }
 else 
 {
