@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.3 2003/10/24 15:44:12 andrewziem Exp $
+ * $Id: import.php,v 1.4 2003/10/31 06:16:18 andrewziem Exp $
  *
  */
 
@@ -48,6 +48,8 @@ function import_legacy2()
     // move file (safely)
     
     $dname = SOS_PATH . 'data/'. $_FILES['userfile']['name'];
+    
+    $_SESSION['import']['dname'] = $dname;
     
     echo ("<P>Debug: from ". $_FILES['userfile']['tmp_name']. " to $dname</P>");
     print_r($_FILES);
@@ -98,7 +100,7 @@ function import_legacy2()
 	echo ("<TR>\n");
 	echo ("<TH class=\"vert\">$f</TH>\n");
 	echo ("<TD>");
-	echo ("<SELECT name=\$f\">\n");
+	echo ("<SELECT name=\"".$f."\">\n");
 	echo ("<OPTION>None</OPTION>\n");
 	$i = 0;
 	foreach ($header as $h)
@@ -131,25 +133,30 @@ function import_legacy3()
     global $importable_fields;
     global $db;
     
+    
+    $dname = $_SESSION['import']['dname'];  // to do: validate here
         
     // gather and validate form input
     
     $import_map = array();
+    
+//    print_r($_POST);
     
     foreach ($_POST as $pk=>$pv)
     {
 	// value must be numeric
 	// key must be defined in importable_fields
 	
-	if (is_numeric($pv) and array_search($pk, $importable_fields))
+	if (is_numeric($pv) and intval($pv) > 0 and array_search($pk, $importable_fields))
 	{
-	    $import_map[$pv] = intval($pk);
+	    $import_map[$pk] = intval($pv);
+	    // e.g. $import_name['prefix'] = 1;
 	}
     }
     
     if (empty($import_map))
     {
-	process_user_error("Please define one or more fields to import.");
+	process_user_error(_("Please define one or more fields to import."));
 	die();
     }
     
@@ -177,6 +184,8 @@ function import_legacy3()
     
     $max_column_i = 0;
     
+//    echo ("import map <PRE>"); print_r($import_map); echo ("</PRE>");
+    
     foreach ($import_map as $imk => $imv)
     {
 	if ($imk > $max_column_i)
@@ -184,8 +193,9 @@ function import_legacy3()
 	$sql_names[] = $imk;
     }
     
-    if ($imk > count($header))
+    if (max($import_map) > count($header))
     {
+	//this shouldn't happen
 	process_user_error("The specified import map does not match the import file.");
 	die();
     }
@@ -195,13 +205,17 @@ function import_legacy3()
     $lc = 0; // line counter
     $ic = 0; // import counter
     
+//    print_r($header);
+    
     while (FALSE != ($row = fgetcsv($f, 1000, ",")))
     {
 	$lc++;
 	
 	if (count($row) != count($header))
 	{
+	    // this shouldn't happen
 	    process_user_error("Number of columns in line $lc does not match number of columns in header.");
+	    die();
 	}
 	else
 	{
@@ -210,8 +224,8 @@ function import_legacy3()
 	    foreach ($sql_names as $n)
 	    {
 		// sanitize file input
-		
-		$sql_values[] = $db->escape_string(htmlentities($row[$import_map[$n]]));
+//		echo (" $n --> ". $import_map[$n] . "\n");
+		$sql_values[] = $db->escape_string(htmlentities($row[$import_map[$n] - 1]));
 	    }
 	    
 	    // build SQL INSERT query
@@ -229,12 +243,12 @@ function import_legacy3()
 		}	
 		else
 		{
-		    $sql .= ',');
+		    $sql .= ',';
 		}
 		$sql .= $sv;
 	    }
 	    
-	    $sql .= ')';
+	    $sql .= ') VALUES ';
 	    
 	    $i = 0;
 	    
@@ -247,10 +261,12 @@ function import_legacy3()
 		}	
 		else
 		{
-		    $sql .= ',');
+		    $sql .= ',';
 		}
 		$sql .= "'".$sv."'";
 	    }
+	    
+	    $sql .= ')';
 
 	    echo $sql;
 	}
