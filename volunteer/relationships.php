@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.10 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: relationships.php,v 1.11 2003/11/27 04:06:59 andrewziem Exp $
  *
  */
 
@@ -297,7 +297,7 @@ function relationship_add()
     
     if (!volunteer_get($vid) or !volunteer_get($vid2))
     {
-	process_user_error(_("Volunteer not found."));
+	save_message(_("Volunteer not found."), MSG_USER_ERROR);
 	return FALSE;
     }
     
@@ -308,12 +308,15 @@ function relationship_add()
     
     if (!$result1 or !$result2)
     {
-	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
+	save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));	
     }
     else
     {
-	process_user_notice(_("Added relationship."));
+	save_message(_("Added relationship."), MSG_USER_NOTICE);
     }
+    
+    // redirect client to non-POST page
+    header("Location: ./?vid=$vid&menu=relationships");
     
 } /* relationship_add() */
 
@@ -336,7 +339,7 @@ function relationship_delete()
     
     if (!$vid1 or !$vid2)
     {
-	process_system_error(_("Input missing."));
+	save_message(_("Input missing."), MSG_SYSTEM_ERROR);
 	return FALSE;
     }
     
@@ -347,12 +350,14 @@ function relationship_delete()
     
     if (!$result1 or !$result2)
     {
-	process_system_error(_("Error deleting data from database."));
+	save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR);
     }
     else
     {
-	process_user_notice(_("Deleted."));
+	save_message(_("Deleted."), MSG_USER_NOTICE);
     }
+    
+    header("Location: ?vid=$vid1&menu=relationships");
 
 } /* relationship_delete() */
 

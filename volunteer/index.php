@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.21 2003/11/27 03:54:28 andrewziem Exp $
+ * $Id: index.php,v 1.22 2003/11/27 04:06:59 andrewziem Exp $
  *
  */
 
@@ -141,8 +141,6 @@ make_nav_begin();
 	    $found = TRUE;
 	    include('relationships.php');
 	    relationship_delete();
-	    relationships_view();
-	    relationships_add_form();	    
 	}
     }
     if (!$found)
