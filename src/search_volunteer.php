@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.4 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.5 2003/11/07 17:08:25 andrewziem Exp $
  *
  */
 
@@ -317,7 +317,7 @@ function volunteer_search()
         // to do: implement e-mail
 	// to do: what other mass actions?
 
-	echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\"Email\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\""._("E-mail")."\">\n");
 	echo ("</FORM>\n");
 	
 	// results navigation
@@ -374,7 +374,7 @@ function volunteer_search()
         
 	    echo ("<OPTION>$c</OPTION>\n");
 	echo ("</SELECT>\n");
-	echo ("<INPUT type=\"submit\" name=\"button_search\" value=\"Sort\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_search\" value=\""._("Sort")."\">\n");
 
 	echo ("</FIELDSET>\n");
 //        echo ("<P><A HREF=\"search_volunteer.php\">Search</A> again.</P>");
@@ -509,7 +509,7 @@ section.</P>
 </TR>
 </TABLE>
 
-<input type="Submit" name="button_search" value="Search">
+<input type="Submit" name="button_search" value="<?php echo _("Search"); ?>">
 </form>
 
 

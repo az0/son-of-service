@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: notes.php,v 1.4 2003/11/07 17:08:25 andrewziem Exp $
  *
  */
 
@@ -84,7 +84,7 @@ echo ("<TD align=\"right\">".$note['quality']."</TD>\n");
 	echo ("</TABLE>\n");
 	if (!$brief)
 	{
-		echo ("<INPUT type=\"submit\" name=\"delete_note\" value=\"Delete\">\n");
+		echo ("<INPUT type=\"submit\" name=\"delete_note\" value=\""._("Delete")."\">\n");
 		echo ("</FORM>\n");
 	}
 }
@@ -152,7 +152,7 @@ echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
  </TR>
 
 </table>
-<input type="Submit" name="button_add_note" value="Save this note">
+<input type="Submit" name="button_add_note" value="<?php echo _("Add"); ?>">
 </form>
 <?php
   }

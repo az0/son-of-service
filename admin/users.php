@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: users.php,v 1.3 2003/11/07 17:08:25 andrewziem Exp $
  *
  */
 
@@ -229,11 +229,11 @@ function user_addedit_form()
 if ($mode_edit)
 {
     echo ("<INPUT type=\"hidden\" name=\"user_id\" value=\"$user_id\">\n");
-    echo ("<INPUT type=\"submit\" name=\"button_user_update\" value=\"Update user\">\n");
+    echo ("<INPUT type=\"submit\" name=\"button_user_update\" value=\""._("Save")."\">\n");
 }
 else
 {
-    echo ("<INPUT type=\"submit\" name=\"button_user_add\" value=\"Save new user\">\n");
+    echo ("<INPUT type=\"submit\" name=\"button_user_add\" value=\""._("Add")."\">\n");
 //    echo ("<INPUT type=\"reset\" value=\"Clear\">\n");
 }
 
@@ -283,8 +283,8 @@ function users_list()
 
 	}
 	echo ("</TABLE>\n");	
-	echo ("<INPUT type=\"submit\" name=\"button_user_delete\" value=\"Delete\">\n");
-	echo ("<INPUT type=\"submit\" name=\"button_user_edit\" value=\"Edit\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_user_delete\" value=\""._("Delete")."\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_user_edit\" value=\""._("Edit")."\">\n");
 	echo ("</FORM>\n");
     }    
 } /* users_list() */

@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.4 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: custom.php,v 1.5 2003/11/07 17:08:24 andrewziem Exp $
  *
  */
 
@@ -85,7 +85,7 @@ function custom_add_field_form1()
 </FIELDSET>
 
 <INPUT type="hidden" name="stage" value="2">
-<P><INPUT type="submit" name="add_custom_field" value="Next"></P>
+<P><INPUT type="submit" name="add_custom_field" value=""._("Next").""></P>
 </FORM>
 
 </FIELDSET>

@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.6 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: import.php,v 1.7 2003/11/07 17:08:24 andrewziem Exp $
  *
  */
 
@@ -131,7 +131,7 @@ function import_legacy2()
 <P class="instructionstext">Note: Please wait after beginning this operation.  Some time may pass during which it seems no progress is occuring.</P>
 
 <INPUT type="hidden" name="import_legacy" value="3">
-<INPUT type="submit" name="submit" value="Import"> 
+<INPUT type="submit" name="submit" value="<?php echo _("Import"); ?>"> 
 </FORM>
 <?php
     

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: workhistory.php,v 1.4 2003/11/07 17:08:25 andrewziem Exp $
  *
  */
 
@@ -192,8 +192,8 @@ function volunteer_view_work_history($brief = FALSE)
 	echo ("</TABLE>\n");
 	if (!$brief)
 	{
-	echo ("<INPUT type=\"submit\" name=\"button_delete_work_history\" value=\"Delete\">\n");
-	echo ("<INPUT type=\"submit\" name=\"button_edit_work_history\" value=\"Edit\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_delete_work_history\" value=\""._("Delete")."\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_edit_work_history\" value=\""._("Edit")."\">\n");
 	echo ("</FORM>\n");
 	}
     }
@@ -280,12 +280,15 @@ function work_history_addedit($mode)
 
 <?php
 
-  if ('add' == $mode)
-    echo ("<INPUT type=\"submit\" name=\"button_add_work_history\" value=\"Add\">\n");
-    else
-    echo ("<INPUT type=\"submit\" name=\"button_update_work_history\" value=\"Update\">\n");
-  echo ("</FORM>\n");
-  }
+if ('add' == $mode)
+{
+    echo ("<INPUT type=\"submit\" name=\"button_add_work_history\" value=\""._("Add")."\">\n");
+}
+else
+{
+    echo ("<INPUT type=\"submit\" name=\"button_update_work_history\" value=\""._("Update")."\">\n");
+    echo ("</FORM>\n");
+}
 
 
 ?>

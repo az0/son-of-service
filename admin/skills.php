@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.2 2003/11/03 05:12:58 andrewziem Exp $
+ * $Id: skills.php,v 1.3 2003/11/07 17:08:25 andrewziem Exp $
  *
  */
 
@@ -80,7 +80,7 @@ function skill_add_form()
     echo ("</TD>\n");
     echo ("</TR>\n");
     echo ("</TABLE>\n");
-    echo ("<INPUT type=\"submit\" name=\"button_skill_add\" value=\"Add skill\">\n");    
+    echo ("<INPUT type=\"submit\" name=\"button_skill_add\" value=\""._("Add")."\">\n");    
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
 }
@@ -117,8 +117,8 @@ function skill_list()
 	    echo ("</TR>\n");
 	}
 	echo ("</TABLE>\n");
-	echo ("<INPUT type=\"submit\" name=\"button_skill_delete\" value=\"Delete\">\n");
-	echo ("<INPUT type=\"submit\" name=\"button_skill_edit\" value=\"Edit\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_skill_delete\" value=\""._("Delete")."\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_skill_edit\" value=\""._("Edit")."\">\n");
 	echo ("</FORM>\n");
     }
 } /* skill_list() */
