@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.16 2003/11/23 03:17:03 andrewziem Exp $
+ * $Id: index.php,v 1.17 2003/11/23 03:25:42 andrewziem Exp $
  *
  */
 
@@ -163,7 +163,7 @@ function volunteer_delete()
 
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
     {
-	include(SOS_PATH . 'src/delete_volunteer.php');
+	include(SOS_PATH . 'functions/delete_volunteer.php');
 	
         delete_volunteer($vid);
     }

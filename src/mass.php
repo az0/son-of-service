@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.3 2003/11/23 03:17:03 andrewziem Exp $
+ * $Id: mass.php,v 1.4 2003/11/23 03:25:42 andrewziem Exp $
  *
  */
 
@@ -69,7 +69,7 @@ else if (array_key_exists('button_delete_volunteers', $_POST))
     }
     else if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
     {
-	include (SOS_PATH . 'src/delete_volunteer.php');
+	include (SOS_PATH . 'functions/delete_volunteer.php');
 	foreach ($vids as $vid)
 	{
 	    delete_volunteer($vid);

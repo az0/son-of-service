@@ -7,7 +7,7 @@
  *
  * Delete a volunteer.
  *
- * $Id: delete_volunteer.php,v 1.1 2003/11/23 03:17:03 andrewziem Exp $
+ * $Id: delete_volunteer.php,v 1.1 2003/11/23 03:25:42 andrewziem Exp $
  *
  */
 
