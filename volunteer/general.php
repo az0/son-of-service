@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.13 2004/02/15 14:42:31 andrewziem Exp $
+ * $Id: general.php,v 1.14 2004/02/15 15:20:06 andrewziem Exp $
  *
  */
 
@@ -152,6 +152,18 @@ function volunteer_save()
     $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());
     
     $vid = intval($_POST['vid']);
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+    
+    if ($errors_found)
+    {
+        redirect("?vid=$vid&menu=general");    
+	return FALSE;
+    }
     
     // todo: portable LIMIT for UPDATE
 

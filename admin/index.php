@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved. 
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.18 2004/02/10 02:19:56 andrewziem Exp $
+ * $Id: index.php,v 1.19 2004/02/15 15:20:06 andrewziem Exp $
  *
  */
 

@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.9 2003/12/30 17:34:20 andrewziem Exp $
+ * $Id: availability.php,v 1.10 2004/02/15 15:20:06 andrewziem Exp $
  *
  */
  
@@ -20,22 +20,32 @@ function volunteer_delete_availability()
     global $db;
     
     
-    // todo: check permissions
+    $errors_found = 0;
     
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+        
     $vid = intval($_POST['vid']);
     $availability_id  = intval($_POST['availability_id']);
     
     $sql = "DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = $vid";
     
-    $result = $db->Execute($sql);
+    if (0 === $errors_found)
+    {
+    
+	$result = $db->Execute($sql);
 
-    if (!$result)
-    {
-	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
-    }
-    else
-    {
-	save_message(MSG_USER_NOTICE, _("Deleted."));
+	if (!$result)
+	{
+	    save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+	}
+	else
+	{
+	    save_message(MSG_USER_NOTICE, _("Deleted."));
+	}
     }
     
     // relocate client to non-POST page
@@ -48,6 +58,7 @@ function volunteer_availability_add()
     global $db;
       
 
+    $errors_found = 0;
     $vid = intval($_POST['vid']);      
      
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
@@ -67,7 +78,7 @@ function volunteer_availability_add()
     {
 	save_message(MSG_SYSTEM_ERROR, _("Bad form input:"). ' day_of_week', __FILE__, __LINE__);
     }
-    else
+    else if (0 === $errors_found)
     {  
 	$sql = "INSERT INTO availability ".
 	    "(volunteer_id, day_of_week, start_time, end_time, dt_added, uid_added, dt_modified,uid_modified) ".
@@ -170,6 +181,7 @@ function volunteer_view_availability($brief = FALSE)
 	echo ("</TABLE>\n");
 	if (!$brief)
 	{
+	    // todo: allow multiple delete
 	    echo ("<INPUT type=\"submit\" name=\"button_delete_availability\" value=\""._("Delete")."\">\n");
 	}
     }

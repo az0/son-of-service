@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.15 2003/12/29 00:44:11 andrewziem Exp $
+ * $Id: relationships.php,v 1.16 2004/02/15 15:20:06 andrewziem Exp $
  *
  */
 
@@ -72,7 +72,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
     else
     {
         echo ("<LI>"._("Error")."\n");
-	if (!$brief)
+	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $row['volunteer2_id'], NULL))
 	{
     	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
 	}
@@ -278,6 +278,7 @@ function relationship_add()
 {
     global $db;
 
+
     if (array_key_exists('add_relationship', $_POST))
     {
 	$vid2 = intval($_POST['volunteer2_id']);
@@ -295,16 +296,18 @@ function relationship_add()
 	}
     }
     
+    $errors_found = 0;
+    
     if (0 == $string_id)
     {
 	process_system_error(_("Bad form input:").' string_id');    
-	return FALSE;
+	$errors_found++;
     }
     
     if (!$vid2)
     {
 	process_system_error(_("Input missing."));
-	return FALSE;
+	$errors_found++;	
     }
     
     $vid = intval($_POST['vid']);
@@ -312,8 +315,20 @@ function relationship_add()
     if (!volunteer_get($vid) or !volunteer_get($vid2))
     {
 	save_message(MSG_USER_ERROR, _("Volunteer not found."));
-	return FALSE;
+	$errors_found++;	
     }
+    
+    if (!(has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid2, NULL)))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }
+    
+    if ($errors_found)
+    {
+	redirect("?vid=$vid&menu=relationships");
+	return FALSE;
+    }    
     
     $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid, $vid2, $string_id)";
     $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid2, $vid, $string_id)";
@@ -358,10 +373,23 @@ function relationship_delete()
 	}
     }
     
+    $errors_found = 0;
+    
     if (!$vid1 or !$vid2)
     {
 	save_message(MSG_SYSTEM_ERROR, _("Input missing."), __FILE__, __LINE__);
-	return FALSE;
+	$errors_found ++;
+    }
+
+    if (!(has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid2, NULL)))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+    
+    if ($errors_found)
+    {
+        redirect("?vid=$vid&menu=relationships");
     }
     
     $sql1 = "DELETE FROM relationships WHERE volunteer1_id = $vid1 and volunteer2_id = $vid2";

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.10 2003/12/29 00:44:11 andrewziem Exp $
+ * $Id: skills.php,v 1.11 2004/02/15 15:20:06 andrewziem Exp $
  *
  */
 
@@ -25,6 +25,17 @@ function volunteer_delete_skill()
     
     $vid = intval($_POST['vid']);
     $volunteer_skill_id  = intval($_POST['volunteer_skill_id']);
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+    
+    if ($errors_found)
+    {
+        redirect("?vid=$vid&menu=skills");    
+    }
 
     // to do: portable LIMIT    
     $sql = "DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = $vid LIMIT 1";
@@ -164,13 +175,22 @@ function volunteer_skill_add()
     $vid = intval($_POST['vid']);
     $string_id = intval($_POST['string_id']);
     $skill_level = intval($_POST['skill_level']);
-      
-    // always validate form input first
+    
+    $errors_found = 0;
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }      
+
     if (!(preg_match("/^[0-9]+$/", $_POST['string_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
     {
+	$errors_found++;    
 	save_message(MSG_SYSTEM_ERROR, _("Bad form input:").' string_id, skill_level', __FILE__, __LINE__);
     }
-    else
+    
+    if (0 === $errors_found)
     {  
 	$sql = "INSERT INTO volunteer_skills (volunteer_id, string_id, skill_level) VALUES ($vid, $string_id, $skill_level)";
     
