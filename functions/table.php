@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.10 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: table.php,v 1.11 2004/02/27 15:09:47 andrewziem Exp $
  *
  */
 
@@ -49,6 +49,7 @@ class DataTableDisplay
     //  subkey: sortable (boolean)
     //  subkey: break_row
     //  subkey: colspan (integer)
+    //  subkey: map (array, maps one value to another such as an int to string)
     {
 	assert(is_array($headers));	
 	$this->headers = $headers;
@@ -147,7 +148,7 @@ class DataTableDisplay
 		    // todo: revisit value=
 		    if (!$this->printable)
 		    {
-		        echo ("<TD><INPUT type=\"checkbox\" name=\"${k}_".$row[$k]."\" value=\"".$row[$k]."\"></TD>\n");
+		        echo ("<TD><INPUT type=\"checkbox\" name=\"${k}_".$row[$k]."\" value=\"1\"></TD>\n");
 		    }
 		}
 		else
@@ -175,7 +176,11 @@ class DataTableDisplay
 		    {
 			// format date+time
 			$c = nbsp_if_null(sqldatetime_to_local($row[$k]));
-		    }		    
+		    }	
+		    elseif (array_key_exists('map', $v))
+		    {
+			$c = $v['map'][$row[$k]];
+		    }	    
 		    else
 		    {
 		        $c = $row[$k];

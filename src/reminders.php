@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.7 2004/01/20 04:06:05 andrewziem Exp $
+ * $Id: reminders.php,v 1.8 2004/02/27 15:09:47 andrewziem Exp $
  *
  */
  
@@ -71,11 +71,12 @@ function show_reminders()
 	$table = new DataTableDisplay();
 
 	// todo: display message on second row	
-	$fieldnames['note_id']['checkbox'] = TRUE;
+	$fieldnames['note_id'] = array('label' => _("Select"), 'checkbox' => TRUE);
 	$fieldnames['reminder_date']['label'] = _("Reminder date");		
 	$fieldnames['dt']['label'] = _("Creation date");	
 	$fieldnames['volunteer']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";
-	$fieldnames['message'] = array();
+	$fieldnames[] = array('break_row' => TRUE);
+	$fieldnames['message'] = array('label' => _("Message"), 'colspan' =>  is_printable() ? 3 : 4, 'nl2br' => TRUE);
 	
 	$table->setHeaders($fieldnames);
 	$table->begin();
