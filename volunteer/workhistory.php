@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.11 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: workhistory.php,v 1.12 2003/12/06 19:39:49 andrewziem Exp $
  *
  */
  
@@ -264,7 +264,6 @@ function work_history_addedit($mode)
 // creates a form
 {
     global $db;
-    global $db_cache_timeout;
     
 
     if (!('add' == $mode or 'edit' == $mode))
@@ -335,7 +334,7 @@ function work_history_addedit($mode)
  
  $sql = "SELECT string_id, s FROM strings WHERE type = 'work'";
  
- $result = $db->CacheExecute($sql, $db_cache_timeout);
+ $result = $db->Execute($sql);
  
  if (!$result)
  {

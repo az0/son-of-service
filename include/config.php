@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: config.php,v 1.6 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: config.php,v 1.7 2003/12/06 19:39:49 andrewziem Exp $
  *
  */
 
@@ -33,6 +33,8 @@ $html_security_level = 1;
 
 // db_cache_timeout: measured in seconds
 $db_cache_timeout = 60;
+
+$ADODB_CACHE_DIR = SOS_PATH . 'data/';
 
 $debug = TRUE;
 

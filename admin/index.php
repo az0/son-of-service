@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.14 2003/11/29 22:59:53 andrewziem Exp $
+ * $Id: index.php,v 1.15 2003/12/06 19:39:49 andrewziem Exp $
  *
  */
 
@@ -36,13 +36,13 @@ if (!array_key_exists('download_mailing_list',$_GET))
     make_nav_begin();
 }    
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
-    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->get_error()));    
-    die();	
+    die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
 }
+
 
 function download_mailing_list()
 {
@@ -54,18 +54,20 @@ function download_mailing_list()
 	die();
     }
     
-    $result = $db->query("SELECT concat(first, ' ',middle,' ',last) as personalname, organization, street, city, state, postal_code FROM volunteers");
+    // todo: portable concat    
+    $sql = "SELECT concat(first, ' ',middle,' ',last) as personalname, organization, street, city, state, postal_code FROM volunteers";
+    
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
 	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()));
     }
     else
-    if (0 == $db->num_rows($result))
+    if (0 == $result->RecordCount())
     {
 	process_user_error(_("No data found."));
-    }
-    
+    }    
     else
     {
 	header("Content-disposition: attachment; filename=\"mailinglist.csv\"");
@@ -78,18 +80,20 @@ function download_mailing_list()
 	
 	$fieldnames = array();
 	
-	while ($i < mysql_num_fields($result))
+	while ($i < $result->FieldCount())
 	{
-	    $meta = mysql_fetch_field($result);
-	    $fieldnames[] = $meta->name;
+	    $fld = $result->FetchField($i);
+	    $fieldnames[] = $fld->name;
 	    $i++;
 	}
 	
 	$tw->setFieldNames($fieldnames);
     
-	while (FALSE != ($row = mysql_fetch_row($result)))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    $tw->addRow($row);
+	    $result->MoveNext();
 	}
 	
     }

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: users.php,v 1.11 2003/12/06 19:39:49 andrewziem Exp $
  *
  */
  
@@ -22,15 +22,22 @@ function user_save()
 {
     global $db;
     
-    
-    if (!has_permission(PC_ADMIN, PT_WRITE, NULL, intval($_POST['user_id'])))
-    {
-	return FALSE;
-    }
-    
+
     // add or update mode?
     
     $mode_update = array_key_exists('button_user_update', $_POST);
+    
+    $user_id = NULL;
+
+    if ($mode_update)
+    {
+        $user_id = intval($_POST['user_id']);
+    }
+    
+    if (!has_permission(PC_ADMIN, PT_WRITE, NULL, $user_id))
+    {
+	message_die(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }
     
     // validate form input
     
@@ -52,14 +59,13 @@ function user_save()
 	save_message(MSG_USER_ERROR, _("Account password is too short: 4 or more characters required."));
 	$errors_found++;
     }
-    else    
-    if (isset($_POST['password1']) and isset($_POST['password2']))
-	{
-	   if (0 != strcmp($_POST['password1'], $_POST['password2']))
-	   {
-		save_message(MSG_USER_ERROR, _("Passwords do not match."));
-		$errors_found++;
-	   }
+    else if (isset($_POST['password1']) and isset($_POST['password2']))
+    {
+       if (0 != strcmp($_POST['password1'], $_POST['password2']))
+       {
+	    save_message(MSG_USER_ERROR, _("Passwords do not match."));
+	    $errors_found++;
+	}
     }
 
     if (isset($_POST['access_admin']) and "y" == $_POST['access_admin'])
@@ -81,42 +87,38 @@ function user_save()
 	    $access_admin = '0';
 	}
     
-	$username = $db->escape_string($_POST['username']);
-	$personalname = $db->escape_string($_POST['personalname']);
-	// do not escape password because of md5()
-	$email = $db->escape_string($_POST['email']);
-	if ($mode_update)
-	{
-	    $user_id = intval($_POST['user_id']);
-	}
+	$username = $db->qstr($_POST['username'], get_magic_quotes_gpc());
+	$personalname = $db->qstr($_POST['personalname'], get_magic_quotes_gpc());
+	$password = $db->qstr(md5($_POST['password1']), FALSE);
+	$email = $db->qstr($_POST['email'], get_magic_quotes_gpc());
     
 	if ($mode_update and 0 == $errors_found)
 	{
 	    $sql = 'UPDATE users SET ';
-	    $sql .= " username = '$username',";
-	    $sql .= " personalname = '$personalname',";
+	    $sql .= " username = $username,";
+	    $sql .= " personalname = $personalname,";
 	
 	    if (strlen($_POST['password1']) > 4)
 	    {
-		$sql .= " password = '".md5($_POST['password1'])."',";	
+		$sql .= " password = $password,";	
 	    }
 	
 	    $sql .= " access_admin = $access_admin,";
-	    $sql .= " email =  '$email',";
+	    $sql .= " email =  $email,";
 	    $sql .= " access_change_vol = $access_change_vol ";
+	    // todo: portable LIMIT
 	    $sql .= " WHERE user_id = $user_id LIMIT 1 ";
 	    
 	}
 	else if (0 == $errors_found)
 	{
-	    $sql = "INSERT INTO users (personalname, username, password, access_admin, " .
+	    $sql = "INSERT INTO users (personalname, username, password, email, access_admin, " .
 		   "access_change_vol) " .
-		   "VALUES ('$personalname'," .
-		           " '$username',".
-		    	   "'".md5($_POST['password1']) . "',".
-			"'$access_admin', '$access_change_vol')";
+		   "VALUES ($personalname," .
+		   " $username,	$password, $email, ".
+		   "$access_admin, $access_change_vol)";
 	}				   
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 
 	if (!$result) 
 	{ 
@@ -129,8 +131,10 @@ function user_save()
 	}
     
 	// redirect to GET to prevent POST form reposting
-	header("Location: " . SOS_PATH . "admin/?users");
+
     }
+    
+    header("Location: " . SOS_PATH . "admin/?users");
 
 } /* user_save() */
 
@@ -155,16 +159,17 @@ function user_addedit_form()
 	echo ("<H2>Edit user</H2>\n");
 
 	echo ("<P class=\"instructiontext\">Leave the password fields blank to retain the old password.</P>\n");
-        
-	$result = $db->query("SELECT * FROM users WHERE user_id = $user_id");
+
+	$sql = "SELECT * FROM users WHERE user_id = $user_id";
+	        
+	$result = $db->Execute($sql);
 	
 	if (!$result)
 	{
-	    process_system_error(_("Error querying database."));	    	    
-	    return FALSE;
+	    message_die(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	}
 	
-	if (1 != $db->num_rows($result))
+	if (1 != $result->RecordCount())
 	{
 	    process_system_error(_("User not found."));
 	    return FALSE;
@@ -172,7 +177,7 @@ function user_addedit_form()
 	
 	unset($result['password']);
 	
-	$form_values = $db->fetch_array($result);
+	$form_values = $result->fields;
     }	
     else
     {
@@ -255,13 +260,15 @@ function users_list()
     
     echo ("<H2>List of users</H2>\n");
     
-    $result = $db->query("SELECT * FROM users");
+    $sql = "SELECT * FROM users";
+    
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
 	process_system_error(_("Error querying database."));
     }
-    else if (0 == $db->num_rows($result))
+    elseif (0 == $result->RecordCount())
     {
 	process_user_error(_("No user accounts."));
 	user_add();
@@ -279,13 +286,15 @@ function users_list()
 	echo ("</TR>\n");
 	echo ("</THEAD>\n");
 	
-	while (FALSE != ($row = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    echo ("<TR>\n");
 	    echo ("<TD><INPUT type=\"radio\" name=\"user_id\" value=\"".$row['user_id']."\"></TD>\n");
 	    echo ("<TD>".$row['username']."</TD>\n");	    
 	    echo ("<TD>".$row['personalname']."</TD>\n");
 	    echo ("</TR>\n");
+	    $result->MoveNext();
 
 	}
 	echo ("</TABLE>\n");	
@@ -312,9 +321,10 @@ function users_delete()
     {
 	// delete user
 	
+	// todo: portable LIMIT
 	$sql = "DELETE FROM users WHERE user_id = $user_id LIMIT 1";
 	
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 	
 	if (!$result)
 	{
@@ -334,13 +344,13 @@ function users_delete()
 	// request delete confirmation
 	
 	$sql = "SELECT * FROM users WHERE user_id = $user_id";
-    	$result = $db->query($sql);
+    	$result = $db->Execute($sql);
 	
 	if (!$result)
 	{	
 	    process_system_error(_("Error querying database."));    
 	}
-	else if (1 != $db->num_rows($result))
+	else if (1 != $result->RecordCount())
 	{
 	    process_system_error("User not found.");    	
 	}
@@ -351,7 +361,7 @@ function users_delete()
 	
 	    echo ("<P>"._("Are you sure you want to delete this user?")."</P>\n");
 	
-	    $row = $db->fetch_array($result);
+	    $row = $result->fields;
 	
 	    echo ("<P>".$row['personalname']." ($user_id)</P>\n");
 	

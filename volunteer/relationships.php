@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.12 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: relationships.php,v 1.13 2003/12/06 19:39:49 andrewziem Exp $
  *
  */
 
@@ -48,21 +48,23 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
 	    "ON relationships.string_id = strings.string_id ".
 	    "WHERE relationships.volunteer1_id = ".$row['volunteer2_id']." AND relationships.volunteer2_id != $vid AND strings.type = 'relationship'";
     
-        $result = $db->query($sql);
+        $result = $db->Execute($sql);
 	
 	if (!$result)
 	{
 	    process_system_error(_("Error querying database."),	array('debug' => $db->get_error()));
 	}
-	else if ($db->num_rows($result) > 0)
+	else if ($result->RecordCount() > 0)
         {
 	    echo ("<UL>\n");
-            while (FALSE != ($row2 = $db->fetch_array($result)))
+            while (!$result->EOF)
     	    {
+		$row2 = $result->fields;
 		if (!in_array($row2['volunteer2_id'], $ignore_vids))
 		{
 		    show_relationship_leaf($row['volunteer2_id'], $row2, $remaining_depth - 1, $ignore_vids, $brief);
 		}
+		$result->MoveNext();
 	    }
 	    echo ("</UL>\n");	    
 	}
@@ -83,8 +85,11 @@ function relationships_view($brief = FALSE)
 {
     global $db;
     global $ignore_relationships;
+    
 
-    $vid = intval($_REQUEST['vid']);
+    display_messages();
+    
+    $vid = intval($_GET['vid']);
     
     if (array_key_exists('max_depth', $_GET) and is_numeric($_GET['max_depth']))
     {	
@@ -119,13 +124,13 @@ function relationships_view($brief = FALSE)
     "ON relationships.string_id = strings.string_id ".
     "WHERE relationships.volunteer1_id = $vid AND strings.type = 'relationship'";
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
 	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
     }
-    else if ($db->num_rows($result) > 0)
+    else if ($result->RecordCount() > 0)
     {
 
 	echo ("<H2>"._("Relationships")."</H2>\n");
@@ -135,10 +140,12 @@ function relationships_view($brief = FALSE)
 	echo ("<UL>\n");
 	echo ("<LH>".make_volunteer_name(volunteer_get($vid))."</LH>\n");
 		
-	while (FALSE != ($row = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    $c++;
 	    show_relationship_leaf($vid, $row, $max_depth - 1, array($vid), $brief);
+	    $result->MoveNext();
 	}
 	
 	echo ("</UL>\n");
@@ -179,6 +186,7 @@ function relationships_view($brief = FALSE)
 function relationships_add_form()
 {    
     global $db;
+    global $db_cache_timeout;
 
 
     $vid = intval($_REQUEST['vid']);
@@ -187,11 +195,13 @@ function relationships_add_form()
     echo ("<H3>"._("Add relationship")."</H3>\n");
 
     // remember relationship types for multiple uses
-    $result = $db->query("SELECT s AS name, string_id FROM strings WHERE type = 'relationship'");
+    $sql = "SELECT s AS name, string_id FROM strings WHERE type = 'relationship'";
+    $result = $db->CacheExecute($db_cache_timeout, $sql);
     $rtypes = array();
-    while (FALSE != ($row = $db->fetch_array($result)))
+    while (!$result->EOF)
     {
-	$rtypes[] = $row;
+	$rtypes[] = $result->fields;
+	$result->MoveNext();
     }
     
     // quickly add a relationship if volunteer ID is known
@@ -232,11 +242,14 @@ function relationships_add_form()
 	echo ("<LEGEND>Search results</LEGEND>\n");
 	echo ("<FORM method=\"post\" action=\".\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-	$needle = $db->escape_string($_GET['volunteer2_name']);
-	$result = $db->query("SELECT volunteer_id FROM volunteers WHERE concat(first, middle, last, organization) like '%$needle%'");
+	$needle = $db->qstr($_GET['volunteer2_name'], get_magic_quotes_gpc());
+	// todo: portable concat
+	$sql = "SELECT volunteer_id FROM volunteers WHERE concat(first, middle, last, organization) like '%$needle%'";
+	$result = $db->Execute($sql);
 	$c = 0;
-	while (FALSE != ($row = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    $c++;
 	    $vid2 = $row['volunteer_id'];
 	    $v2 = volunteer_get(intval($vid2));
@@ -250,6 +263,7 @@ function relationships_add_form()
 	    echo ("<INPUT type=\"submit\" name=\"add_relationship_$vid2\" value=\"Add\">\n");
 	    echo (" $name ($vid2)\n");
 	    echo ("<BR>\n");
+	    $result->MoveNext();
 	}
 	echo ("</FORM>\n");
     	echo ("</FIELDSET>\n");
@@ -303,7 +317,7 @@ function relationship_add()
     
     $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid, $vid2, $string_id)";
     $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid2, $vid, $string_id)";
-    $result1 = $db->query($sql1);    
+    $result1 = $db->Execute($sql1);    
     
     if (!$result1)
     {
@@ -311,7 +325,7 @@ function relationship_add()
     }
     else
     {
-        $result2 = $db->query($sql2);
+        $result2 = $db->Execute($sql2);
 	if (!$result2)
 	{
 	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql2);	
@@ -352,7 +366,7 @@ function relationship_delete()
     
     $sql1 = "DELETE FROM relationships WHERE volunteer1_id = $vid1 and volunteer2_id = $vid2";
     $sql2 = "DELETE FROM relationships WHERE volunteer1_id = $vid2 and volunteer2_id = $vid1";    
-    $result1 = $db->query($sql1);
+    $result1 = $db->Execute($sql1);
 
     
     if (!$result1)
@@ -361,7 +375,7 @@ function relationship_delete()
     }
     else
     {
-        $result2 = $db->query($sql2);
+        $result2 = $db->Execute($sql2);
 	if (!$result2)
 	{
 	    save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql2);
