@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.3 2003/10/24 14:34:29 andrewziem Exp $
+ * $Id: index.php,v 1.4 2003/11/03 05:12:58 andrewziem Exp $
  *
  */
 
@@ -103,8 +103,9 @@ function admin_menu()
 <UL>
  <LI><A href="./?add_user=1">Add a user account</A>
  <LI><A href="./?list_users=1">User accounts</A>
- <LI><A href="./?add_skill=1">Add a volunteer skill</A>
- <LI><A href="./?list_skills=1">Volunteer skills</A>
+ <LI><A href="./?add_skill=1">Add a volunteer skill type</A>
+ <LI><A href="./?list_skills=1">Volunteer skill types</A>
+ <LI><A href="./?list_relationship_type=1">Relationship types</A> 
  <LI><A href="./?update_volunteer_stats=1">Update volunteer statistics</A>
  <LI><A href="./?system_check=1">System check</A>
  <LI><A href="./?add_custom_field=1">Add custom field</A>
@@ -118,12 +119,39 @@ function admin_menu()
 } /* admin_menu */
 
 
+// Display appropriate menu
+
 if (array_key_exists('system_check', $_GET))
 {
     include('systemcheck.php');
     system_check();
 }
 else
+// RELATIONSHIPS
+if (array_key_exists('button_relationship_type_add', $_POST))
+{
+    include('relationships.php');
+    relationship_type_add();
+    relationship_type_list();    
+    relationship_type_add_form();    
+}
+else
+if (array_key_exists('list_relationship_type', $_GET))
+{
+    include('relationships.php');
+    relationship_type_list();
+    relationship_type_add_form();    
+}
+else
+if (array_key_exists('button_relationship_type_delete', $_POST))
+{
+    include('relationships.php');
+    relationship_type_delete();
+    relationship_type_list();
+    relationship_type_add_form();    
+}
+else
+// SKILLS
 if (array_key_exists('list_skills', $_GET))
 {
     include('skills.php');
@@ -148,6 +176,7 @@ else
 if (array_key_exists('button_skill_edit', $_POST))
     process_system_error("To do: not yet implemented.");
 else
+// USERS
 if (array_key_exists('list_users', $_GET))
 {
     include('users.php');
@@ -172,9 +201,11 @@ if (array_key_exists('button_user_add', $_POST) or array_key_exists('button_user
     users_list();
 }
 else    
+// MAILING LIST
 if (array_key_exists('download_mailing_list', $_GET))
     download_mailing_list();
 else    
+// VOLUNTEER STATS
 if (array_key_exists('update_volunteer_stats', $_GET))
 {
     stats_update_volunteers($db);
@@ -182,18 +213,24 @@ if (array_key_exists('update_volunteer_stats', $_GET))
     admin_menu();
 }        
 else
+// IMPORT
 if (array_key_exists('import_legacy', $_REQUEST))
 {
     require_once('import.php');
     import_legacy();
 }        
 else
+// CUSTOM FIELDS
 if (array_key_exists('add_custom_field', $_REQUEST))
 {
     include('custom.php');
     custom_add_field_form();
 }        
-else admin_menu();
+else 
+// MENU
+{
+    admin_menu();
+}
 
 if (!array_key_exists('download_mailing_list',$_GET))
 {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: skills.php,v 1.2 2003/11/03 05:12:58 andrewziem Exp $
  *
  */
 
@@ -121,9 +121,6 @@ function skill_list()
 	echo ("<INPUT type=\"submit\" name=\"button_skill_edit\" value=\"Edit\">\n");
 	echo ("</FORM>\n");
     }
-    
-    
-
 } /* skill_list() */
 
 
