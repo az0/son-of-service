@@ -7,7 +7,7 @@
  *
  * Generates artificial volunteers for testing.
  *
- * $Id: randomvolunteer.php,v 1.2 2003/10/06 00:33:32 andrewziem Exp $
+ * $Id: randomvolunteer.php,v 1.3 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -16,7 +16,7 @@ $run_from_web_server = FALSE;
 
 $num_volunteers = 50;
 $print = TRUE;
-$db = TRUE;
+$use_db = TRUE;
 
 $names[] = 'Andrew';
 $names[] = 'Carol';
@@ -69,19 +69,18 @@ if (!$run_from_web_server and (array_key_exists('SERVER_PORT', $_SERVER)))
 
 define ('SOS_PATH', '../');
 
-if ($db)
+if ($use_db)
 {
     require_once(SOS_PATH . 'include/config.php');    
     require_once(SOS_PATH . 'functions/db.php');
     
-    $db = new voldbMySql();
+    echo ("Connecting to database.\n");
+    $db = connect_db();
 
-    if ($db->get_error())
+    if (!$db)
     {
-	process_system_error("Unable to establish database connection: ".$db->get_error());    
-	die();	
+        die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
     }
-
 }
 
 list($usec, $sec) = explode(' ', microtime());       
@@ -97,15 +96,15 @@ while ($num_volunteers)
     $sql = "INSERT INTO volunteers (first, last, street, email_address) VALUES ('$first', '$last', '$street', '$first.$last@doesnotexist.com')";
     if ($print)
 	echo ($sql."\n");
-    if ($db)
+    if ($use_db)
     {
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 	if (!$result)
 	{
-	    echo ("Fatal error: ".$db->error());
+	    echo ("Fatal error: ".$db->ErrorMsg());
 	    die();
 	}
-	$id = $db->insert_id();
+	$id = $db->Insert_ID();
 	
 	echo "id = $id\n";
 	
@@ -116,9 +115,11 @@ while ($num_volunteers)
 	    for ($i = mt_rand(1,100); $i > 1; $i--)
 	    {
 		$d = date('Y-m-d', $t + mt_rand(1, 60*60*24*365));
-		$result = $db->query("INSERT INTO work (date, hours, volunteer_id) VALUES ('$d', ".mt_rand(1,5).", $id)");
+		$result = $db->Execute("INSERT INTO work (date, hours, volunteer_id) VALUES ('$d', ".mt_rand(1,5).", $id)");
 		if (!$result)
-		    die(mysql_error);
+		{
+		    die("Error inserting data into database: ".$db->ErrorMsg());
+		}
 	    }
 	}
     }	

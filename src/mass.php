@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.6 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: mass.php,v 1.7 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -26,12 +26,11 @@ make_html_begin('Mass volunteer action', array());
 
 make_nav_begin();
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
-    process_system_error(_("Unable to establish database connection: "), array('debug' => $db->get_error()));    
-    die();	
+    die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
 }
 
 if (array_key_exists('button_email_volunteers', $_POST))

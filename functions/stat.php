@@ -7,7 +7,7 @@
  *
  * Volunteer statistics.
  *
- * $Id: stat.php,v 1.3 2003/12/03 17:23:04 andrewziem Exp $
+ * $Id: stat.php,v 1.4 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -21,12 +21,14 @@ function stats_update_volunteers($db)
 {
     set_time_limit(60 * 10); // 10 minutes
 
-    $result = $db->query("SELECT volunteer_id FROM volunteers"); 
+    $result = $db->Execute("SELECT volunteer_id FROM volunteers"); 
     if (!$result)
 	return FALSE;
-    while (FALSE != ($row = $db->fetch_array($result)))
+    while (!$result->EOF)
     {
+	$row = $result->fields;
 	stats_update_volunteer($db, $row['volunteer_id']);
+	$result->MoveNext();
     }
     
 
@@ -67,7 +69,7 @@ function stats_update_volunteer($db, $vid)
 	return FALSE;
     }
     
-    $row = $results->fields;
+    $row = $result->fields;
     
     if (!$row)
     {

@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.8 2003/12/03 17:23:04 andrewziem Exp $
+ * $Id: db.php,v 1.9 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -37,7 +37,7 @@ function volunteer_get($vid)
                          "FROM volunteers " .
                          "WHERE volunteer_id=$vid");
 
-    if ($result === false)
+    if (!$result)
     {
 	process_system_error("Error fetching volunteer details from database.");
 	return FALSE;
@@ -67,17 +67,21 @@ function connect_db ()
 		return $db;
 
 	//check for database type
-	if ($cfg['dbtype'] == 'mysql')
+	if ('mysql' == $cfg['dbtype'])
 	{
 		$db = &NewADOConnection('mysql');
 
 		// toggle persistant connections
-		if ($cfg['dbpersist'] == true)
+		if (TRUE == $cfg['dbpersist'])
+		{
 			$db->PConnect($cfg['dbhost'], $cfg['dbuser'],
 				$cfg['dbpass'], $cfg['dbname']);
+		}
 		else
+		{
 			$db->Connect($cfg['dbhost'], $cfg['dbuser'],
 				$cfg['dbpass'], $cfg['dbname']);
+		}
 
 		/*
 		 * it is not necessary to return false on failure because

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.8 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.9 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -36,14 +36,6 @@ function volunteer_add()
 
     $errors_found = 0;
 
-/*
-    if (!isset($_POST['first']) or 0 == strlen(trim($_POST['first'])))
-    {
-       process_user_error(_("Too short:").' '._("First name"));
-       $errors_found++;
-    }
-*/    
-
     if (!isset($_POST['last']) or 0 == strlen(trim($_POST['last'])))
     {
        process_user_error(_("Too short:").' '._("Last name"));       
@@ -56,42 +48,40 @@ function volunteer_add()
 	  // todo: redisplay form here with valus in place
 	  die();
     }
-    
-    
-    $organization = $db->escape_string(htmlentities($_POST['organization']));
+        
+    $organization = $db->qstr(htmlentities($_POST['organization']), get_magic_quotes_gpc());
 
-    $prefix = $db->escape_string(htmlentities($_POST['prefix'])); 
-    $first = $db->escape_string(htmlentities($_POST['first']));
-    $middle = $db->escape_string(htmlentities($_POST['middle']));      
-    $last = $db->escape_string(htmlentities($_POST['last']));      
+    $prefix = $db->qstr(htmlentities($_POST['prefix']), get_magic_quotes_gpc()); 
+    $first = $db->qstr(htmlentities($_POST['first']), get_magic_quotes_gpc());
+    $middle = $db->qstr(htmlentities($_POST['middle']), get_magic_quotes_gpc());      
+    $last = $db->qstr(htmlentities($_POST['last']), get_magic_quotes_gpc());      
    
-    $street = $db->escape_string(htmlentities($_POST['street']));         
-    $city = $db->escape_string(htmlentities($_POST['city']));            
-    $state = $db->escape_string(htmlentities($_POST['state']));
-    $postal_code = $db->escape_string(htmlentities($_POST['postal_code']));   
-    $country = $db->escape_string(htmlentities($_POST['country']));       
+    $street = $db->qstr(htmlentities($_POST['street']), get_magic_quotes_gpc());         
+    $city = $db->qstr(htmlentities($_POST['city']), get_magic_quotes_gpc());            
+    $state = $db->qstr(htmlentities($_POST['state']), get_magic_quotes_gpc());
+    $postal_code = $db->qstr(htmlentities($_POST['postal_code']), get_magic_quotes_gpc());   
+    $country = $db->qstr(htmlentities($_POST['country']), get_magic_quotes_gpc());       
    
-    $email_address = $db->escape_string(htmlentities($_POST['email_address']));      
+    $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());      
    
-    $phone_home = $db->escape_string(htmlentities($_POST['phone_home']));
-    $phone_work = $db->escape_string(htmlentities($_POST['phone_work']));   
-    $phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));      
+    $phone_home = $db->qstr(htmlentities($_POST['phone_home']), get_magic_quotes_gpc());
+    $phone_work = $db->qstr(htmlentities($_POST['phone_work']), get_magic_quotes_gpc());   
+    $phone_cell = $db->qstr(htmlentities($_POST['phone_cell']), get_magic_quotes_gpc());      
 
     $sql = 'INSERT INTO volunteers '.
 	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,phone_home,phone_work,phone_cell,email_address, dt_added, uid_added) '.
-	    "VALUES ('$prefix', '$first', '$middle', '$last', '$organization', '$street', '$city', '$state', '$postal_code', '$country', '$phone_home', '$phone_work', '$phone_cell', '$email_address', now(), ".$_SESSION['user_id'].")";
+	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $phone_home, $phone_work, $phone_cell, $email_address, now(), ".$_SESSION['user_id'].")";
 
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
 
     if (!$result) 
     { 
-	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
-        return FALSE;
+	die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
     }
     
-    $vid = $db->insert_id();
+    $vid = $db->Insert_ID();
     
-    $volunteer_row = volunteer_get(intval($vid));
+    $volunteer_row = volunteer_get($vid);
     
     echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
 
@@ -175,12 +165,11 @@ function volunteer_add_form()
 
 if (array_key_exists('button_add_volunteer', $_POST)) 
 {
-    $db = new voldbMySql();
+    $db = connect_db();
 
-    if ($db->get_error())
+    if (!$db)
     {
-	process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));
-	return FALSE;
+        die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);	
     }
 
     volunteer_add();

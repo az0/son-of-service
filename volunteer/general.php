@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.6 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: general.php,v 1.7 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -270,7 +270,7 @@ function volunteer_save()
 
     if ($extended_count > 0)
     {
-	$success_extended = (FALSE != $db->query($sql));        
+	$success_extended = (FALSE != $db->Execute($sql));        
     
 	if (!$success_extended)
 	{

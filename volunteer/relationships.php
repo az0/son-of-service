@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.13 2003/12/06 19:39:49 andrewziem Exp $
+ * $Id: relationships.php,v 1.14 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -52,7 +52,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
 	
 	if (!$result)
 	{
-	    process_system_error(_("Error querying database."),	array('debug' => $db->get_error()));
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	}
 	else if ($result->RecordCount() > 0)
         {
@@ -128,7 +128,7 @@ function relationships_view($brief = FALSE)
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     else if ($result->RecordCount() > 0)
     {

@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.9 2003/11/28 16:25:47 andrewziem Exp $
+ * $Id: import.php,v 1.10 2003/12/07 02:07:26 andrewziem Exp $
  *
  */
 
@@ -235,7 +235,7 @@ function import_legacy3()
 	    foreach ($sql_names as $n)
 	    {
 		// sanitize file input
-		$sql_values[] = $db->escape_string(htmlentities($row[$import_map[$n] - 1]));
+		$sql_values[] = $db->qstr(htmlentities($row[$import_map[$n] - 1]), get_magic_quotes_gpc());
 	    }
 	    
 	    // build SQL INSERT query
@@ -278,11 +278,11 @@ function import_legacy3()
 	    
 	    $sql .= ')';
 
-	    $result = $db->query($sql);
+	    $result = $db->Execute($sql);
 	    
 	    if (!$result)
 	    {
-		process_system_error("Unable to add volunteer: line $lc", array('debug' => $db->get_error()));
+		die_message(MSG_SYSTEM_ERROR, "Unable to add volunteer: line $lc", __FILE__, __LINE__, $sql);
 	    }
 	    else
 	    {

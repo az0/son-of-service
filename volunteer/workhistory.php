@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.12 2003/12/06 19:39:49 andrewziem Exp $
+ * $Id: workhistory.php,v 1.13 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
  
@@ -190,7 +190,7 @@ function volunteer_view_work_history($brief = FALSE)
 
     if (!$result)
     {
-	die_messaeg(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	return FALSE;
     }
 

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.25 2003/12/07 00:40:27 netgamer7 Exp $
+ * $Id: index.php,v 1.26 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -28,7 +28,7 @@ $db = connect_db();
 
 if ($db->_connectionID == '')
 {
-	die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
+    die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
 }
 
 if (array_key_exists('vid', $_REQUEST))

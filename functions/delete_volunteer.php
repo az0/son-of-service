@@ -7,7 +7,7 @@
  *
  * Delete a volunteer.
  *
- * $Id: delete_volunteer.php,v 1.3 2003/11/27 16:34:18 andrewziem Exp $
+ * $Id: delete_volunteer.php,v 1.4 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -27,14 +27,16 @@ function delete_volunteer($vid)
     echo ("<P>"._("Deleting volunteer...")."</P>\n");
 	
     // delete related records
-    $result = $db->query("DELETE FROM notes WHERE vid=$vid");
-    $result = $db->query("DELETE FROM work WHERE vid=$vid");
-    $result = $db->query("DELETE FROM availability WHERE vid=$vid");      
-    $result = $db->query("DELETE FROM volunteer_skills WHERE vid=$vid");            
-    $result = $db->query("DELETE FROM relationships WHERE volunteer1_id = $vid OR volunteer2_id = $vid");            	
+    $result = $db->Execute("DELETE FROM notes WHERE vid=$vid");
+    $result = $db->Execute("DELETE FROM work WHERE vid=$vid");
+    $result = $db->Execute("DELETE FROM availability WHERE vid=$vid");      
+    $result = $db->Execute("DELETE FROM volunteer_skills WHERE vid=$vid");            
+    $result = $db->Execute("DELETE FROM relationships WHERE volunteer1_id = $vid OR volunteer2_id = $vid");            	
       
     // delete primary record
-    $result = $db->query("DELETE FROM volunteers WHERE volunteer_id=$vid LIMIT 1");
+    // todo: portable LIMIT 1
+    $sql = "DELETE FROM volunteers WHERE volunteer_id=$vid LIMIT 1";
+    $result = $db->Execute($sql);
 
     if ($result)
     {
@@ -44,8 +46,7 @@ function delete_volunteer($vid)
     }
     else
     {
-        process_system_error(_("Error deleting data from database."), array('debug' => $db->get_error()));
-        return FALSE;
+	die_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);
     }
 }
 

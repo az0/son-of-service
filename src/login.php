@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.8 2003/12/07 00:40:27 netgamer7 Exp $
+ * $Id: login.php,v 1.9 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -67,7 +67,7 @@ if (isset($_POST['button_login']))
     $db = connect_db();
     if ($db->_connectionID == '')
     {
-    	die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
+        die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
     }
     
     // Security: Do not allow variable poisoning

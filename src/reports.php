@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.6 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: reports.php,v 1.7 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
 
@@ -22,7 +22,9 @@ require_once(SOS_PATH.'functions/textwriter.php');
 is_logged_in();
 
 if (array_key_exists('download', $_REQUEST))
-ob_start();
+{
+    ob_start();
+}
 else
 {
     make_html_begin("Reports", array());
@@ -30,12 +32,11 @@ else
     make_nav_begin();
 }    
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
-    process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
-    die();	
+    die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);    
 }
 
 
@@ -59,12 +60,13 @@ function report_display($title, $result, $type)
     global $db;
 
 
-    $nfields = mysql_num_fields($result);
+    $nfields = $result->FieldCount();
     $fields = array();
     
     for ($n = 0; $n < $nfields; $n++)
     {
-	$fields[]  .= mysql_field_name($result, $n);
+	$fld = $result->FetchField($n);
+	$fields[]  .= $fld->name;
     }
     
     if ('html' == $type)
@@ -88,18 +90,22 @@ function report_display($title, $result, $type)
 	//$writer->open();
     }
     
-    while (FALSE != ($row = $db->fetch_array($result)))
+    while (!$result->EOF)
     {
+	$row = $result->fields;
 	if ('html' == $type)
 	{
 	    echo ("<TR>\n");
 	    foreach ($fields as $field)
+	    {
 		echo ("<TD>".$row[$field]."</TD>\n");
+	    }
 	    echo ("</TR>\n");
 	} elseif ('csv' == $type)
 	{
 	    $writer->addRow($row);
 	}
+	$result->MoveNext();
     }
 
     if ($type == 'html')
@@ -119,11 +125,10 @@ function report_hours()
     global $db;
     global $steps;
     
+
     // validate
     
     $errors_found = 0;
-    
-
     
     if (!in_array($_REQUEST['step'], array('Day', 'Week', 'Month', 'Year')))
     {
@@ -176,24 +181,28 @@ function report_hours()
     
     $sql .= " $dategroup ";
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()." $sql"));
-    }
-    
-    if (0 == $db->num_rows($result))
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    } else if (0 == $result->RecordCount())
     {
 	process_user_notice("No data available for given critiera.");
     }
     else
-    // display
+    {
+	// display
 
-    if (array_key_exists('download', $_REQUEST))
-	report_display('AggregateHours', $result, 'csv');
-    else
-	report_display('Aggregate hours', $result, 'html');
+	if (array_key_exists('download', $_REQUEST))
+	{
+	    report_display('AggregateHours', $result, 'csv');
+	}
+	else
+	{
+	    report_display('Aggregate hours', $result, 'html');
+	}
+    }
 }
 
 
@@ -201,6 +210,7 @@ function report_active_volunteers()
 {
     global $db;
     global $steps;
+    
     
     // validate
     
@@ -225,25 +235,28 @@ function report_active_volunteers()
     //$sql = "SELECT volunteer_id, last, hours_life FROM volunteers ORDER BY hours_life DESC";
     $d1 = str_replace('-','', $d1);
     $d2 = str_replace('-','', $d2);    
-    $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, sum(hours) as Total_Hours FROM work LEFT JOIN volunteers ON work.volunteer_id = volunteers.volunteer_id WHERE work.date between $d1 and $d2 GROUP BY volunteer_id ORDER BY Total_Hours DESC LIMIT 30";
-    $result = $db->query($sql);
+    $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, sum(hours) as Total_Hours FROM work LEFT JOIN volunteers ON work.volunteer_id = volunteers.volunteer_id WHERE work.date between $d1 and $d2 GROUP BY volunteer_id ORDER BY Total_Hours DESC";
+    $result = $db->SelectLimit($sql, 30);
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()." $sql"));
-    }
-    
-    if (0 == $db->num_rows($result))
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    } elseif (0 == $result->RecordCount())
     {
 	process_user_notice("No data available for given critiera.");
     }
     else
-    // display
-    if (array_key_exists('download',$_REQUEST))
-    	report_display("Most active volunteers between $d1 and $d2", $result, 'csv');
-    else
-    	report_display("Most active volunteers between $d1 and $d2", $result, 'html');
-
+    {
+	// display
+	if (array_key_exists('download',$_REQUEST))
+	{
+    	    report_display("Most active volunteers between $d1 and $d2", $result, 'csv');
+	}
+	else
+	{
+    	    report_display("Most active volunteers between $d1 and $d2", $result, 'html');
+	}
+    }
     
 } /* report_active_volunteers() */
 
@@ -265,19 +278,21 @@ function reports_menu()
     echo ("<OPTION>"._("Year")."</OPTION>\n");    
     echo ("</SELECT>\n");
     $sql = "SELECT * FROM strings WHERE type = 'work'";
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     else
     {
 	echo ("<SELECT name=\"category_id\">\n");
 	echo ("<OPTION>--Project</OPTION>\n");
 	echo ("<OPTION value=\"any\">"._("Any")."</OPTION>\n");	
-	while (FALSE != ($row = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    echo ("<OPTION value=\"".$row['string_id']."\">".$row['s']."</OPTION>\n");
+	    $result->MoveNext();
 	}
 	echo ("</SELECT>\n");
     }

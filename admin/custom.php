@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.11 2003/11/28 16:25:47 andrewziem Exp $
+ * $Id: custom.php,v 1.12 2003/12/07 02:07:26 andrewziem Exp $
  *
  */
 
@@ -230,21 +230,21 @@ function custom_add_field_form3()
     
     $unique = FALSE;    
     
-    $label = $db->escape_string(strip_tags($_POST['label']));
-    $codebase = str_replace(' ','_', $label);
+    $label = $db->qstr(strip_tags($_POST['label']), get_magic_quotes_gpc());
+    $codebase = str_replace(' ','_', $_POST['label']);
     $code = $codebase;
     
     for ($i = 0; !$unique; $i++)
     {    
 	// if code is not unique, try finding a unique variation
-	echo "code = $code";
-	$result = $db->query("SELECT code FROM extended_meta WHERE code = '$code'");
+	$sql = "SELECT code FROM extended_meta WHERE code = " . $db->qstr($code, get_magic_quotes_gpc());
+	$result = $db->Execute($sql);
 	if (!$result)
 	{
-	    process_system_error(_("Error querying database.").' code', array('debug' => $db->get_error()));
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	    return;
 	}	
-	if (0 == $db->num_rows($result))
+	if (0 == $result->RecordCount())
 	{
 	    $unique = TRUE;
 	}
@@ -258,10 +258,8 @@ function custom_add_field_form3()
 	    return FALSE;
 	}
     };
-
-    echo ("<p>debug: code = $code</p>\n");
     
-    print_r($_POST);
+    $code_escaped = $db->qstr($code, get_magic_quotes_gpc());
 
     // add to extended_meta 
 
@@ -271,7 +269,7 @@ function custom_add_field_form3()
 	    $length = intval($_POST['string_length']);	
 	    $sql_meta = 'INSERT INTO extended_meta '.
 		'(code, label, size1, fieldtype) '.
-		"VALUES ('$code', '$label', $length, 'string')";
+		"VALUES ($code_escaped, $label, $length, 'string')";
 	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code varchar($length)";
     	    break;
 	case 'textarea':
@@ -280,19 +278,19 @@ function custom_add_field_form3()
 	    $ta_rows = intval($_POST['textarea_rows']);		    
 	    $sql_meta = 'INSERT INTO extended_meta '.
 		'(code, label, size1, size2, size3, fieldtype) '.
-		"VALUES ('$code', '$label', $ta_length, $ta_cols, $ta_rows, 'textarea')";
+		"VALUES ($code_escaped, $label, $ta_length, $ta_cols, $ta_rows, 'textarea')";
 	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code varchar($ta_length)";		
 	    break;
 	case 'date':	    		
 	    $sql_meta = 'INSERT INTO extended_meta '.
 		'(code, label, fieldtype) '.
-		"VALUES ('$code', '$label', 'date')";
+		"VALUES ($code_escaped, $label, 'date')";
 	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code DATE";		
 	    break;	
 	case 'integer':	    		
 	    $sql_meta = 'INSERT INTO extended_meta '.
 		'(code, label, fieldtype) '.
-		"VALUES ('$code', '$label', 'integer')";
+		"VALUES ($code_escaped, $label, 'integer')";
 	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code INT";		
 	    break;	
 	    
@@ -304,26 +302,23 @@ function custom_add_field_form3()
 	    
     }
     
-    $result = $db->query($sql_meta);
+    $result = $db->Execute($sql_meta);
     
-    echo ($db->get_error());
-
     if (!$result)
     {
-	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()) );
-	return;	
+	die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql_meta);
     }    
     
-    $result = $db->query($sql_ext);
-    
-    echo ("$sql_ext:".$db->get_error());
+    $result = $db->Execute($sql_ext);
     
     if (!$result)
     {
 	// todo: roll back changes to _meta
-	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
-	$result = $db->query("DELETE FROM extended_meta WHERE code = '$code' LIMIT 1");
-	return;	
+	// todo: portable LIMIT
+	save_message(MSG_SYSTEM_ERROR, _("Error altering database structure."), __FILE__, __LINE__, $sql_ext);
+	$result = $db->Execute("DELETE FROM extended_meta WHERE code = $code LIMIT 1");
+	display_messages();
+	return FALSE;
     }    
     
     echo ("<P>Your column $label has been added succesfully.</P>\n");

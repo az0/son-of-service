@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.5 2003/12/07 00:40:27 netgamer7 Exp $
+ * $Id: reminders.php,v 1.6 2003/12/07 02:07:27 andrewziem Exp $
  *
  */
  
@@ -29,7 +29,7 @@ $db = connect_db();
 
 if ($db->_connectionID == '')
 {
-    die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
+    die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
 }
 
 is_logged_in();
@@ -47,11 +47,11 @@ function show_reminders()
 	"WHERE uid_assigned = ".intval($_SESSION['user_id'])." AND acknowledged = 1 ".
 	"ORDER BY reminder_date DESC";
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     elseif (0 == $result->RecordCount())
     {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.4 2003/11/29 22:59:53 andrewziem Exp $
+ * $Id: strings.php,v 1.5 2003/12/07 02:07:26 andrewziem Exp $
  *
  */
 
@@ -51,12 +51,12 @@ function strings_add()
 
     if (0 == $errors_found)
     {
-	$string_name = $db->escape_string(htmlentities($_POST['string_name']));
-	$string_category = $db->escape_string(htmlentities($_POST['string_category']));    
+	$string_name = $db->qstr(htmlentities($_POST['string_name']), get_magic_quotes_gpc());
+	$string_category = $db->qstr(htmlentities($_POST['string_category']), get_magic_quotes_gpc());    
 	
-	$sql = "INSERT INTO strings (s, type) VALUES ('$string_name', '$string_category')";
+	$sql = "INSERT INTO strings (s, type) VALUES ($string_name, $string_category)";
 	
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 
 	if (FALSE != $result)
 	{
@@ -122,13 +122,13 @@ function strings_list()
 	"GROUP BY strings.string_id ".
 	"ORDER BY type, name, count ";
 
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
-    else if (0 == $db->num_rows($result))
+    else if (0 == $result->RecordCount())
     {
 	process_user_error(_("No work categories exist."));
     }
@@ -147,14 +147,16 @@ function strings_list()
 // todo: fixme: quantity never zero
 //	echo ("<TH>"._("Quantity in use")."</TH>\n");	
 	echo ("</TR>\n");
-	while (FALSE != ($row = ($db->fetch_array($result))))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    echo ("<TR>\n");
 	    echo ("<TD><INPUT type=\"radio\" name=\"string_id\" value=\"".$row['string_id']."\"></TD>\n");
 	    echo ("<TD>".$category_map[$row['type']]."</TD>\n");	    
 	    echo ("<TD>".$row['name']."</TD>\n");
 //	    echo ("<TD>".$row['count']."</TD>\n");	    
 	    echo ("</TR>\n");
+	    $result->MoveNext();
 	}
 	echo ("</TABLE>\n");
 	echo ("<INPUT type=\"submit\" name=\"button_string_delete\" value=\""._("Delete")."\">\n");
@@ -174,7 +176,6 @@ function strings_delete()
 	// User should not be given option to get here.
 	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
-    
 
     if (!array_key_exists('string_id', $_POST))
     {
@@ -187,19 +188,19 @@ function strings_delete()
     
     // Exists?  What type?
     $sql = "SELECT type FROM strings WHERE string_id = $string_id";
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
-    else if (0 == $db->num_rows($result))
+    else if (0 == $result->RecordCount())
     {
 	// unusual
 	die_message(MSG_SYSTEM_ERROR, "Cannot find string.", __FILE__, __LINE__, $sql);	
     }
     
-    $row = $db->fetch_array($result);
+    $row = $result->fields;
     
     switch ($row['type'])
     {
@@ -221,14 +222,14 @@ function strings_delete()
 	    break;
     }
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
     
     
     if (!$result)
     {
 	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
     } 
-    else if ($db->num_rows($result) > 0)
+    else if ($result->RecordCount() > 0)
     {
 	save_message(MSG_USER_ERROR, _("Currently in use."));	
     }
@@ -236,7 +237,7 @@ function strings_delete()
     {
 	$sql = "DELETE FROM strings WHERE string_id = $string_id LIMIT 1";
 	
-	$result = $db->query($sql);	
+	$result = $db->Execute($sql);	
 	
 	if ($result)
 	{

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.16 2003/12/07 00:40:26 netgamer7 Exp $
+ * $Id: index.php,v 1.17 2003/12/07 02:07:26 andrewziem Exp $
  *
  */
 
@@ -40,7 +40,7 @@ $db = connect_db();
 
 if ($db->_connectionID == '')
 {
-    die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
+    die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
 }
 
 
@@ -61,7 +61,7 @@ function download_mailing_list()
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()));
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     else
     if (0 == $result->RecordCount())
@@ -190,6 +190,7 @@ else
 // VOLUNTEER STATS
 if (array_key_exists('update_volunteer_stats', $_GET))
 {
+    include_once(SOS_PATH . 'functions/stat.php');
     stats_update_volunteers($db);
     echo ("<P>Volunteer statistics updated.</P>\n");
     admin_menu();
