@@ -7,7 +7,7 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.1 2003/11/27 16:34:18 andrewziem Exp $
+ * $Id: access.php,v 1.2 2003/11/29 22:59:54 andrewziem Exp $
  *
  */
 
@@ -36,7 +36,7 @@ define('PT_READ', 1);
 define('PT_WRITE', 1);
 
 
-function has_permission($category, $type, $volunteer_id, $user_id)
+function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
 // category = PC_ADMIN, PC_VOLUNTEER
 // type = READ, MODIFY
 // volunteer_id = volunteer on which operation requested

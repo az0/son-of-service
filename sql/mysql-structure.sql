@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.17 2003/11/24 16:09:40 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.18 2003/11/29 22:59:54 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -78,6 +78,8 @@ CREATE TABLE strings (
     lang varchar(6),
     type enum('extended', 'relationship', 'skill', 'work'),
     foreign_id INT,
+    
+    UNIQUE(s, lang, type)
     
 );
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.3 2003/11/28 16:25:47 andrewziem Exp $
+ * $Id: strings.php,v 1.4 2003/11/29 22:59:53 andrewziem Exp $
  *
  */
 
@@ -22,50 +22,52 @@ function strings_add()
     global $db;
     global $category_map;
     
-    
-    // todo: check permissions
+
+    if (!has_permission(PC_ADMIN, PT_WRITE))
+    {
+	// User should not be given option to get here.
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
 
     $errors_found = 0;
 
     if (strlen($_POST['string_name']) > 100)
     {
-	process_user_error(_("Too long:"). ' '. _("String name"));
+	save_message(MSG_USER_ERROR, _("Too long:"). ' '. _("String name"));
 	$errors_found++;
     }
     
     if (strlen($_POST['string_name']) < 2)
     {
-	process_user_error(_("Too short:"). ' '. _("String name"));
+	save_message(MSG_USER_ERROR, _("Too short:"). ' '. _("String name"));
 	$errors_found++;	
     }
     
     if (!array_key_exists($_POST['string_category'], $category_map))
     {
-	process_user_error(_("Choose a category from the list."));
+	save_message(MSG_USER_ERROR, _("Choose a category from the list."));
 	$errors_found++;
     }
 
-    if ($errors_found)
-    {
-	echo ("<P>Try again.</P>\n");	
-	return FALSE;
-    }
-    else
+    if (0 == $errors_found)
     {
 	$string_name = $db->escape_string(htmlentities($_POST['string_name']));
 	$string_category = $db->escape_string(htmlentities($_POST['string_category']));    
 	
-	$result = $db->query("INSERT INTO strings (s, type) VALUES ('$string_name', '$string_category')");
+	$sql = "INSERT INTO strings (s, type) VALUES ('$string_name', '$string_category')";
+	
+	$result = $db->query($sql);
 
-	if ($result)
+	if (FALSE != $result)
 	{
-	    process_user_notice(_("Added succesfully."));	
+	    save_message(MSG_USER_NOTICE, _("Added succesfully."));	
 	}
 	else
 	{
-	    process_system_error(_("Error adding data to database."));
+	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
 	}
     }
+    redirect("./?strings");
 } /* strings_add() */
 
 
@@ -100,8 +102,14 @@ function strings_list()
     global $db;
     global $category_map;
     
-    
-    // todo: check permissions    
+
+    display_messages();
+
+    if (!has_permission(PC_ADMIN, PT_READ))
+    {
+	// User should not be given option to get here.
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }
     
     $sql = "SELECT strings.string_id AS string_id, strings.s AS name, strings.type AS type, count(*) AS count ".
 	"FROM strings ".
@@ -161,28 +169,34 @@ function strings_delete()
     global $db;
     
     
-    // todo: check permissions
+    if (!has_permission(PC_ADMIN, PT_WRITE))
+    {
+	// User should not be given option to get here.
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+    
 
     if (!array_key_exists('string_id', $_POST))
     {
-	process_user_error(_("You must make a selection."));
-	return FALSE;
+	save_message(MSG_USER_ERROR, _("You must make a selection."));
+	redirect("./?strings");
+	die();
     }    
     
     $string_id = intval($_POST['string_id']);
     
     // Exists?  What type?
-    $result = $db->query("SELECT type FROM strings WHERE string_id = $string_id");
+    $sql = "SELECT type FROM strings WHERE string_id = $string_id";
+    $result = $db->query($sql);
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
-	return FALSE;
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     else if (0 == $db->num_rows($result))
     {
-	process_user_error(_("Cannot find string."));
-	return FALSE;	
+	// unusual
+	die_message(MSG_SYSTEM_ERROR, "Cannot find string.", __FILE__, __LINE__, $sql);	
     }
     
     $row = $db->fetch_array($result);
@@ -212,25 +226,31 @@ function strings_delete()
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));	
+	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
     } 
     else if ($db->num_rows($result) > 0)
     {
-	process_user_error(_("Currently in use."));	
+	save_message(MSG_USER_ERROR, _("Currently in use."));	
     }
     else
     {
-	$result = $db->query("DELETE FROM strings WHERE string_id = $string_id LIMIT 1");	
+	$sql = "DELETE FROM strings WHERE string_id = $string_id LIMIT 1";
+	
+	$result = $db->query($sql);	
 	
 	if ($result)
 	{
-	    process_user_notice(_("Removed."));
+	    save_message(MSG_USER_NOTICE, _("Removed."));
 	}
 	else
 	{
-	    process_user_notice(_("Error deleting data from database."));	
+	    save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);	
 	}
     }
+    
+    // redirect user to non-POST page
+    redirect("./?strings");
+    
 } /* strings_delete() */
 
 ?>
