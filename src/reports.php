@@ -5,14 +5,14 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.7 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: reports.php,v 1.8 2004/02/10 02:17:50 andrewziem Exp $
  *
  */
 
 
 session_start();
 
-define(SOS_PATH, '../');
+define('SOS_PATH', '../');
 
 require_once(SOS_PATH.'include/global.php');
 require_once(SOS_PATH.'functions/html.php');

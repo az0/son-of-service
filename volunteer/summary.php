@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.7 2003/12/21 23:39:06 andrewziem Exp $
+ * $Id: summary.php,v 1.8 2004/02/10 02:17:50 andrewziem Exp $
  *
  */
 
@@ -51,12 +51,7 @@ function volunteer_summary()
 	$contact_card .= _("Phone:").' '.$phone['number'].' '.$phone['memo'] ."\n";
 	$phone_result->MoveNext();
     }
-/*
-    $tab = new DataTableDisplay();
-    $tab->begin();
-    $tab->addRow(array(nl2br($contact_card)));
-    $tab->end();
-*/
+
     echo ("<P>".nl2br($contact_card)."</P>\n");
 
     // show notes
