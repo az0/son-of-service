@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.4 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: reports.php,v 1.5 2003/11/24 14:43:58 netgamer7 Exp $
  *
  */
 
@@ -239,7 +239,10 @@ function report_active_volunteers()
     }
     else
     // display
-    report_display("Most active volunteers between $d1 and $d2", $result, 'html');
+    if (array_key_exists('download',$_REQUEST))
+    	report_display("Most active volunteers between $d1 and $d2", $result, 'csv');
+    else
+    	report_display("Most active volunteers between $d1 and $d2", $result, 'html');
 
     
 } /* report_active_volunteers() */
