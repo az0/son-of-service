@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.1 2003/10/05 16:14:49 andrewziem Exp $
+ * $Id: workhistory.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
  *
  */
 
@@ -97,7 +97,7 @@ function volunteer_work_history_save($mode)
 	$errors_found++;       
     }
     
-    $memo = $db->escape_string($_POST['memo']);
+    $memo = $db->escape_string(sos_strip_tags($_POST['memo']));
 
     // add to database
     if ('add' == $mode)

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
  *
  */
 
@@ -63,23 +63,23 @@ function volunteer_add()
 	die();	
     }
     
-    $organization = $db->escape_string($_POST['organization']);
+    $organization = $db->escape_string(htmlentities($_POST['organization']));
 
-    $prefix = $db->escape_string($_POST['prefix']); 
-   $first = $db->escape_string($_POST['first']);
-   $middle = $db->escape_string($_POST['middle']);      
-   $last = $db->escape_string($_POST['last']);      
+    $prefix = $db->escape_string(htmlentities($_POST['prefix'])); 
+    $first = $db->escape_string(htmlentities($_POST['first']));
+    $middle = $db->escape_string(htmlentities($_POST['middle']));      
+    $last = $db->escape_string(htmlentities($_POST['last']));      
    
-   $street = $db->escape_string($_POST['street']);         
-   $city = $db->escape_string($_POST['city']);            
-   $state = $db->escape_string($_POST['state']);
-   $zip = $db->escape_string($_POST['zip']);   
+    $street = $db->escape_string(htmlentities($_POST['street']));         
+    $city = $db->escape_string(htmlentities($_POST['city']));            
+    $state = $db->escape_string(htmlentities($_POST['state']));
+    $zip = $db->escape_string(htmlentities($_POST['zip']));   
    
-   $email_address = $db->escape_string($_POST['email_address']);      
+    $email_address = $db->escape_string(htmlentities($_POST['email_address']));      
    
-   $phone_home = $db->escape_string($_POST['phone_home']);
-   $phone_work = $db->escape_string($_POST['phone_work']);   
-   $phone_cell = $db->escape_string($_POST['phone_cell']);      
+    $phone_home = $db->escape_string(htmlentities($_POST['phone_home']));
+    $phone_work = $db->escape_string(htmlentities($_POST['phone_work']));   
+    $phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));      
 
    //$wants_monthly_information = $_POST['wants_monthly_information'];             
 

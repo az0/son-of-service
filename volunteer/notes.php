@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.1 2003/10/05 16:14:51 andrewziem Exp $
+ * $Id: notes.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
  *
  */
 
@@ -201,7 +201,7 @@ function note_add()
     
     //to do: more validation
     
-    $message = $db->escape_string($_POST['message']);
+    $message = $db->escape_string(sos_strip_tags($_POST['message']));
     $vid = intval($_POST['vid']);    
     $uid_assigned = intval($_POST['uid_assigned']);        
     if (empty($uid_assigned))

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.1 2003/10/05 16:14:24 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
  *
  */
 
@@ -504,7 +504,7 @@ section.</P>
 	echo ("<TR>\n");
 	echo ("<TH class=\"vert\">".$row['name']."</TH>\n");
 	echo ("<TD><SELECT name=\"skill_".$row['skill_id']."\">\n");
-        echo ("<OPTION value=\"n\">"_("Doesn't matter")."</OPTION>\n");
+        echo ("<OPTION value=\"n\">"._("Doesn't matter")."</OPTION>\n");
         echo ("<OPTION value=\"2\">"._("Amatuer")."</OPTION>\n");
         echo ("<OPTION value=\"3\">"._("Some")."</OPTION>\n");    
         echo ("<OPTION value=\"4\">"._("Professional")."</OPTION>\n");        

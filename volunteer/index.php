@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.1 2003/10/05 16:14:46 andrewziem Exp $
+ * $Id: index.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
  *
  */
 
@@ -205,24 +205,24 @@ global $volunteer;
 
 // sanitize input
 
-$organization = $db->escape_string($_POST['organization']);
+$organization = $db->escape_string(htmlentities($_POST['organization']));
 
-$prefix = $db->escape_string($_POST['prefix']);
-$first = $db->escape_string($_POST['first']);
-$middle = $db->escape_string($_POST['middle']);
-$last = $db->escape_string($_POST['last']);
-$suffix = $db->escape_string($_POST['suffix']);
+$prefix = $db->escape_string(htmlentities($_POST['prefix']));
+$first = $db->escape_string(htmlentities($_POST['first']));
+$middle = $db->escape_string(htmlentities($_POST['middle']));
+$last = $db->escape_string(htmlentities($_POST['last']));
+$suffix = $db->escape_string(htmlentities($_POST['suffix']));
 
-$street = $db->escape_string($_POST['street'], TRUE);
-$city = $db->escape_string($_POST['city'], TRUE);
-$state = $db->escape_string($_POST['state'], TRUE);
-$zip = $db->escape_string($_POST['zip']);
+$street = $db->escape_string(htmlentities($_POST['street']), TRUE);
+$city = $db->escape_string(htmlentities($_POST['city']), TRUE);
+$state = $db->escape_string(htmlentities($_POST['state']), TRUE);
+$zip = $db->escape_string(htmlentities($_POST['zip']));
 
-$email_address = $db->escape_string($_POST['email_address']);
+$email_address = $db->escape_string(htmlentities($_POST['email_address']));
 
-$phone_home = $db->escape_string($_POST['phone_home']);
-$phone_work = $db->escape_string($_POST['phone_work']);
-$phone_cell = $db->escape_string($_POST['phone_cell']);
+$phone_home = $db->escape_string(htmlentities($_POST['phone_home']));
+$phone_work = $db->escape_string(htmlentities($_POST['phone_work']));
+$phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));
 
 if (array_key_exists('wants_monthly_information', $_POST))
 $wants_monthly_information = $db->escape_string($_POST['wants_monthly_information']);
