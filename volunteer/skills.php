@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.13 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: skills.php,v 1.14 2004/03/11 03:10:53 andrewziem Exp $
  *
  */
 
@@ -144,7 +144,7 @@ function volunteer_view_skills($brief = FALSE)
     // add skill form
     if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
-	$sql = "SELECT * FROM strings WHERE type = 'skill'";
+	$sql = "SELECT * FROM strings WHERE type = 'skill' ORDER BY s";
 	$skills_list_result = $db->CacheExecute($db_cache_timeout, $sql);
 
 	if (!$skills_list_result)

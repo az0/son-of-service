@@ -5,10 +5,12 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.9 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: reports.php,v 1.10 2004/03/11 03:10:53 andrewziem Exp $
  *
  */
 
+// todo: build better report framework
+// todo: make each report like a plugin
 
 session_start();
 
@@ -27,7 +29,7 @@ if (array_key_exists('download', $_REQUEST))
 }
 else
 {
-    make_html_begin("Reports", array());
+    make_html_begin(_("Reports"), array());
 
     make_nav_begin();
 }    
@@ -188,7 +190,7 @@ function report_hours()
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     } else if (0 == $result->RecordCount())
     {
-	process_user_notice("No data available for given critiera.");
+	process_user_notice(("No data available for given critiera."));
     }
     else
     {
@@ -200,7 +202,7 @@ function report_hours()
 	}
 	else
 	{
-	    report_display('Aggregate hours', $result, 'html');
+	    report_display(_("Aggregate hours"), $result, 'html');
 	}
     }
 }
@@ -254,11 +256,12 @@ function report_active_volunteers()
 	}
 	else
 	{
-    	    report_display("Most active volunteers between $d1 and $d2", $result, 'html');
+    	    report_display("Most active volunteers between " . htmlentities($d1) . " and " . htmlentities($d2), $result, 'html');	    
 	}
     }
     
 } /* report_active_volunteers() */
+
 
 function reports_menu()
 {
@@ -308,11 +311,11 @@ function reports_menu()
     echo ("<BR><INPUT type=\"submit\" name=\"report_active_volunteers\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
+
+    if (!array_key_exists('download', $_REQUEST))
+    {
+	make_html_end();
+    }
 }
-
-
-if (!array_key_exists('download', $_REQUEST))
-    make_html_end();
-
 ?>
 

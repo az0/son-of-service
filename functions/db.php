@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.11 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: db.php,v 1.12 2004/03/11 03:10:52 andrewziem Exp $
  *
  */
 
@@ -18,8 +18,16 @@ if (preg_match('/db.php/i', $_SERVER['PHP_SELF']))
 }
 
 
+/**
+ * volunteer_get($vid, &$errstr)
+ *
+ * Get volunteer's primary record.
+ *
+ * @param int vid volunteer_id
+ * @param *string errstr will be filled with message in case of error
+ * @return array record from volunteer table
+ */
 function volunteer_get($vid, &$errstr)
- // get from database
  {
     //assuming $db is a fully connected ADOdb connection
     global $db;
@@ -52,6 +60,7 @@ function volunteer_get($vid, &$errstr)
     return $volunteer;
  
  } /* volunteer_get() */
+
 
 function connect_db ()
 {
@@ -116,6 +125,60 @@ function make_orderby($request, $column_names, $default_column, $default_directi
     {
 	return ("ORDER BY $default_column $default_direction");	
     }
+}
+
+/**
+ * db_column_exists($name, $table)
+ *
+ * @param string name name of column, "the needle," quoted by qstr
+ * @param string table name of table, "the haystack"
+ * @return boolean
+ */
+function db_column_exists($name, $table)
+{
+    global $db;
+    
+
+    $sql = "SHOW COLUMNS FROM extended LIKE " . $name;
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
+    }
+    
+    return (1 == $result->RecordCount());
+}
+
+/**
+ * db_extended_column_type($code)
+ *
+ * Given that code is the code name of column in the extended system
+ * (user-defined fields), look up its data type.
+ * 
+ * Returns false on error.
+ *
+ * @param string code column in the extended system, quoted by qstr
+ * @return char integer, decimal, string, textarea, date (or false on error)
+ */
+
+function db_extended_column_type($code)
+{
+    global $db;
+    
+
+    $sql = "SELECT fieldtype FROM extended_meta WHERE code = " . $code;
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
+    }
+    
+    if (1 == $result->RecordCount())
+    {
+	return $result->fields['fieldtype'];
+    }
+    
+    return FALSE;    
 }
 
 ?>

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.21 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: workhistory.php,v 1.22 2004/03/11 03:10:53 andrewziem Exp $
  *
  */
  
@@ -206,7 +206,6 @@ function volunteer_view_work_history($brief = FALSE)
     if (!$result)
     {
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
-	return FALSE;
     }
 
     if (!$brief or 0 < $result->RecordCount())
@@ -338,7 +337,7 @@ function work_history_addedit($mode)
  
  // get a list of categories
  
- $sql = "SELECT string_id, s FROM strings WHERE type = 'work'";
+ $sql = "SELECT string_id, s FROM strings WHERE type = 'work' ORDER BY s";
  
  $result = $db->Execute($sql);
  

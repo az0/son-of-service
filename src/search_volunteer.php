@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.23 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.24 2004/03/11 03:10:53 andrewziem Exp $
  *
  */
 
@@ -15,6 +15,7 @@
 // todo: add to found set (vs replace) ?
 // todo: advanced searching (e.g., not, match exact)
 // todo: query manager for saving queries
+// todo: handle multiple tables better
 
 function getmicrotime(){ 
 // this function from PHP documentation
@@ -155,6 +156,304 @@ function search_add($form_name, $column, &$where)
 }
 
 
+/**
+ * volunteer_search_sql()
+ *
+ * Given user-defined parameters in $_GET, generates an appropriate
+ * SQL string.  Modifies $cm.
+ *
+ * @return string SQL string
+ *
+ */
+function volunteer_search_sql()
+{
+    global $cm;
+    global $db;
+
+
+    $skills_active = $extended_active = FALSE;
+	
+    // dummy
+    $where  = " WHERE 1 ";
+
+    // columns in volunteer table
+    search_add('first', 'first', $where);		
+    search_add('last', 'last', $where);		
+    search_add('organization', 'organization', $where);		
+    search_add('street', 'street', $where);			
+    search_add('city', 'city', $where);					
+    search_add('state', 'state', $where);		
+    search_add('postal_code', 'postal_code', $where);				
+    search_add('country', 'country', $where);					
+
+    // add skills to SQL
+    foreach ($_REQUEST as $key => $p)
+    {
+        if (FALSE != preg_match('/^skill_(\d+)/', $key, $matches))
+        {
+    	    if ('n' != $_REQUEST[$key])
+    	    {		    
+	        $skills_active = TRUE;	    
+		$where .= " AND ( string_id = ".$matches[1]." and skill_level >= " . intval($_REQUEST[$key]) . ") ";
+	    }		
+	}	    
+    }	
+
+    // extended
+    foreach ($_REQUEST as $key => $p)
+    {
+        if (FALSE != preg_match('/^extended_(.+)$/', $key, $matches))
+        {
+    	    if (0 < strlen(trim($_REQUEST[$key])))
+    	    {	
+		$sColumn = $matches[1];
+		$qsColumn = $db->qstr($matches[1], get_magic_quotes_gpc());
+		$qsCritiera = $db->qstr($p, get_magic_quotes_gpc());
+	    
+		// valid column?	    
+		if (!db_column_exists($qsColumn, 'extended'))
+		{
+		    die_message(MSG_SYSTEM_ERROR, "invalid column name passed", __FILE__, __LINE__);
+		}
+		
+		switch (db_extended_column_type($qsColumn))
+		{
+		    case 'integer':
+		    case 'decimal':
+			$where .= " AND extended.$sColumn = " . $db->qstr($_REQUEST[$key], get_magic_quotes_gpc()) . "  ";
+			break;
+			
+		    case 'string':
+		    case 'textarea':
+			$where .= " AND extended.$sColumn LIKE $qsCritiera  ";
+			break;
+			
+		    default:
+			// shouldn't get here
+			die_message(MSG_SYSTEM_ERROR, "unexpected type", __FILE__, __LINE__);
+			break;		    
+		}
+
+	        $extended_active = TRUE;	    
+		
+	    }		
+	}	    
+    }	
+
+
+    if ($skills_active)
+    {	
+	$groupby = ' GROUP BY volunteer_skills.volunteer_id ';
+	$from   = ' FROM volunteer_skills RIGHT JOIN volunteers ON volunteer_skills.volunteer_id = volunteers.volunteer_id ';
+    }
+    else
+    {	
+	$from   = ' FROM volunteers ';
+    	$groupby = ' ';
+    }
+    
+    if ($extended_active)
+    {
+	$from .= ' LEFT JOIN extended ON volunteers.volunteer_id = extended.volunteer_id ';
+    }
+	
+    if (array_key_exists('phone_number', $_REQUEST) and strlen($_REQUEST['phone_number'] > 0))
+    {
+        $from .= ' RIGHT JOIN phone_numbers ON volunteers.volunteer_id = phone_numbers.volunteer_id ';
+        $where .= ' AND phone_numbers.number LIKE '.$db->qstr("%".$_REQUEST['phone_number']."%", get_magic_quotes_gpc());
+    }
+	
+    if (array_key_exists('availability_day', $_REQUEST) and is_numeric($_REQUEST['availability_day']))
+    {
+        $t = intval($_REQUEST['availability_time']);
+        $d = intval($_REQUEST['availability_day']);
+        $from .= ' RIGHT JOIN availability ON volunteers.volunteer_id = availability.volunteer_id ';
+        $where .= " AND availability.start_time <= $t AND $t <= availability.end_time AND $d = availability.day_of_week";
+    }
+	
+    $orderby = "";
+    if ($cm->columnExists($_REQUEST['sortby']))
+    { 
+	// is orderby valid?
+	$orderby = " ORDER BY ".$_REQUEST['sortby'].' ';
+	if ($cm->columnExists($_REQUEST['sortby']))		
+	{
+		$cm->setDisplay($_REQUEST['sortby'], TRUE);		
+	}
+    }
+
+    $total_results = -1;
+		
+    $sql = $cm->getSelect() . $from . $where . $groupby  . $orderby;
+    
+    return $sql;
+} /* volunteer_search_sql() */
+
+
+/**
+ * volunteer_search_display($sql)
+ *
+ * Given an SQL string, it executes it and displays the results.
+ *
+ * @return void
+ */
+function volunteer_search_display($sql, $offset, $results_per_page)
+{
+    global $db, $cm;
+    
+
+    // is offset too small?    
+    if ($offset < 0)
+    {
+	$offset = 0;
+    }
+
+    $result = $db->Execute($sql);
+
+    if (!$result)
+    { 
+	// search failed
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+    else
+    { 
+	// search successful
+	// todo: mass-action on found set (email)
+		
+        if (0 == ($total_results = $result->RecordCount()))
+        {
+             process_user_error(_("Found zero volunteers matching your description."));
+        }
+        else
+	{	
+	    // is offset too large?
+
+	    if ($offset > $total_results)
+	    {
+		$offset = $total_results - $results_per_page;
+	    }
+    
+	    echo ("<FORM method=\"post\" action=\"mass.php\">\n");	
+
+	    $tab = new DataTableDisplay();
+		    
+	    $fieldnames = array();
+		    
+	    for ($i = 0, $max = $result->FieldCount(); $i < $max; $i++)
+	    {
+		$fld = $result->FetchField($i);		    
+		$fieldnames[$fld->name] = array();
+	    }
+
+	    $fieldnames['volunteer_id']['checkbox'] = TRUE;
+	    $fieldnames['volunteer_id']['label'] = _("Select");		    
+	    $fieldnames['first']['label'] = _("First");
+	    $fieldnames['first']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";
+	    $fieldnames['last']['label'] = _("Last");
+	    $fieldnames['last']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
+	    $fieldnames['organization']['label'] = _("Organization");
+	    $fieldnames['organization']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
+
+	    if ($offset > 0)
+	    {
+		$result->Move($offset);	    
+	    }
+		    
+	    $max = $results_per_page;
+	    if ($offset + $results_per_page > $total_results)
+	    {
+		$max = $offset + $results_per_page;
+	    }
+	    if ($max > $total_results)
+	    {
+		$max = $total_results - 1;
+	    }
+		    
+	    $tab->setHeaders($fieldnames);
+	    $tab->begin();
+	    
+	    $counter = 0;
+	    while (!$result->EOF)
+	    {
+		$counter++;
+	        $tab->addRow($result->fields);
+		$result->MoveNext();
+		if ($counter >= $results_per_page)
+		    break;
+	    }
+		    
+	    $tab->end();
+	    
+	    // todo: what other mass actions?
+
+	    echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\""._("E-mail")."\">\n");
+	    if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
+	    {
+    		echo ("<INPUT type=\"submit\" name=\"button_delete_volunteers\" value=\""._("Delete")."\">\n");	
+	    }
+	    echo ("</FORM>\n");
+	    
+	    // results navigation
+	
+	    $page = 1 + ($offset / $results_per_page);
+	    $pages = ceil($total_results / $results_per_page);
+	    $last_this_page = ($offset + $results_per_page) > $total_results ?   $total_results: ($offset + $results_per_page);
+
+	    echo ("<P>Page $page of $pages showing records ".($offset + 1)." through ".($last_this_page)." of $total_results.</P>\n");
+
+	    if ($offset > 0)
+	    {
+	        // not first result
+	    
+	        $url = make_url($_REQUEST, array('offset', 'button_search'));	    
+	    
+	        echo ("<A href=\"search_volunteer.php$url&offset=0\">"._("First")."</A>\n");
+	        echo ("<A href=\"search_volunteer.php$url&offset=".($offset-$results_per_page)."\">"._("Previous")."</A>\n");	    
+	    }
+	    else
+            {	
+	        echo (_("First")."\n");
+	        echo (_("Previous")."\n");
+	    }
+
+	    if ($offset + $results_per_page < $total_results)
+	    {
+    		$url = make_url($_REQUEST, array('offset', 'button_search'));
+	        echo ("<A href=\"search_volunteer.php$url&offset=".($offset+$results_per_page)."\">Next</A>\n");
+	        echo ("<A href=\"search_volunteer.php$url&offset=".($total_results - ($total_results % $results_per_page))."\">".gettext("Last")."</A>\n");	    
+	    }
+	    else
+	    {
+    		echo (_("Next")."\n");
+	        echo (_("Last")."\n");
+	    }
+
+	    // sorting
+
+	    echo ("<FORM method=\"get\" action=\"search_volunteer.php\">\n");
+	    echo ("<FIELDSET>\n");
+	    echo ("<LEGEND>Sort</LEGEND>\n");
+
+	    foreach ($_REQUEST as $k => $v)
+	    {
+	        if ($k != 'sortby' and !preg_match('/^button_/', $k) and session_name() != $k)
+		{
+	    	    echo ("<INPUT type=\"hidden\" name=\"$k\" value=\"$v\">\n");
+		}
+	    }
+	    echo ("<SELECT name=\"sortby\"");
+	    foreach ($cm->getNames() as $c)
+	    {
+	        echo ("<OPTION>$c</OPTION>\n");
+	    }
+	    echo ("</SELECT>\n");
+	    echo ("<INPUT type=\"submit\" name=\"button_search\" value=\""._("Sort")."\">\n");
+	    echo ("</FIELDSET>\n");    
+	    echo ("</FORM>\n");    
+           }
+        }
+}
+
 function volunteer_search()
 {
     global $db, $cm;
@@ -167,236 +466,11 @@ function volunteer_search()
         $offset = intval($_REQUEST['offset']);
     }
 
-    // is offset too small?    
-    if ($offset < 0)
-    {
-	$offset = 0;
-    }
+    $sql = volunteer_search_sql();
+    
+    volunteer_search_display($sql, $offset, $results_per_page);
 
-    $skills_active = FALSE;
 	
-    foreach ($_REQUEST as $key => $p)
-    {
-        if (FALSE != preg_match('/^skill_(\d+)/', $key, $matches))
-        {
-    	    if ('n' != $_REQUEST[$key])
-	    {
-	        $skills_active = TRUE;
-	    }
-	}
-    }
-	
-    if ($skills_active)
-    {	
-	$where  = " WHERE volunteers.volunteer_id > 0";
-    }
-    else
-    {	
-        $where  = " WHERE volunteers.volunteer_id > 0";
-    }
-
-	search_add('first', 'first', $where);		
-	search_add('last', 'last', $where);		
-	search_add('organization', 'organization', $where);		
-	search_add('street', 'street', $where);			
-	search_add('city', 'city', $where);					
-	search_add('state', 'state', $where);		
-	search_add('postal_code', 'postal_code', $where);				
-	search_add('country', 'country', $where);					
-	
-	foreach ($_REQUEST as $key => $p)
-	{
-	    if (FALSE != preg_match('/^skill_(\d+)/', $key, $matches))
-	    {
-		if ('n' != $_REQUEST[$key])
-		{
-		    
-		    $where .= " AND ( string_id = ".$matches[1]." and skill_level >= ".$_REQUEST[$key].") ";
-
-
-		}		
-	    }	    
-	}	
-
-	if ($skills_active)
-	{	
-    	    $groupby = ' GROUP BY volunteer_skills.volunteer_id ';
-	    $from   = " FROM volunteer_skills RIGHT JOIN volunteers ON volunteer_skills.volunteer_id = volunteers.volunteer_id ";
-	}
-	else
-	{	
-	    $from   = ' FROM volunteers ';
-    	    $groupby = ' ';
-	}
-	
-	if (array_key_exists('phone_number', $_REQUEST) and strlen($_REQUEST['phone_number'] > 0))
-	{
-	    $from .= ' RIGHT JOIN phone_numbers ON volunteers.volunteer_id = phone_numbers.volunteer_id ';
-	    $where .= ' AND phone_numbers.number LIKE '.$db->qstr("%".$_REQUEST['phone_number']."%", get_magic_quotes_gpc());
-	}
-	
-	if (array_key_exists('availability_day', $_REQUEST) and is_numeric($_REQUEST['availability_day']))
-	{
-	    $t = intval($_REQUEST['availability_time']);
-	    $d = intval($_REQUEST['availability_day']);
-	    $from .= ' RIGHT JOIN availability ON volunteers.volunteer_id = availability.volunteer_id ';
-	    $where .= " AND availability.start_time <= $t AND $t <= availability.end_time AND $d = availability.day_of_week";
-	}
-	
-	$orderby = "";
-	if ($cm->columnExists($_REQUEST['sortby']))
-	{ 
-	    // is orderby valid?
-	    $orderby = " ORDER BY ".$_REQUEST['sortby'].' ';
-	    if ($cm->columnExists($_REQUEST['sortby']))		
-	    {
-		    $cm->setDisplay($_REQUEST['sortby'], TRUE);		
-	    }
-	}
-
-	$total_results = -1;
-		
-	$sql = $cm->getSelect() . $from . $where . $groupby  . $orderby;
-	
-	echo ("<FORM method=\"post\" action=\"mass.php\">\n");	
-	
-        $result = $db->Execute($sql);
-
-        if (!$result)
-        { 
-	    // search failed
-	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	    
-        }
-        else
-        { 
-		// search successful
-		// todo: mass-action on found set (email)
-		
-                if (0 == ($total_results = $result->RecordCount()))
-                {
-                     process_user_error(_("Found zero volunteers matching your description."));
-                }
-                else
-		{
-		
-		    // is offset too large?
-		    if ($offset > $total_results)
-		    {
-			$offset = $total_results - $results_per_page;
-		    }
-
-		    $tab = new DataTableDisplay();
-		    
-		    $fieldnames = array();
-		    
-		    for ($i = 0, $max = $result->FieldCount(); $i < $max; $i++)
-		    {
-			$fld = $result->FetchField($i);		    
-			$fieldnames[$fld->name] = array();
-		    }
-		    
-		    $fieldnames['first']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    
-		    $fieldnames['last']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
-		    $fieldnames['organization']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
-		    $fieldnames['volunteer_id']['checkbox'] = TRUE;
-			
-		    if ($offset > 0)
-		    {
-			$result->Move($offset);	    
-		    }
-		    
-		    $max = $results_per_page;
-		    if ($offset + $results_per_page > $total_results)
-		    {
-			$max = $offset + $results_per_page;
-		    }
-		    if ($max > $total_results)
-		    {
-			$max = $total_results - 1;
-		    }
-		    
-		    $tab->setHeaders($fieldnames);
-		    $tab->begin();
-		    
-		    while (!$result->EOF)
-		    {
-		        $tab->addRow($result->fields);
-			$result->MoveNext();
-		    }
-		    
-		    $tab->end();
-
-               }
-
-        }
-
-        // todo: implement e-mail
-	// todo: what other mass actions?
-
-	echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\""._("E-mail")."\">\n");
-	if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
-	{
-	    echo ("<INPUT type=\"submit\" name=\"button_delete_volunteers\" value=\""._("Delete")."\">\n");	
-	}
-	echo ("</FORM>\n");
-	
-	// results navigation
-	
-	$page = 1 + ($offset / $results_per_page);
-	$pages = ceil($total_results / $results_per_page);
-	$last_this_page = ($offset + $results_per_page) > $total_results ?   $total_results: ($offset + $results_per_page);
-
-	echo ("<P>Page $page of $pages showing records ".($offset + 1)." through ".($last_this_page)." of $total_results.</P>\n");
-
-	if ($offset > 0)
-	{
-	    // not first result
-	    
-	    $url = make_url($_REQUEST, array('offset', 'button_search'));	    
-	    
-	    echo ("<A href=\"search_volunteer.php$url&offset=0\">"._("First")."</A>\n");
-	    echo ("<A href=\"search_volunteer.php$url&offset=".($offset-$results_per_page)."\">"._("Previous")."</A>\n");	    
-	}
-	else
-	{
-	    echo (_("First")."\n");
-	    echo (_("Previous")."\n");
-	}
-
-	if ($offset + $results_per_page < $total_results)
-	{
-	    $url = make_url($_REQUEST, array('offset', 'button_search'));
-	    echo ("<A href=\"search_volunteer.php$url&offset=".($offset+$results_per_page)."\">Next</A>\n");
-	    echo ("<A href=\"search_volunteer.php$url&offset=".($total_results - ($total_results % $results_per_page))."\">".gettext("Last")."</A>\n");	    
-	}
-	else
-	{
-	    echo (_("Next")."\n");
-	    echo (_("Last")."\n");
-	
-	}
-
-	// sorting
-
-	echo ("<FORM method=\"get\" action=\"search_volunteer.php\">\n");
-	echo ("<FIELDSET>\n");
-	echo ("<LEGEND>Sort</LEGEND>\n");
-
-	foreach ($_REQUEST as $k => $v)
-	{
-	    if ($k != 'sortby' and !preg_match('/^button_/', $k))
-		echo ("<INPUT type=\"hidden\" name=\"$k\" value=\"$v\">\n");
-	}
-//	echo ("Sort by\n");
-	echo ("<SELECT name=\"sortby\"");
-	foreach ($cm->getNames() as $c)
-        
-	    echo ("<OPTION>$c</OPTION>\n");
-	echo ("</SELECT>\n");
-	echo ("<INPUT type=\"submit\" name=\"button_search\" value=\""._("Sort")."\">\n");
-
-	echo ("</FIELDSET>\n");
-	echo ("</FORM>\n");    
 } /* volunteer_search () */
 
 function volunteer_search_form()
@@ -462,6 +536,27 @@ section.</P>
  <th class="vert"><?php echo _("E-mail"); ?></th>
  <td><input type="Text" name="email_address"></td>
  </tr>
+<?php
+// extended fields
+$sql = "SELECT * FROM extended_meta";
+$result = $db->Execute($sql);
+if (!$result)
+{
+    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+}
+else
+{
+    while (!$result->EOF)
+    {
+	echo ("<tr>\n");
+	echo ("<th class=\"vert\">" . $result->fields['label'] . "</th>\n");
+	echo ("<td><input type=\"text\" name=\"extended_" . $result->fields['code'] . "\"></td>\n");
+	echo ("</tr>\n");
+	$result->MoveNext();
+    }
+}
+
+?>
 </table>
 
 <TABLE border="0" style="margin:6pt">

@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.12 2004/03/10 14:44:16 andrewziem Exp $
+ * $Id: table.php,v 1.13 2004/03/11 03:10:52 andrewziem Exp $
  *
  */
 
@@ -190,7 +190,7 @@ class DataTableDisplay
     			$c = nl2br($c);
 		    }
 
-		    if (array_key_exists('link', $v) and $v['link'])
+		    if (array_key_exists('link', $v) and $v['link'] and 0 < strlen(trim($row[$k])))
 		    {
 			if (preg_match_all("/\#(\w+)\#/", $v['link'], $tagss))
 			foreach ($tagss as $tags)
