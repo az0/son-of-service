@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.13 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: users.php,v 1.14 2004/01/22 06:04:44 andrewziem Exp $
  *
  */
  
@@ -193,6 +193,7 @@ function user_addedit_form()
 	echo ("<P class=\"instructionstext\">A user administrates the volunteer database.  He may view and change volunteers' accounts.</P>\n");
 	// form defaults
 	$form_values = array('access_edit_vol' => 1, 'access_add_vol' => 1);
+	$form_values['email'] = $form_values['username'] = $form_values['personalname'] = "";
 	
     }
     
@@ -213,7 +214,7 @@ $form = new formMaker;
 $form->open(FALSE, 'post', '.', FS_TABLE);
 $form->addField(_("Username"), 'text', 'username', array('length' => 20), $form_values['username']);
 $form->addField(_("Password"), 'password', 'password1', array('length' => 20), '');
-$form->addField(_("Verify password"), 'password', 'password1', array('length' => 20), '');
+$form->addField(_("Verify password"), 'password', 'password2', array('length' => 20), '');
 ?>
 
 <tr>
