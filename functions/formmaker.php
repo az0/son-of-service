@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.10 2004/03/12 15:57:32 andrewziem Exp $
+ * $Id: formmaker.php,v 1.11 2004/05/01 20:31:46 andrewziem Exp $
  *
  */
 
@@ -140,7 +140,7 @@ class formMaker
     function formMaker()
     // constructor
     {
-
+	$this->hidden_fields = array();
     }
 
     function open($title = FALSE, $method, $action, $style)
