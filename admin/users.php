@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.5 2003/11/22 16:53:48 andrewziem Exp $
+ * $Id: users.php,v 1.6 2003/11/22 18:14:03 netgamer7 Exp $
  *
  */
  
@@ -47,13 +47,13 @@ function user_save()
 
     if (!isset($_POST['username']) or 4 > strlen(trim($_POST['username'])))
     {
-       process_user_error("Username is too short.");
+       process_user_error("Username is too short - 4 or more characters reqired.");
        $errors_found++;
     }
 
     if (!$mode_update and (!isset($_POST['password1']) or 4 > strlen(trim($_POST['password1']))))
     {
-	process_user_error("Account password is too short.");
+	process_user_error("Account password is too short - 4 or more characters required.");
 	$errors_found++;
     }
     else    
