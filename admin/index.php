@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.20 2004/02/22 00:26:49 andrewziem Exp $
+ * $Id: index.php,v 1.21 2004/03/04 01:22:53 andrewziem Exp $
  *
  */
 
@@ -78,6 +78,8 @@ function download_mailing_list()
 	header("Pragma: no-cache");
 	header("Content-type: text/csv");
 	
+	require_once(SOS_PATH . 'functions/textwriter.php');
+	
 	$tw = new textDbWriter('csv');
 	
 	$i = 0;
@@ -121,12 +123,12 @@ function admin_menu()
 <UL>
  <LI><A href="./?users">User accounts</A>
  <LI><A href="./?strings">Strings: relationship types, skill types, work categories</A>
- <LI><A href="./?update_volunteer_stats">Update volunteer statistics</A>
- <LI><A href="./?system_check">System check</A>
- <LI><A href="./?add_custom_field">Add custom field</A>
+ <LI><A href="./?add_custom_field">Add custom field</A> 
  <LI><A href="./?import_legacy">Import legacy data</A>
- <LI>Download database dump in SQL format
+<!-- <LI>Download database dump in SQL format -->
  <LI>Download mailing list [<A href="./?download_mailing_list&type=postal&who=all">all</A>]</LI>
+ <LI><A href="./?system_check">System check</A> 
+ <LI><A href="./?update_volunteer_stats">Update volunteer statistics</A> 
 
  </UL>
 <?php
