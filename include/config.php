@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: config.php,v 1.7 2003/12/06 19:39:49 andrewziem Exp $
+ * $Id: config.php,v 1.8 2004/03/10 14:35:49 andrewziem Exp $
  *
  */
 
@@ -28,7 +28,7 @@ $smtp_hostname = 'localhost';
 // html_security_level
 // 1: HTML stripped from most form input for maximum security
 // 2: admin-level users can include some HTML
-// 3: all users can include some HTM
+// 3: all users can include some HTML
 $html_security_level = 1;
 
 // db_cache_timeout: measured in seconds
