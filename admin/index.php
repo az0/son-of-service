@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003 by Andrew Ziem.  All rights reserved. 
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.17 2003/12/07 02:07:26 andrewziem Exp $
+ * $Id: index.php,v 1.18 2004/02/10 02:19:56 andrewziem Exp $
  *
  */
 
@@ -13,7 +13,7 @@ ob_start();
 
 session_start();
 
-define (SOS_PATH, '../');
+define ('SOS_PATH', '../');
 
 require_once (SOS_PATH . 'include/global.php');
 require_once (SOS_PATH . 'functions/access.php');
