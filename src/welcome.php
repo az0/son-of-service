@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.1 2003/10/05 16:14:24 andrewziem Exp $
+ * $Id: welcome.php,v 1.2 2003/10/06 00:33:33 andrewziem Exp $
  *
  */
 
@@ -47,5 +47,10 @@ $reminders = $db->num_rows($result);
 echo ("<P>Welcome, $username.  You have $reminders reminders waiting.</P>\n");
 
 
-
 ?>
+
+<P>Thank you for trying this demo of SOS.  This is not a finished
+product: the program is in an early stage of development.  The primary
+goal now is to identify and implement major features.  Also constructive
+criticism of the overall design is appropriate now.</P>
+

@@ -7,7 +7,7 @@
  *
  * Generates artificial volunteers for testing.
  *
- * $Id: randomvolunteer.php,v 1.1 2003/10/05 16:14:24 andrewziem Exp $
+ * $Id: randomvolunteer.php,v 1.2 2003/10/06 00:33:32 andrewziem Exp $
  *
  */
 
@@ -71,7 +71,6 @@ define ('SOS_PATH', '../');
 
 if ($db)
 {
-
     require_once(SOS_PATH . 'include/config.php');    
     require_once(SOS_PATH . 'functions/db.php');
     

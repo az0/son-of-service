@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.1 2003/10/05 16:14:46 andrewziem Exp $
+ * $Id: custom.php,v 1.2 2003/10/06 00:33:32 andrewziem Exp $
  *
  */
 
@@ -201,12 +201,12 @@ function custom_add_field_form2()
 </FIELDSET>
 
 <P>Really add this field?</P>
-<FORM method="post" action=".">
+<FORM action="." method="post">
 <INPUT type="hidden" name="stage" value="3">
 <?php
     foreach($_POST as $pk => $pv)
     {
-	if ($pk != 'stage')
+	if ($pk != 'stage' and $pk != 'add_custom_field')
 	{
 	    $pk = strip_tags($pk); // security feature
 	    $pv = strip_tags($pv); // security feature
@@ -214,7 +214,7 @@ function custom_add_field_form2()
 	}
     }
 ?>
-<INPUT type="button" name="add_custom_field" value="<?php echo(_("Add"));?>">
+<INPUT type="submit" name="add_custom_field" value="<?php echo(_("Add"));?>">
 </FORM>
 
 <?php
@@ -222,8 +222,106 @@ function custom_add_field_form2()
 } /* custom_add_field_form2() */
 
 
+function custom_add_field_form3()
+{
+    global $db;
+    
+    
+    // validate some input
+
+    $errors_found = 0;
+    
+    if (empty($_POST['label']) or strlen(trim($_POST['label'])) < 3)
+    {
+	$errors_found++;
+	process_user_error(_("Label too short"));
+    }
+    
+    if ($errors_found)
+	return;
+    
+    // find a unique code
+    
+    $unique = FALSE;
+    
+    
+    $label = $db->escape_string(strip_tags($_POST['label']));
+    $codebase = str_replace(' ','', $label);
+    $code = $codebase;
+    
+    for ($i = 0; !$unique; $i++)
+    {    
+	echo "code = $code";
+	$result = $db->query("SELECT code from extended_meta where code = '$code'");
+	if (!$result)
+	{
+	    process_system_error(_("Error while querying database").' code', array('debug',mysql_error()));
+	    return;
+	}	
+	if (0 == $db->num_rows($result))
+	    $unique = TRUE;
+	    else $code = $code.$i;
+	if ($i > 20)
+	{
+	    process_system_error("Unable to find unique code based on $label.");
+	}
+    };
+
+    echo ("<p>debug: code = $code</p>\n");
+
+    // add to extended_meta 
+
+    switch ($_POST['fieldtype'])
+    {
+	case 'string':
+	    $length = intval($_POST['string_length']);	
+	    $sql_meta = 'INSERT INTO extended_meta '.
+		'(code, label, databasecolumntype, databasecolumnsize, fieldtype) '.
+		"VALUES ('$code', '$label', 'varchar', $length, 'string')";
+	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code varchar($length)";
+    	    break;
+	default:
+	    process_system_error(_("Bad form input:" .' fieldtype'));	    
+	    assert(FALSE);    
+	    break;
+	    
+    }
+    
+    $result = $db->query($sql_meta);
+    
+    echo (mysql_error());
+
+    if (!$result)
+    {
+	process_system_error(_("Error while adding custom meta data."), array('debug', mysql_error()) );
+	return;	
+    }    
+    
+    $result = $db->query($sql_ext);
+    
+    echo ("$sql_ext:".mysql_error());
+    
+    if (!$result)
+    {
+	// to do: roll back changes to _meta
+	process_system_error(_("Error while adding column to table extended."), array('debug', mysql_error()));
+	$result = $db->query("DELETE FROM extended_meta where code = '$code'");
+	return;	
+    }    
+    
+    echo ("<P>Your column $label has been added succesfully.</P>\n");
+
+}
+
+
 function custom_add_field_form()
 {
+
+    if (array_key_exists('stage',$_POST) and $_POST['stage'] == 3)
+    {
+	custom_add_field_form3();
+    }
+    else
     if (array_key_exists('stage',$_POST) and $_POST['stage'] == 2)
     {
 	custom_add_field_form2();

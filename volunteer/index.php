@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
+ * $Id: index.php,v 1.3 2003/10/06 00:33:33 andrewziem Exp $
  *
  */
 
@@ -21,6 +21,7 @@ define('SOS_PATH', '../');
 
 require_once (SOS_PATH . 'include/global.php');
 require_once (SOS_PATH . 'functions/html.php');
+require_once (SOS_PATH . 'functions/forminput.php');
 
 make_html_begin(_("Volunteer account"), array());
 
@@ -141,40 +142,37 @@ function volunteer_delete()
         $result = $db->query("DELETE FROM work WHERE vid=$vid");
         echo " <LI>Deleting availability..\n";
         $result = $db->query("DELETE FROM availability WHERE vid=$vid");      
-	echo (" <LI>Deleting skills..\n");
-	$result = $db->query("DELETE FROM volunteer_skills WHERE vid=$vid");            
+        echo (" <LI>Deleting skills..\n");
+        $result = $db->query("DELETE FROM volunteer_skills WHERE vid=$vid");            
 	echo " </UL>\n";
       
-    // delete primary record
+        // delete primary record
 
 	echo ("<P>Deleting primary record...</P>\n");
 
-	$result = $db->query("DELETE FROM volunteers WHERE volunteer_id=$vid LIMIT 1");
+        $result = $db->query("DELETE FROM volunteers WHERE volunteer_id=$vid LIMIT 1");
 
-	if ($result)
-      {
-              echo ("<P>Volunteer permanently deleted.</P>\n");
-      }
-      else
-      {
-          process_system_error("Error deleting volunteer from database: " .
-                mysql_error());
+        if ($result)
+	{
+	    echo ("<P>Volunteer permanently deleted.</P>\n");
+        }
+	else
+        {
+    	    process_system_error("Error deleting volunteer from database: " .
+            mysql_error());
+	 }
+    }
+    else
+    {
+	echo ("<P class=\"instructionstext\">Are you sure you want to permanently delete this volunteer and all his related records (work history, notes, reminders, etc.)?  If not, simply click a menu option: General, Skills, etc.</P>\n");
 
-      }
-      }
-      else
-      {
-
-	
-    echo ("<P class=\"instructionstext\">Are you sure you want to permanently delete this volunteer and all his related records (work history, notes, reminders, etc.)?  If not, simply click a menu option: General, Skills, etc.</P>\n");
-
-    $volunteer = volunteer_get($vid);
+	$volunteer = volunteer_get($vid);
      
-    echo ("<PRE>\n");
-    echo $volunteer['first']. " " . $volunteer['middle'] . " " . $volunteer['last'] . " (".$volunteer['organization'].")\n";
-    echo $volunteer['street'] . "\n";
-    echo $volunteer['city'] . ", " . $volunteer['state']. " ". $volunteer['zip']. "\n";
-    echo "</PRE>";
+	echo ("<PRE>\n");
+	echo $volunteer['first']. " " . $volunteer['middle'] . " " . $volunteer['last'] . " (".$volunteer['organization'].")\n";
+	echo $volunteer['street'] . "\n";
+	echo $volunteer['city'] . ", " . $volunteer['state']. " ". $volunteer['zip']. "\n";
+	echo "</PRE>";
 
      ?>
 

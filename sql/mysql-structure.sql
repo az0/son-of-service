@@ -165,7 +165,7 @@ CREATE TABLE relationships (
 
 CREATE TABLE extended (
 	extended_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	volunteer_id NOT NULL,
+	volunteer_id INT NOT NULL,
 	INDEX(volunteer_id)
 );
 
@@ -173,7 +173,8 @@ CREATE TABLE extended_strings (
 	extended_string_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	extended_meta_id MEDIUMINT NOT NULL,
 	lang CHAR(6),
-	string varchar(100)
+	string varchar(100),
+	value MEDIUMINT,
 	
 );
 
@@ -183,9 +184,9 @@ CREATE TABLE extended_meta (
 	code VARCHAR(50),
 	label VARCHAR(50),
 	description VARCHAR(100),
-	databasecolumntype ENUM (int, float, decimal, datetime, date, time, varchar, blob),
+	databasecolumntype ENUM ('int', 'float', 'decimal', 'datetime', 'date', 'time', 'varchar', 'blob'),
 	databasecolumnsize MEDIUMINT UNSIGNED,
-	fieldtype (number, string, textarea, date, datetime, boolean, radio, select, multiselect, checkbox, file),
+	fieldtype ENUM ('number', 'string', 'textarea'),
 	displayposition MEDIUMINT,
 
 # to do: validation

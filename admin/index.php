@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: index.php,v 1.2 2003/10/06 00:33:32 andrewziem Exp $
  *
  */
 
@@ -111,6 +111,7 @@ function admin_menu()
  <LI><A href="./?update_volunteer_stats=1">Update volunteer statistics</A>
  <LI><A href="./?system_check=1">System check</A>
  <LI><A href="./?add_custom_field=1">Add custom field</A>
+ <LI><A href="./?import_legacy=1">Import legacy data</A>
  <LI>Download database dump in SQL format
  <LI>Download mailing list [<A href="./?download_mailing_list=1&type=postal&who=all">all</A>]</LI>
 
@@ -182,6 +183,12 @@ if (array_key_exists('update_volunteer_stats', $_GET))
     stats_update_volunteers($db);
     echo ("<P>Volunteer statistics updated.</P>\n");
     admin_menu();
+}        
+else
+if (array_key_exists('import_legacy', $_REQUEST))
+{
+    require_once('import.php');
+    import_legacy();
 }        
 else
 if (array_key_exists('add_custom_field', $_REQUEST))
