@@ -7,7 +7,7 @@
  *
  * Delete a volunteer.
  *
- * $Id: delete_volunteer.php,v 1.2 2003/11/23 17:03:30 andrewziem Exp $
+ * $Id: delete_volunteer.php,v 1.3 2003/11/27 16:34:18 andrewziem Exp $
  *
  */
 
@@ -38,7 +38,7 @@ function delete_volunteer($vid)
 
     if ($result)
     {
-	// to do: log
+	// todo: log
         echo ("<P>Volunteer permanently deleted.</P>\n");
         return TRUE;
     }

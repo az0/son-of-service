@@ -7,7 +7,7 @@
  *
  * Volunteer statistics.
  *
- * $Id: stat.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: stat.php,v 1.2 2003/11/27 16:34:18 andrewziem Exp $
  *
  */
 
@@ -34,7 +34,7 @@ function stats_update_volunteers($db)
 
 function stats_update_volunteer($db, $vid)
 {
-    // to do: faster using select into table
+    // todo: faster using select into table
     
     if (!is_numeric($vid))
     {

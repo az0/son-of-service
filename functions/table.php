@@ -7,7 +7,7 @@
  *
  * Makes comma-delimited data files for downloading.
  *
- * $Id: table.php,v 1.2 2003/11/24 16:09:40 andrewziem Exp $
+ * $Id: table.php,v 1.3 2003/11/27 16:34:18 andrewziem Exp $
  *
  */
 
@@ -70,12 +70,12 @@ function addRow($row)
 	{
 		if (array_key_exists('radio',$v) and $v['radio'])
 		{
-		    // to do: revisit value=
+		    // todo: revisit value=
 		    echo ("<TD><INPUT type=\"radio\" name=\"$k\" value=\"".$row[$k]."\"></TD>\n");
 		}
 		else if (array_key_exists('checkbox',$v) and $v['checkbox'])
 		{
-		    // to do: revisit value=
+		    // todo: revisit value=
 		    echo ("<TD><INPUT type=\"checkbox\" name=\"${k}_".$row[$k]."\" value=\"".$row[$k]."\"></TD>\n");
 		}
 		else

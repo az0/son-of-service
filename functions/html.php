@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.8 2003/11/27 04:23:57 andrewziem Exp $
+ * $Id: html.php,v 1.9 2003/11/27 16:34:18 andrewziem Exp $
  *
  */
 
@@ -32,7 +32,7 @@ function save_message($message, $type, $options = FALSE)
     assert (is_int($type));
     $_SESSION['messages'][] = array('message' => $message, 'type' => $type, 'options' => $options);
     
-    // to do: log error message here if applicable (refer to configurable log level)
+    // todo: log error message here if applicable (refer to configurable log level)
 }
 
 
@@ -57,7 +57,7 @@ function display_message($message, $type, $options = FALSE)
     
     if (is_array($options) and array_key_exists('debug', $options))
     {
-	// to do: disable debug in config.php
+	// todo: disable debug in config.php
 	echo ("<P>"._("Debug:").' '.$options['debug']."</P>\n");
     }
 }
@@ -103,7 +103,7 @@ if ('1' == $_SESSION['user']['access_admin'])
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/login.php?logout=1\">"._("Logout")."</A>\n");
 echo ("</DIV>\n");
 
-// to do: make quick search fit aesthetically somewhere
+// todo: make quick search fit aesthetically somewhere
 /*
 echo ("<FORM method=\"post\" action=\"". SOS_PATH . "search_volunteer.php\">\n");
 echo ("Quick search <INPUT type=\"text=\" name=\"fullname\" size=\"10\">\n");
@@ -189,7 +189,7 @@ function display_position($arg_1, $arg_2)
 }
 
 function display_position_maybeused($arg_1)
-// to do: is this used?
+// to o: is this used?
 {
   if ("y" == $arg_1)
   {

@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.4 2003/11/22 16:53:48 andrewziem Exp $
+ * $Id: formmaker.php,v 1.5 2003/11/27 16:34:18 andrewziem Exp $
  *
  */
 
@@ -122,7 +122,7 @@ class formMaker
 
     function addField($label, $type, $name, $attributes, $value)
     {
-	// to do: blind support for fields
+	// todo: blind user support for fields
 	
 	if (FS_TABLE == $this->style)
 	{
