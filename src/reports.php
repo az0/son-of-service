@@ -5,11 +5,12 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.11 2004/08/28 15:04:58 andrewziem Exp $
+ * $Id: reports.php,v 1.12 2004/08/29 15:32:07 andrewziem Exp $
  *
  */
 
 // todo: build better report framework
+// todo: paginate long reports
 // todo: make each report like a plugin
 
 session_start();
@@ -58,84 +59,117 @@ reports_menu();
 $steps = array('Day', 'Week', 'Month', 'Year');
 
 
+class report_display
+{
+	var $title;
+	var $type;
+	var $fields;
+	var $writer;
+
+	function report_display($title, $type, $fields)
+	{
+		$this->title = $title;
+		$this->type = $type;
+		$this->fields = $fields;
+	}
+	
+	function begin($result)
+	{
+		global $db;
+	
+ 		if ('html' == $this->type)
+		{
+			echo ("<TABLE border=\"1\">\n");
+			echo ("<CAPTION>" . $this->title . "</CAPTION>\n");
+    
+			echo ("<TR>\n");
+			foreach ($this->fields as $field)
+	    			echo ("<TH>$field</TH>\n");
+			echo ("</TR>\n");
+  		}
+    		elseif ('csv'  == $this->type)
+    		{
+			header("Content-disposition: attachment; filename=\"" . $this->title . ".csv\"");
+			header("Pragma: no-cache");
+			header("Content-type: text/csv");
+	
+			$this->writer = new textDbWriter('csv');
+			$this->writer->setFieldNames($this->fields);
+			//$writer->open();
+ 		}
+	}
+	
+	function add_row($row)
+	{
+		if ('html' == $this->type)
+		{
+	    		echo ("<TR>\n");
+	    		foreach ($this->fields as $field)
+	    		{
+				echo ("<TD>");
+				if ('volunteer_id' == $field)
+				{
+		    			echo ("<a href=\"../volunteer/?vid=" . $row[$field] . "\">");
+				}
+				if (0 == strlen(trim($row[$field])))
+				{
+		    			$row[$field] = '&nbsp';
+				}
+				echo ($row[$field]);
+				if ('volunteer_id' == $field)
+				{
+		    			echo ("</a>");
+				}
+		
+				echo ("</TD>\n");
+			}
+	    		echo ("</TR>\n");
+		} elseif ('csv' == $this->type)
+		{
+	    		$this->writer->addRow($row);
+		}
+	}
+	
+	function close()
+	{
+    		if ($this->type == 'html')
+    		{
+			echo ("</TABLE>\n");
+			$url = make_url($_REQUEST, array());
+			// todo: request gives too much
+	
+			echo ("<P><A href=\"$url&download=1\">Download CSV</A>\n");
+    		}
+	}
+}
+
 function report_display($title, $result, $type)
 // type = 'html', 'csv'
 // todo: add XML
 {
-    global $db;
-
-
     $nfields = $result->FieldCount();
     $fields = array();
-    
     for ($n = 0; $n < $nfields; $n++)
     {
 	$fld = $result->FetchField($n);
 	$fields[]  .= $fld->name;
     }
+		
+    $report = new report_display($title, $type, $fields);
     
-    if ('html' == $type)
-    {
-	echo ("<TABLE border=\"1\">\n");
-	echo ("<CAPTION>$title</CAPTION>\n");
-    
-	echo ("<TR>\n");
-	foreach ($fields as $field)
-	    echo ("<TH>$field</TH>\n");
-	echo ("</TR>\n");
-    }
-    elseif ('csv'  == $type)
-    {
-	header("Content-disposition: attachment; filename=\"$title.csv\"");
-	header("Pragma: no-cache");
-	header("Content-type: text/csv");
-	
-	$writer = new textDbWriter('csv');
-	$writer->setFieldNames($fields);
-	//$writer->open();
-    }
+    $report->begin($result);
     
     while (!$result->EOF)
     {
 	$row = $result->fields;
-	if ('html' == $type)
-	{
-	    echo ("<TR>\n");
-	    foreach ($fields as $field)
-	    {
-		echo ("<TD>");
-		if ('volunteer_id' == $field)
-		{
-		    echo ("<a href=\"../volunteer/?vid=" . $row[$field] . "\">");
-		}
-		if (0 == strlen(trim($row[$field])))
-		{
-		    $row[$field] = '&nbsp';
-		}
-		echo ($row[$field]);
-		if ('volunteer_id' == $field)
-		{
-		    echo ("</a>");
-		}
-		
-		echo ("</TD>\n");
-	    }
-	    echo ("</TR>\n");
-	} elseif ('csv' == $type)
-	{
-	    $writer->addRow($row);
-	}
+	
+	$report->add_row($row);
+	
 	$result->MoveNext();
     }
+    
+    $report->close();
 
-    if ($type == 'html')
-    {
-	echo ("</TABLE>\n");
-	$url = make_url($_REQUEST, array());
-	// todo: request gives too much
-	
-	echo ("<P><A href=\"$url&download=1\">Download CSV</A>\n");
-    }
 } /* report_display() */
 
 function report_hours()
@@ -313,7 +347,7 @@ function report_volunteers_by_skill()
     if (is_integer($string_id))
     {
 	// one skill
-        $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, volunteers.email_address as email_address, strings.s as skill " .
+        $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, volunteers.email_address as Email_Address, strings.s as Skill " .
 	"FROM volunteers " .
 	"LEFT JOIN volunteer_skills ON volunteers.volunteer_id = volunteer_skills.volunteer_id " .
 	"LEFT JOIN strings ON strings.string_id = volunteer_skills.string_id " .
@@ -323,8 +357,11 @@ function report_volunteers_by_skill()
     else
     {
 	// all skills
-	// todo: how to get multiple skill names in one SQL records?
-	process_system_error("Not yet implemented");
+        $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, volunteers.email_address as Email_Address " .
+	"FROM volunteers " .
+	"LEFT JOIN volunteer_skills ON volunteers.volunteer_id = volunteer_skills.volunteer_id " .
+	"GROUP BY volunteer_id ".	
+	"ORDER BY volunteers.volunteer_id";
     }
     $result = $db->SelectLimit($sql, 30);
     
@@ -337,15 +374,101 @@ function report_volunteers_by_skill()
     }
     else
     {
-	// display
-	if (array_key_exists('download',$_REQUEST))
+        $nfields = $result->FieldCount();
+	$fields = array();
+	for ($n = 0; $n < $nfields; $n++)
+	{	
+	    $fld = $result->FetchField($n);
+	    $fields[]  .= $fld->name;
+	}
+
+	if ('any' == $string_id)
 	{
-    	    report_display("Volunteers by skill", $result, 'csv');
+		$fields[] = 'Skills';
+	}
+	
+	$fields[] = 'Phone_Numbers';
+
+	if (array_key_exists('download', $_REQUEST))
+	{
+	    $type = 'csv';
 	}
 	else
 	{
-    	    report_display("Volunteers by skill", $result, 'html');	    
+	    $type = 'html';
 	}
+		
+	$report = new report_display(_("Volunteers by skill"), $type, $fields);
+    
+	$report->begin($result);
+    
+	while (!$result->EOF)
+	{
+	    $row = $result->fields;
+
+	    // gather phone numbers
+	    $result2 = $db->Execute("SELECT number, memo FROM phone_numbers WHERE volunteer_id = " . $row['volunteer_id']);
+	    
+	    if ($result2)
+	    {	    
+		$phone = "";
+		while (!$result2->EOF)
+		{
+		    $row2 = $result2->fields;
+		    if ("" != $phone)
+		    {
+			$phone .= ", ";
+		    }
+		    $phone .= $row2['number'] . ' '. $row2['memo'];
+		    $result2->MoveNext();
+		}
+		$row['Phone_Numbers'] = $phone;
+
+	    }
+	    else
+	    {
+		$row['Phone_Numbers'] = '';
+	    }
+	    
+	    if ('any' == $string_id)
+	    {
+	    
+		// gather skill names
+		$sql = "SELECT strings.s as skill, strings.string_id as skill_id " .
+		    "FROM volunteer_skills " .
+		    "LEFT JOIN strings on volunteer_skills.string_id = strings.string_id " .
+		    "WHERE volunteer_skills.volunteer_id = " . $row['volunteer_id'];
+		
+		$result2 = $db->Execute($sql);
+	    
+		if ($result2)
+		{	    
+		    $skills = "";
+		    while (!$result2->EOF)
+		    {
+			$row2 = $result2->fields;
+			if ("" != $skills)
+			{
+			    $skills .= ", ";
+			}
+			$skills .= $row2['skill'];
+			$result2->MoveNext();
+		    }
+		    $row['Skills'] = $skills;
+		}
+		else
+		{
+		    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+		}
+	    }
+	    
+	    // display this record
+	    $report->add_row($row);
+	
+	    $result->MoveNext();
+	}
+    
+	$report->close();
     }
     
 } /* report_volunteers_by_skill() */
