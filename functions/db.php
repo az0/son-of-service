@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.9 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: db.php,v 1.10 2003/12/22 00:19:08 andrewziem Exp $
  *
  */
 
@@ -95,6 +95,29 @@ function connect_db ()
 	 * or is not supported
 	 */
 	return false;
+}
+
+function make_orderby($request, $column_names, $default_column, $default_direction)
+// Makes an SQL ORDERBY.
+
+// request: an array such as $_GET
+// column_names: an array of valid column names
+// default_column: string
+// default_direction: string, either ASC or DESC
+{
+    assert(is_array($request));
+    assert(is_array($column_names));    
+    if (array_key_exists('orderby', $request) 
+	and in_array($request['orderby'], $column_names)
+	and array_key_exists('orderdir', $request)
+	and in_array($request['orderdir'], array('asc', 'desc')))
+    {
+	return("ORDER BY ".$request['orderby'].' '.$request['orderdir']);
+    }
+    else
+    {
+	return ("ORDER BY $default_column $default_direction");	
+    }
 }
 
 ?>

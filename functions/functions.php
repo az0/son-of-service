@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.3 2003/12/03 17:23:04 andrewziem Exp $
+ * $Id: functions.php,v 1.4 2003/12/22 00:19:08 andrewziem Exp $
  *
  */
 
@@ -74,6 +74,19 @@ function get_user_id()
 function redirect($url)
 {
     header("Location: $url");
+}
+
+function sqldate_to_local($sql_date)
+{
+    global $db;
+    
+    
+    $unixdate = $db->Unixdate($sql_date);
+    // todo: what is error return?
+    
+    // todo: localize    
+    return (strftime("%D", $unixdate));
+    
 }
 
 ?>

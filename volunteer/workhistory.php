@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.16 2003/12/21 18:05:39 andrewziem Exp $
+ * $Id: workhistory.php,v 1.17 2003/12/22 00:19:08 andrewziem Exp $
  *
  */
  
@@ -185,19 +185,22 @@ function volunteer_view_work_history($brief = FALSE)
     
     display_messages();
     
-    $vid = intval($_REQUEST['vid']);
+    $vid = intval($_GET['vid']);
     
     if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
     {
 	process_system_error(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
 	return FALSE;
     }    
+    
+    $column_names = array('hours', 'quality', 'date', 'memo', 'category');
+    $orderby = make_orderby($_GET, $column_names, 'date', 'DESC');
         
     $sql = "SELECT work.work_id AS work_id, work.hours AS hours, work.quality AS quality, work.date AS date, work.memo AS memo, strings.s AS category ".
 	"FROM work ".
 	"LEFT JOIN strings ON work.category_id = strings.string_id ".
 	"WHERE volunteer_id = $vid ".
-	"ORDER BY date DESC";
+	$orderby;
 	
     $result = $db->Execute($sql);
 
@@ -242,11 +245,11 @@ function volunteer_view_work_history($brief = FALSE)
 	}
 	$headers = array();
 	$headers['work_id'] = array('checkbox' => TRUE, 'label' => _("Select"));
-	$headers['date'] =  array('label' => _("Date"), 'type' => TT_DATE);	
-	$headers['hours'] = array('label' => _("Hours"), 'type' => TT_NUMBER);
-	$headers['category'] = array('label' => _("Category"));		
-	$headers['quality'] = array('label' => _("Quality"));			
-	$headers['memo'] = array('label' => _("Memo"));	
+	$headers['date'] =  array('label' => _("Date"), 'type' => TT_DATE, 'sortable' => TRUE);	
+	$headers['hours'] = array('label' => _("Hours"), 'type' => TT_NUMBER, 'sortable' => TRUE);
+	$headers['category'] = array('label' => _("Category"), 'sortable' => TRUE);		
+	$headers['quality'] = array('label' => _("Quality"), 'sortable' => TRUE);			
+	$headers['memo'] = array('label' => _("Memo"), 'sortable' => TRUE);	
 	$dtp->setHeaders($headers);
 	$dtp->setDatabase($db, $result);
 	$offset = 0;

@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.6 2003/12/21 18:05:38 andrewziem Exp $
+ * $Id: table.php,v 1.7 2003/12/22 00:19:08 andrewziem Exp $
  *
  */
 
@@ -16,17 +16,16 @@ if (preg_match('/table.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
-// todo: printable (supress INPUT) [test]
 // todo: break row [test]
 // todo: htmlspecialchars 
 // todo: same function names as for tab, csv class
 // todo: localize date, datetime per user
-// todo: resortable
 
 define('TT_STRING', 1);
 define('TT_NUMBER', 2);
 define('TT_DATE', 3);
-define('TT_INPUT', 4);
+define('TT_DATETIME', 4);
+define('TT_INPUT', 5);
 
 class DataTableDisplay
 {
@@ -43,10 +42,11 @@ class DataTableDisplay
     function setHeaders($headers)
     // $headers: an array
     //  key: field name (for addRow())
-    //  subkey: label
-    //  subkey: checkbox
+    //  subkey: label (string)
+    //  subkey: checkbox (boolean)
     //  subkey: link
-    //  subkey: type
+    //  subkey: type (see TT_*)
+    //  subkey: sortable (boolean)
     {
 	assert(is_array($headers));
 	$this->headers = $headers;
@@ -61,6 +61,7 @@ class DataTableDisplay
     function begin()
     {
 	echo ("<TABLE border=\"1\">\n");
+	// display column headers
 	if (isset($this->headers) and is_array($this->headers))
 	{
 	    echo ("<TR>\n");
@@ -77,16 +78,20 @@ class DataTableDisplay
 		    $label = ucfirst($k);
 		}
 		
-		if (array_key_exists('checkbox', $this->headers[$k]) and $this->printable)
+		if (array_key_exists('checkbox', $v) and $v['checkbox'] and $this->printable)
 		{
 		}
 		else
 		{
-		    echo ("<TH>$label</TH>\n");
+		    echo ("<TH>$label\n");
+		    if (array_key_exists('sortable', $v) and $v['sortable'])
+		    {
+			// display sorting option
+			$url = make_url($_GET, 'orderby');
+			echo ("[<A href=\"$url&orderby=$k&orderdir=asc\">A</A>/<A href=\"$url&orderby=$k&orderdir=desc\">D</A>]");
+		    }
+		    echo ("</TH>\n");
 		}
-//	if (array_key_exists('sortable', $v) and $v['sortable'])
-//	    echo ("<A href=\"\">[Sort Asc]</A>\n");//remove
-
 	    }
 	    echo ("</TR>\n");    
 	}
@@ -142,6 +147,11 @@ class DataTableDisplay
 		    {
 			// blank cell
 			$c = "&nbsp;";
+		    }
+		    elseif (array_key_exists('type', $v) and TT_DATE == $v['type'])
+		    {
+			// format date
+			$c = sqldate_to_local($row[$k]);
 		    }
 		    else
 		    {
@@ -247,7 +257,7 @@ class DataTablePager extends DataTableDisplay
 		$previous = 0;	
 	    }
 	    echo ("<A href=\"$url&offset=$previous\">&lt;&lt;</A> ");	    
-	    
+
 	}
 	else
 	{
