@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.7 2003/11/23 21:39:48 andrewziem Exp $
+ * $Id: html.php,v 1.8 2003/11/27 04:23:57 andrewziem Exp $
  *
  */
 
@@ -72,7 +72,11 @@ function display_messages()
 {
     if (array_key_exists('messages', $_SESSION) and is_array($_SESSION['messages']))
     {
-	foreach ($_SESSION['messages'] as $key => $msg)
+	// reverse array so FIFO
+	
+	$messages = array_reverse ($_SESSION['messages']);
+	
+	foreach ($messages as $key => $msg)
 	{
 	    display_message($msg['message'], $msg['type'], $msg['options']);
 	    unset($_SESSION['messages'][$key]);

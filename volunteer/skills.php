@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.4 2003/11/12 16:12:24 andrewziem Exp $
+ * $Id: skills.php,v 1.5 2003/11/27 04:23:58 andrewziem Exp $
  *
  */
 
@@ -25,23 +25,27 @@ function volunteer_delete_skill()
     $vid = intval($_REQUEST['vid']);
     $volunteer_skill_id  = intval($_REQUEST['volunteer_skill_id']);
     
-    $result = $db->query("DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = ".intval($vid)." LIMIT 1");
+    $result = $db->query("DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = $vid LIMIT 1");
 
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()));
+	save_message(_("Error querying database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
     }
     else
     {
-	process_user_notice(_("Deleted."));
+	save_message(_("Deleted."), MSG_USER_NOTICE);
     }
-    volunteer_view_skills();
 
+    // redirect client to non-POST page
+    header("Location: ?vid=$vid&menu=skills");
 }
 
 function volunteer_view_skills()
 {
     global $db, $skill_levels;
+    
+    
+    display_messages();
 
     $vid = intval($_REQUEST['vid']);
     
@@ -134,8 +138,7 @@ function volunteer_skill_add()
     // always validate form input first
     if (!(preg_match("/^[0-9]+$/", $_POST['string_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
     {
-	process_system_error(_("Bad form input:").' string_id, skill_level');
-	die();
+	save_message(_("Bad form input:").' string_id, skill_level', MSG_SYSTEM_ERROR);
     }
     else
     {  
@@ -143,11 +146,11 @@ function volunteer_skill_add()
     
         if (!$result)
         {
-    	    process_system_error(_("Error adding data to database."));
+    	    save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR);
         }      
     }
     
-    volunteer_view_skills();
+    header("Location: ?vid=$vid&menu=skills");
     
 } /* volunteer_skill_add() */
 
