@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.13 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: workhistory.php,v 1.14 2003/12/17 17:11:03 andrewziem Exp $
  *
  */
  
@@ -15,7 +15,7 @@ if (preg_match('/workhistory.php/i', $_SERVER['PHP_SELF']))
 }
 
 require_once(SOS_PATH . 'functions/stat.php');
-
+require_once(SOS_PATH . 'functions/table.php');
 
 function volunteer_work_history_delete()
 {
@@ -207,45 +207,33 @@ function volunteer_view_work_history($brief = FALSE)
 	}
     }
     else
-    { // display work history
+    { 
+	// display work history
+	
 	if (!$brief)
 	{
 		echo ("<FORM method=\"post\" action=\".\">\n");
 		echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	}
-	echo ("<TABLE border=\"1\">\n");
-	echo ("<TR>\n");
-	if (!$brief)
+	
+	$dtp = new DataTablePager($db, $result);
+	$headers = array();
+	$headers['work_id'] = array('checkbox' => TRUE);
+	$headers['date'] =  array('label' => _("Date"), 'type' => TT_DATE);	
+	$headers['hours'] = array('label' => _("Hours"), 'type' => TT_NUMBER);
+	$headers['category'] = array('label' => _("Category"));		
+	$headers['quality'] = array('label' => _("Quality"));			
+	$headers['memo'] = array('label' => _("Memo"));	
+	$dtp->setHeaders($headers);
+	$dtp->setDatabase($db, $result);
+	$offset = 0;
+	if (array_key_exists('offset', $_GET))
 	{
-		echo ("<TH>"._("Select")."</TH>\n");
+	    $offset = intval($_GET['offset']);
 	}
-	echo ("<TH>"._("Date")."</TH>\n");
-	echo ("<TH>"._("Hours")."</TH>\n");
-	echo ("<TH>"._("Category")."</TH>\n");	
-	echo ("<TH>"._("Quality")."</TH>\n");
-	echo ("<TH>"._("Memo")."</TH>\n");
-	echo ("</TR>\n");
-
-	while (!$result->EOF)
-	{
-	    $work = $result->fields;
-	    if (empty($work['memo']))
-	    {
-	    	$work['memo'] = '&nbsp;';
-	    }
-	    echo ("<TR>\n");
-	    if (!$brief)
-	    {
-	        echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$work['work_id']."\"></TD>\n");
-	    }
-	    echo ("<TD>".$work['date']."</TD>\n");
-	    echo ("<TD align=\"right\">".$work['hours']."</TD>\n");
-	    echo ("<TD align=\"right\">".$work['category']."</TD>\n");	    
-	    echo ("<TD align=\"right\">".$work['quality']."</TD>\n");
-	    echo ("<TD>".$work['memo']."</TD>\n");
-	    $result->MoveNext();
-	}
-	echo ("</TABLE>\n");
+	$dtp->setPagination();
+	$dtp->render();
+	
 	if (!$brief)
 	{
 	echo ("<INPUT type=\"submit\" name=\"button_delete_work_history\" value=\""._("Delete")."\">\n");

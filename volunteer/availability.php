@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.6 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: availability.php,v 1.7 2003/12/17 17:11:03 andrewziem Exp $
  *
  */
  
@@ -48,10 +48,15 @@ function volunteer_availability_add()
 {
     global $db;
       
-      
-    // todo: check permissions      
-      
-    $vid = intval($_POST['vid']);
+
+    $vid = intval($_POST['vid']);      
+     
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+    
     $day_of_week = intval($_POST['day_of_week']);
     // should just be char      
     $start_time = $db->qstr($_POST['start_time'], get_magic_quotes_gpc()); 
@@ -83,20 +88,30 @@ function volunteer_availability_add()
 
 
 
-function volunteer_view_availability()
+function volunteer_view_availability($brief = FALSE)
+// Use brief for summary: supresses headers and forms.
 {
     global $db;
     global $user;
     global $daysofweek;
     
     
-    //todo: check permissions
-    
-    display_messages();
-    
     $vid = intval($_REQUEST['vid']);
     
-    echo ("<H3>Availability</H3>\n");
+    if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }
+    
+    if (!$brief)
+    {    
+        display_messages();
+    
+	echo ("<H3>Availability</H3>\n");
+	
+	echo ("<FORM method=\"post\" action=\".\">\n");
+	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
+    }
     
     $sql = "SELECT * FROM availability WHERE volunteer_id = $vid ORDER BY day_of_week";
 
@@ -107,71 +122,81 @@ function volunteer_view_availability()
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     
-    
-    echo ("<FORM method=\"post\" action=\".\">\n");
-    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-    
     if (0 == $result->RecordCount())
     {
-	process_user_notice(_("None found."));
+	if (!$brief)
+	{	
+	    process_user_notice(_("None found."));
+	}
     }
     else
     {
 ?>
-
-
 <TABLE border="1">
 <TR>
- <TH><?php echo _("Select");?></TH>
+<?php
+    if (!$brief)
+    {
+	echo ("<TH>" . _("Select") . "</TH>\n");
+    }
+?>
  <TH><?php echo _("Day of week");?></TH>
  <TH><?php echo _("Start");?></TH>
  <TH><?php echo _("End");?></TH>
 </TR>
 <?php
 
-    while (!$result->EOF)
-    {
-	$availability = $result->fields;
-	echo ("<TR>\n");
-	echo ("<TD><INPUT type=\"radio\" name=\"availability_id\" value=\"".$availability['availability_id']."\"></TD>\n");
-	echo ("<TD>".(0< $availability['day_of_week'] ? $daysofweek[$availability['day_of_week']]:"bad value")."</TD>\n");
-	echo ("<TD>".$availability['start_time']."</TD>\n");	
-	echo ("<TD>".$availability['end_time']."</TD>\n");		
-	echo ("</TR>\n");	
-	$result->MoveNext();
+	while (!$result->EOF)
+        {
+	    $availability = $result->fields;
+	    echo ("<TR>\n");
+	    if (!$brief)
+	    {
+		echo ("<TD><INPUT type=\"radio\" name=\"availability_id\" value=\"".$availability['availability_id']."\"></TD>\n");
+	    }
+	    echo ("<TD>".(0< $availability['day_of_week'] ? $daysofweek[$availability['day_of_week']]:"bad value")."</TD>\n");
+	    echo ("<TD>".$availability['start_time']."</TD>\n");	
+	    echo ("<TD>".$availability['end_time']."</TD>\n");		
+	    echo ("</TR>\n");	
+	    $result->MoveNext();
+	}
+
+	echo ("</TABLE>\n");
+	if (!$brief)
+	{
+	    echo ("<INPUT type=\"submit\" name=\"button_delete_availability\" value=\""._("Delete")."\">\n");
+	}
     }
 
-echo ("</TABLE>\n");
-echo ("<INPUT type=\"submit\" name=\"button_delete_availability\" value=\""._("Delete")."\">\n");
-}
+    if (!$brief)
+    {
+	echo ("<H4>Add new availability</H4>\n");
+	echo ("<SELECT name=\"day_of_week\">\n");
+        for ($i = 1; $i <= 7; $i++)
+	{
+	    echo ("<OPTION value=\"$i\">".$daysofweek[$i]."</OPTION>\n");
+	}
+	echo ("</SELECT>\n");
+	echo (" From ");
+	echo ("<SELECT name=\"start_time\">\n");
+	echo ("<OPTION>"._("Morning")."</OPTION>\n");
+	echo ("<OPTION>"._("Afternoon")."</OPTION>\n");
+	echo ("<OPTION>"._("Evening")."</OPTION>\n");
+	echo ("<OPTION>"._("Night")."</OPTION>\n");
+	echo ("</SELECT>\n");
+	echo (" To ");
+	
+	echo ("<SELECT name=\"end_time\">\n");
+	echo ("<OPTION>"._("Morning")."</OPTION>\n");
+	echo ("<OPTION>"._("Afternoon")."</OPTION>\n");
+	echo ("<OPTION>"._("Evening")."</OPTION>\n");
+	echo ("<OPTION>"._("Night")."</OPTION>\n");
+	echo ("</SELECT>\n");
 
+	echo ("<INPUT type=\"submit\" name=\"availability_add\" value=\""._("Add")."\">\n");
 
-echo ("<H4>Add new availability</H4>\n");
-echo ("<SELECT name=\"day_of_week\">\n");
-for ($i = 1; $i <= 7; $i++)
-{
-    echo ("<OPTION value=\"$i\">".$daysofweek[$i]."</OPTION>\n");
-}
-echo ("</SELECT>\n");
-echo (" From ");
-echo ("<SELECT name=\"start_time\">\n");
-echo ("<OPTION>"._("Morning")."</OPTION>\n");
-echo ("<OPTION>"._("Afternoon")."</OPTION>\n");
-echo ("<OPTION>"._("Evening")."</OPTION>\n");
-echo ("<OPTION>"._("Night")."</OPTION>\n");
-echo ("</SELECT>\n");
-echo (" To ");
-
-echo ("<SELECT name=\"end_time\">\n");
-echo ("<OPTION>"._("Morning")."</OPTION>\n");
-echo ("<OPTION>"._("Afternoon")."</OPTION>\n");
-echo ("<OPTION>"._("Evening")."</OPTION>\n");
-echo ("<OPTION>"._("Night")."</OPTION>\n");
-echo ("</SELECT>\n");
-
-echo ("<INPUT type=\"submit\" name=\"availability_add\" value=\""._("Add")."\">\n");
-
-echo ("</FORM>\n");
+	echo ("</FORM>\n");
+    }
 
 } /* volunteer_view_availability() */
 

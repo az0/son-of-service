@@ -12,7 +12,6 @@ TABLE {
  border: solid #333399;
  background: #ccccff;
  border-width: 4px;
- margin: 9pt;
  border-spacing: 0pt;
 }
 
@@ -32,7 +31,6 @@ TD
  padding: 2pt;
 }
 
-
 th {
  background: #9999FF;
  color: #000000;
@@ -44,6 +42,16 @@ th {
 th.vert {
   text-align: left;
   vertical-align: top;
+}
+
+table.pagination {
+ border: solid #000;
+ background: #FFF;
+}
+
+td.pagination {
+ border-color: #000;
+ padding: 1em;
 }
 
 A {

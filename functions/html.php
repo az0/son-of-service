@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: html.php,v 1.11 2003/12/17 17:11:03 andrewziem Exp $
  *
  */
 
@@ -137,7 +137,7 @@ function make_html_begin($title, $options)
     echo ("<HEAD>\n");
     echo ("<TITLE>$title</TITLE>");
     echo ("<STYLE type=\"text/css\" media=\"screen\">\n");
-    echo ("<!--   @import url(". SOS_PATH. "/sos.css);    --></STYLE>\n");
+    echo ("<!--   @import url(". SOS_PATH. "sos.css);    --></STYLE>\n");
     echo ("<META name=\"robots\" content=\"noindex,nofollow\">\n");    
     echo ("</HEAD>\n");
     echo ("<BODY>\n");
@@ -160,6 +160,7 @@ function make_html_end()
 
 
 function display_position_option($arg_1, $arg_2)
+// deprecated
 {
   if ($arg_1 == $arg_2)
   {
@@ -173,6 +174,7 @@ function display_position_option($arg_1, $arg_2)
 
 
 function display_position($arg_1, $arg_2)
+// deprecated
 {
   if ($arg_1 == $arg_2)
   {
@@ -186,6 +188,7 @@ function display_position($arg_1, $arg_2)
 
 function display_position_maybeused($arg_1)
 // to o: is this used?
+// deprecated
 {
   if ("y" == $arg_1)
   {
@@ -203,28 +206,42 @@ function display_position_maybeused($arg_1)
 
 
 function make_url($parameters, $exclusion)
-// paramaters: an array like $_GET
-// exclusion: keys not to include from parameters
+// paramaters: an array, such as $_GET
+// exclusion: keys not to include from parameters (string or array)
 // return: url suitable for HREF
 {
+    assert(is_array($parameters));
+    assert(is_array($exclusion) or is_string($exclusion));
     $url = "";
     $url_i = 0;
+    if (is_string($exclusion))
+    {
+	$exclusion = array($exclusion);
+    }
     foreach ($parameters as $k => $v)
     {
 	$excluded = FALSE;
 	
 	if (is_array($exclusion))
+	{
 	    foreach ($exclusion as $e)
 	    {
 		if ($e == $k)
+		{
 		    $excluded = TRUE;
+		}
 	    }
+	}
 	if (!$excluded)
 	{
 	    if (0 == $url_i)
+	    {
 		$url .= '?';
+	    }
     	    else
+	    {
 		$url .= '&';
+	    }
 	    $url .= urlencode("$k").'='.urlencode("$v");
 	    $url_i++;
 	}

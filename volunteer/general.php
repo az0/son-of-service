@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.8 2003/12/09 05:17:09 andrewziem Exp $
+ * $Id: general.php,v 1.9 2003/12/17 17:11:03 andrewziem Exp $
  *
  */
 
@@ -239,7 +239,7 @@ function volunteer_save()
 			if ($new_value)
 			{
 		    	    $custom[$row_meta['code']]['save'] = TRUE;
-				$custom[$row_meta['code']]['value'] = "'$new_value'";
+			    $custom[$row_meta['code']]['value'] = "'$new_value'";
 			}
 		        elseif (empty($custom[$row_meta['code']]['value']))
 			{
