@@ -5,7 +5,9 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.11 2003/12/17 17:11:03 andrewziem Exp $
+ * Functions related to HTML, HTTP, and URLs.
+ *
+ * $Id: html.php,v 1.12 2003/12/21 18:05:37 andrewziem Exp $
  *
  */
 
@@ -85,9 +87,12 @@ function display_messages()
 function make_nav_begin()
 /* Builds a user navigation bar */
 {
-//    global $PHP_SELF;
-
-
+    if (is_printable())
+    {
+	// JavaScript print button
+	echo ("<INPUT type=\"button\" value=\""._("Print")."\" onClick=\"window.print();\">\n");
+	return;
+    }
 echo ("<div class=\"tab_area\">\n");
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/search_volunteer.php\">"._("Search")."</A>\n");
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
@@ -249,6 +254,28 @@ function make_url($parameters, $exclusion)
     return $url;
 }
 
+function find_values_in_request($request, $prefix)
+// Finds integers in a form request by searching for keys beginning
+// with prefix.  Returns the integer part only.  Useful for processing
+// input from multiple choice forms.
+
+// $request: an array such $_POST
+// $prefix: a string such as volunteer_id
+// return: an array of integers
+{
+    assert(is_array($request));
+    assert(is_string($prefix));
+    $ret = array();
+    foreach ($_POST as $key => $value)
+    {
+        if (preg_match("/${prefix}_(\d+)/", $key, $matches))
+        {
+	    $ret[] = $matches[1];
+	}
+    }
+    return ($ret);
+}
+
 function nbsp_if_null($s)
 {
     if (NULL == $s or empty($s))
@@ -258,6 +285,11 @@ function nbsp_if_null($s)
     
     return $s;
 	
+}
+
+function is_printable()
+{
+    return (array_key_exists('printable', $_GET));
 }
 
 ?>

@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.5 2003/12/20 23:48:41 andrewziem Exp $
+ * $Id: table.php,v 1.6 2003/12/21 18:05:38 andrewziem Exp $
  *
  */
 
@@ -36,7 +36,7 @@ class DataTableDisplay
 
     function DataTableDisplay()
     {
-	$this->printable = FALSE;
+	$this->printable = is_printable();
 	$this->headers = NULL;
     }
 
@@ -207,14 +207,14 @@ class DataTablePager extends DataTableDisplay
     {
 	$this->db = NULL;
 	$this->db_result = NULL;
+	$this->offset = 0;
+	$this->rows_per_page = NULL;	
     }
 
     function setDatabase(&$db, $db_result)
     {
 	$this->db = $db;
 	$this->db_result = $db_result;
-	$this->offset = 0;
-	$this->rows_per_page = NULL;
     }
     
     function setPagination($rows_per_page = 10, $offset = NULL)
@@ -226,7 +226,7 @@ class DataTablePager extends DataTableDisplay
 	}
 	else if (NULL != $offset)
 	{
-	    $this->offset = $offset;
+	    $this->offset = intval($offset);
 	}
 	$this->rows_per_page = intval($rows_per_page);
     }
@@ -290,10 +290,11 @@ class DataTablePager extends DataTableDisplay
 	{
 	    $c = $this->rows_per_page;	
 	}
-	if ($this->db_result->RecordCount() > $this->rows_per_page and !$this->printable)
+	if ($this->rows_per_page > 0 and $this->db_result->RecordCount() > $this->rows_per_page and !$this->printable)
 	{
+	    // open navigation table
 	    echo ("<TABLE border=\"1\" class=\"pagination\"><TR><TD class=\"pagination\">\n");
-	    // print navigation
+	    // print navigation menu
 	    $this->printNavigation();
 	}	
 	$this->begin();
@@ -306,10 +307,11 @@ class DataTablePager extends DataTableDisplay
 	    $c--;
 	}
 	$this->end();
-	if ($this->db_result->RecordCount() > $this->rows_per_page and !$this->printable)
+	if ($this->rows_per_page > 0 and $this->db_result->RecordCount() > $this->rows_per_page and !$this->printable)
 	{
-	    // navigation
+	    // page number
 	    echo ("<P>Page ".intval(1 + ($this->offset / $this->rows_per_page))." of ".ceil($this->db_result->RecordCount() / $this->rows_per_page)."</P>\n");
+	    // close navigation table
 	    echo ("</TD></TR></TABLE>\n");
 	}
     }

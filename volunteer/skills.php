@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.8 2003/12/17 17:11:03 andrewziem Exp $
+ * $Id: skills.php,v 1.9 2003/12/21 18:05:38 andrewziem Exp $
  *
  */
 
@@ -59,8 +59,6 @@ function volunteer_view_skills($brief = FALSE)
     
     if (!$brief)
     {
-	echo ("<H3>"._("Skills, interests")."</H3>\n");
-	
 	echo ("<FORM action=\".\" method=\"post\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
         echo ("<INPUT type=\"hidden\" name=\"menu\" value=\"skills\">\n");
@@ -74,11 +72,18 @@ function volunteer_view_skills($brief = FALSE)
     {
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
-    else if (0 == $vskills_result->RecordCount())
+    
+    if ($vskills_result->RecordCount() > 0 or !$brief)
+    {
+        echo ("<H3>"._("Skills, interests")."</H3>\n");	    
+    }
+
+    if (0 == $vskills_result->RecordCount() and !$brief)
     {
 	process_user_notice(_("None found."));
     }
-    else
+    
+    if ($vskills_result->RecordCount() > 0)
     {
 	echo ("<TABLE border=\"1\">\n");
 	echo ("<TR>\n");

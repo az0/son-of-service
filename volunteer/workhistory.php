@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.15 2003/12/20 23:48:41 andrewziem Exp $
+ * $Id: workhistory.php,v 1.16 2003/12/21 18:05:39 andrewziem Exp $
  *
  */
  
@@ -21,8 +21,9 @@ function volunteer_work_history_delete()
 {
     global $db;
     
+    
     $vid = intval($_POST['vid']);
-    $work_id  = intval($_POST['work_id']);
+    $errors_found = 0;
 
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
@@ -30,33 +31,47 @@ function volunteer_work_history_delete()
 	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
     
-    if (!is_numeric($_POST['vid']) or 0 == ($vid))
+    if (!is_numeric($_POST['vid']) or 0 == $vid)
     {
 	save_message(MSG_SYSTEM_ERROR, _("Bad form input:").' vid', __FILE__, __LINE__);
+	$errors_found++;
+    }
+        
+    $work_ids = find_values_in_request($_POST, 'work_id');
+        
+    if (0 == count($work_ids))    
+    {
+	save_message(MSG_USER_ERROR, _("You must make a selection."));    
 	$errors_found++;
     }
     
     if ($errors_found)
     {
-	return FALSE;
+	redirect("?vid=$vid&menu=workhistory");
     }
     
-    $sql = "DELETE FROM work WHERE work_id = $work_id AND volunteer_id = $vid";
-    
-    $result = $db->Execute($sql);
-
-    if (!$result)
+    foreach ($work_ids as $work_id)
     {
-	save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);
+	// todo: could be faster with SQL binding
+	$sql = "DELETE FROM work WHERE work_id = $work_id AND volunteer_id = $vid";
+    
+	$result = $db->Execute($sql);
+
+	if (!$result)
+	{
+	    save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);
+	    $errors_found++;
+	}
     }
-    else
+    
+    if (!$errors_found)
     {
 	save_message(MSG_USER_NOTICE, _("Deleted."));
 	stats_update_volunteer($db, $vid);
     }
     
     // redirect user to non-POST page
-    header("Location: ?vid=$vid&menu=workhistory");
+    redirect("?vid=$vid&menu=workhistory");
 
 }
 
@@ -166,7 +181,7 @@ function volunteer_work_history_save($mode)
 function volunteer_view_work_history($brief = FALSE)
 {
     global $db;
-    
+
     
     display_messages();
     
@@ -177,9 +192,7 @@ function volunteer_view_work_history($brief = FALSE)
 	process_system_error(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
 	return FALSE;
     }    
-    
-    // todo: pagination
-
+        
     $sql = "SELECT work.work_id AS work_id, work.hours AS hours, work.quality AS quality, work.date AS date, work.memo AS memo, strings.s AS category ".
 	"FROM work ".
 	"LEFT JOIN strings ON work.category_id = strings.string_id ".
@@ -225,7 +238,7 @@ function volunteer_view_work_history($brief = FALSE)
 	}
 	else
 	{
-	    $dtp->setPagination();
+	    $dtp->setPagination(10);
 	}
 	$headers = array();
 	$headers['work_id'] = array('checkbox' => TRUE, 'label' => _("Select"));
@@ -278,7 +291,19 @@ function work_history_addedit($mode)
     
     if ('edit' == $mode)
     {
-	$work_id = intval($_POST['work_id']);    
+	$work_ids = find_values_in_request($_POST, 'work_id');
+	if (0 == count($work_ids))
+	{
+	    save_message(MSG_USER_ERROR, _("You must make a selection."));
+	    redirect("?vid=$vid&menu=workhistory");
+	    return FALSE;
+	}
+	
+	if (1 < count($work_ids))
+	{
+	    process_user_warning(_("You may only edit one at a time."));
+	}
+	$work_id = $work_ids[0];    
 	$sql = "SELECT * FROM work WHERE work_id = $work_id";
 	$result = $db->SelectLimit($sql, 1);
 	if (!$result)
