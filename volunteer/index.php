@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.11 2003/11/09 05:28:24 andrewziem Exp $
+ * $Id: index.php,v 1.12 2003/11/09 20:21:22 andrewziem Exp $
  *
  */
 
@@ -308,15 +308,31 @@ if ($result_meta)
 {
     while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
     {
-	switch ($row_meta['fieldtype'])
+        if (array_key_exists($row_meta['code'], $custom))
 	{
-	    case 'string':
-		if (array_key_exists($row_meta['code'], $custom))
-		{
-		    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']]['value']))."'";
-		    $custom[$row_meta['code']]['save'] = TRUE;
-		}
+	    switch ($row_meta['fieldtype'])
+	    {
+		case 'date':			
+		    $new_value = sanitize_date($custom[$row_meta['code']]['value']);		  
+
+		    if ($custom[$row_meta['code']]['value'])
+		    {
+		    	$custom[$row_meta['code']]['save'] = TRUE;
+		    }
+		    else
+		    {
+			process_user_error("Bad date format.");
+		    }
+		    $custom[$row_meta['code']]['value'] = "'$new_value'";
 		break;
+		    
+		case 'string':		
+		case 'textarea':		
+	    	    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']]['value']))."'";
+	    	    $custom[$row_meta['code']]['save'] = TRUE;
+		break;
+	    
+	    }    
 	}
     }
 }
@@ -358,7 +374,7 @@ if ($extended_count > 0)
     
     if (!$success_extended)
     {
-        process_system_error(_("Error updating extended volunteer record."), array('debug'=>$db->error()));    
+        process_system_error(_("Error updating extended volunteer record."), array('debug' => $db->error()));    
     }
 }
 else
@@ -503,8 +519,14 @@ if ($result_meta)
 	switch ($row_meta['fieldtype'])
 	{
 	    case 'string':
-		$attributes = array('length' => $row_meta['databasecolumnsize']);
+		$attributes = array('length' => $row_meta['size1']);
 		break;
+	    case 'date':
+		$attributes = array();
+		break;		
+	    case 'textarea':
+		$attributes = array('rows' => $row_meta['size3'], 'cols' => $row_meta['size2']);
+		break;		
 	    default:
 		process_system_error("Unexpected type in extended_meta");
 		break;

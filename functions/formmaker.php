@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.1 2003/10/07 15:03:58 andrewziem Exp $
+ * $Id: formmaker.php,v 1.2 2003/11/09 20:21:22 andrewziem Exp $
  *
  */
 
@@ -25,15 +25,38 @@ function render_form_field($type, $name, $attributes, $value)
     {
 	case 'string':
 	case 'integer':
+
 	    if (empty($value))
-		$v = "";
-		else $v=" VALUE=\"$value\" ";
+	    {
+		$v = '';
+	    }
+	    else 
+	    {
+		$v =" VALUE=\"$value\" ";
+	    }
 	    if (empty($attributes['length']))
+	    {
 		$length = 4;
-		else
+	    }
+	    else
+	    {
 		$length = intval($attributes['length']);
+	    }
 	    echo ("<INPUT type=\"text\" name=\"$name\" size=\"$length\"$v>\n");
 	    break;
+	    
+	case 'date':		    
+	    if (empty($value))
+	    {
+		$v = '';
+	    }
+	    else 
+	    {
+		$v =" VALUE=\"$value\" ";
+	    }
+	    echo ("<INPUT type=\"text\" name=\"$name\" size=\"12\"$v>\n");
+	    break;
+	    
 
 	case 'boolean':
 	    echo ("<INPUT type=\"radio\" name=\"$name\" value=\"1\">Yes\n");

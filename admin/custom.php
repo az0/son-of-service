@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.6 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: custom.php,v 1.7 2003/11/09 20:21:21 andrewziem Exp $
  *
  */
 
@@ -45,6 +45,11 @@ function custom_add_field_form1()
 <BR><INPUT class="indented" type="text" name="textarea_rows" value="10" size="3">Width (characters)
 <BR><INPUT class="indented" type="text" name="textarea_cols" value="80"  size="3">Height (characters)
 <BR><INPUT class="indented" type="text" name="textarea_length" value="250"  size="5">Maximum length (characters)
+</FIELDSET>
+
+<FIELDSET>
+<CAPTION><?php echo _("Date");?></CAPTION>
+<BR><INPUT type="radio" name="fieldtype" value="date">Date
 </FIELDSET>
 
 <FIELDSET>
@@ -95,7 +100,7 @@ function custom_add_field_form1()
 } /* custom_add_field_form1() */
 
 
-$fieldtypes = array('integer','string','textarea','boolean');
+$fieldtypes = array('integer','string','textarea','date','boolean');
 //$fieldtypes = array('integer','string','textarea','boolean','checkbox','radio','file');
 
 function custom_add_field_form2()
@@ -133,6 +138,9 @@ function custom_add_field_form2()
 	    if (2 > $attributes['length'] or $attributes['length'] > 254)
 		process_user_warning(_("Length is extreme."));
 	    break;
+	case 'date':
+	    $attributes['length'] = 12;
+	    break;	    
 	case 'boolean':
 	case 'integer':	
 	    break;	    
@@ -152,7 +160,7 @@ function custom_add_field_form2()
     
 ?>
 <FIELDSET>
-<CAPTION>Sample</CAPTION>
+<CAPTION><?php echo _("Sample"); ?></CAPTION>
 <TABLE border="1">
 <TR>
 <TH class="vert"><?php echo $label;?></TH>
@@ -161,7 +169,7 @@ function custom_add_field_form2()
 </TABLE>
 </FIELDSET>
 
-<P>Really add this field?</P>
+<P><?php echo _("Add this field?"); ?></P>
 <FORM action="." method="post">
 <INPUT type="hidden" name="stage" value="3">
 <?php
@@ -203,32 +211,40 @@ function custom_add_field_form3()
     
     // find a unique code
     
-    $unique = FALSE;
-    
+    $unique = FALSE;    
     
     $label = $db->escape_string(strip_tags($_POST['label']));
-    $codebase = str_replace(' ','', $label);
+    $codebase = str_replace(' ','_', $label);
     $code = $codebase;
     
     for ($i = 0; !$unique; $i++)
     {    
+	// if code is not unique, try finding a unique variation
 	echo "code = $code";
-	$result = $db->query("SELECT code from extended_meta where code = '$code'");
+	$result = $db->query("SELECT code FROM extended_meta WHERE code = '$code'");
 	if (!$result)
 	{
-	    process_system_error(_("Error querying database.").' code', array('debug', $db->get_error()));
+	    process_system_error(_("Error querying database.").' code', array('debug' => $db->get_error()));
 	    return;
 	}	
 	if (0 == $db->num_rows($result))
+	{
 	    $unique = TRUE;
-	    else $code = $code.$i;
+	}
+	else 
+	{	
+	    $code = $code.$i;
+	}
 	if ($i > 20)
 	{
 	    process_system_error("Unable to find unique code based on $label.");
+	    die();
 	}
     };
 
     echo ("<p>debug: code = $code</p>\n");
+    
+    print_r($_POST);
 
     // add to extended_meta 
 
@@ -237,10 +253,25 @@ function custom_add_field_form3()
 	case 'string':
 	    $length = intval($_POST['string_length']);	
 	    $sql_meta = 'INSERT INTO extended_meta '.
-		'(code, label, databasecolumntype, databasecolumnsize, fieldtype) '.
-		"VALUES ('$code', '$label', 'varchar', $length, 'string')";
+		'(code, label, size1, fieldtype) '.
+		"VALUES ('$code', '$label', $length, 'string')";
 	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code varchar($length)";
     	    break;
+	case 'textarea':
+	    $ta_length = intval($_POST['textarea_length']);	
+	    $ta_cols = intval($_POST['textarea_cols']);		    
+	    $ta_rows = intval($_POST['textarea_rows']);		    
+	    $sql_meta = 'INSERT INTO extended_meta '.
+		'(code, label, size1, size2, size3, fieldtype) '.
+		"VALUES ('$code', '$label', $ta_length, $ta_cols, $ta_rows, 'textarea')";
+	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code varchar($ta_length)";		
+	    break;
+	case 'date':	    		
+	    $sql_meta = 'INSERT INTO extended_meta '.
+		'(code, label, fieldtype) '.
+		"VALUES ('$code', '$label', 'date')";
+	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code DATE";		
+	    break;	
 	default:
 	    process_system_error(_("Bad form input:" .' fieldtype'));	    
 	    assert(FALSE);    
@@ -254,7 +285,7 @@ function custom_add_field_form3()
 
     if (!$result)
     {
-	process_system_error(_("Error adding data to database."), array('debug', $db->get_error()) );
+	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()) );
 	return;	
     }    
     
@@ -265,8 +296,8 @@ function custom_add_field_form3()
     if (!$result)
     {
 	// to do: roll back changes to _meta
-	process_system_error(_("Error adding data to database."), array('debug', $db->get_error()));
-	$result = $db->query("DELETE FROM extended_meta where code = '$code'");
+	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
+	$result = $db->query("DELETE FROM extended_meta WHERE code = '$code' LIMIT 1");
 	return;	
     }    
     

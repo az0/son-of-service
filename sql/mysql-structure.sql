@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.7 2003/11/09 05:28:24 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.8 2003/11/09 20:21:22 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -193,16 +193,17 @@ CREATE TABLE extended_meta (
 	code VARCHAR(50),
 	label VARCHAR(50),
 	description VARCHAR(100),
-	databasecolumntype ENUM ('int', 'float', 'decimal', 'datetime', 'date', 'time', 'varchar', 'blob'),
-	databasecolumnsize MEDIUMINT UNSIGNED,
-	fieldtype ENUM ('number', 'string', 'textarea'),
-	displayposition MEDIUMINT,
+	size1 MEDIUMINT UNSIGNED,
+	size2 MEDIUMINT UNSIGNED,
+	size3 MEDIUMINT UNSIGNED,
+	fieldtype ENUM ('number', 'string', 'textarea', 'date'),
+	displayposition MEDIUMINT NOT NULL,
 
 # to do: validation
 # to do: required, not required
 	
-	volunteer_read bool,
-	volunteer_write bool,	
+	volunteer_read BOOL,
+	volunteer_write BOOL,	
 	
 	UNIQUE (code)
 	
