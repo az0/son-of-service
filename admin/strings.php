@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.7 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: strings.php,v 1.8 2004/02/21 00:59:06 andrewziem Exp $
  *
  */
 
@@ -60,7 +60,7 @@ function strings_add()
 
 	if (FALSE != $result)
 	{
-	    save_message(MSG_USER_NOTICE, _("Added succesfully."));	
+	    save_message(MSG_USER_NOTICE, _("Added successfully."));	
 	}
 	else
 	{

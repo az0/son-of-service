@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.2 2003/11/29 22:59:54 andrewziem Exp $
+ * $Id: access.php,v 1.3 2004/02/21 00:59:07 andrewziem Exp $
  *
  */
 
@@ -33,7 +33,7 @@ define('PC_ADMIN', 1);
 define('PC_VOLUNTEER', 2);
 
 define('PT_READ', 1);
-define('PT_WRITE', 1);
+define('PT_WRITE', 2);
 
 
 function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
@@ -55,11 +55,10 @@ function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
 	    break;
 	
 	case PC_VOLUNTEER:
-	    if (PT_READ == $type or (PT_WRITE == $type and $_SESSION['user']['access_change_vol']))
+	    if (PT_READ == $type or (PT_WRITE == $type and 1 == $_SESSION['user']['access_change_vol']))
 	    {
 		return TRUE;
 	    }
-	    return FALSE;
 	    break;
 	default:
 	    process_system_error(_("Unexpected parameter"));

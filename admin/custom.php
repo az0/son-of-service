@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.14 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: custom.php,v 1.15 2004/02/21 00:59:05 andrewziem Exp $
  *
  */
 
@@ -361,6 +361,10 @@ function custom_add_field_form3()
 
 function custom_add_field_form()
 {
+    if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
 
     if (array_key_exists('stage',$_POST) and $_POST['stage'] == 3)
     {

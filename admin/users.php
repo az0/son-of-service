@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.15 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: users.php,v 1.16 2004/02/21 00:59:06 andrewziem Exp $
  *
  */
  
@@ -50,11 +50,11 @@ function user_save()
 
     if (!isset($_POST['username']) or 4 > strlen(trim($_POST['username'])))
     {
-       save_message(MSG_USER_ERROR, _("Username is too short: 4 or more characters reqired."));
+       save_message(MSG_USER_ERROR, _("User name is too short: 4 or more characters required."));
        $errors_found++;
     }
 
-    if (!$mode_update and (!isset($_POST['password1']) or 4 > strlen(trim($_POST['password1']))))
+    if (!$mode_update and (!isset($_POST['password1']) or 4 >= strlen($_POST['password1'])))
     {
 	save_message(MSG_USER_ERROR, _("Account password is too short: 4 or more characters required."));
 	$errors_found++;
@@ -70,7 +70,7 @@ function user_save()
 
     if (isset($_POST['access_admin']) and "y" == $_POST['access_admin'])
     {
-	save_user_message(_("This user has administrative privilage."), MSG_USER_WARNING);
+	save_user_message(_("This user has administrative privilege."), MSG_USER_WARNING);
     }
     
     if (!$errors_found)
@@ -98,7 +98,7 @@ function user_save()
 	    $sql .= " username = $username,";
 	    $sql .= " personalname = $personalname,";
 	
-	    if (strlen($_POST['password1']) > 4)
+	    if (strlen($_POST['password1']) >= 4)
 	    {
 		$sql .= " password = $password,";	
 	    }
@@ -118,6 +118,7 @@ function user_save()
 		   " $username,	$password, $email, ".
 		   "$access_admin, $access_change_vol)";
 	}				   
+
 	$result = $db->Execute($sql);
 
 	if (!$result) 
@@ -153,7 +154,7 @@ function user_addedit_form()
 	
 	if (!has_permission(PC_ADMIN, PT_WRITE, NULL, $user_id))
 	{
-	    return FALSE;
+	    message_die(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
 	}
     
 	echo ("<H2>Edit user</H2>\n");
@@ -212,7 +213,7 @@ function user_addedit_form()
 
 $form = new formMaker;
 $form->open(FALSE, 'post', '.', FS_TABLE);
-$form->addField(_("Username"), 'text', 'username', array('length' => 20), $form_values['username']);
+$form->addField(_("User name"), 'text', 'username', array('length' => 20), $form_values['username']);
 $form->addField(_("Password"), 'password', 'password1', array('length' => 20), '');
 $form->addField(_("Verify password"), 'password', 'password2', array('length' => 20), '');
 ?>
@@ -220,11 +221,11 @@ $form->addField(_("Verify password"), 'password', 'password2', array('length' =>
 <tr>
  <th class="vert">Administration privileges</th>
  <td>
-   <INPUT type="checkbox" name="access_admin" <?php dvc_checkbox($form_values, 'access_admin');?>> 
+   <INPUT type="checkbox" name="access_admin" <?php dvc_checkbox($form_values, 'access_admin');?> value="1">  
  </tr>
  <th class="vert">Change volunteers</th>
  <td>
-   <INPUT type="checkbox" NAME="access_change_vol" <?php dvc_checkbox($form_values, 'access_change_vol');?>>
+   <INPUT type="checkbox" NAME="access_change_vol" <?php dvc_checkbox($form_values, 'access_change_vol');?> value="1">
  </tr> 
 <?php
 $form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), $form_values['personalname']);
@@ -255,7 +256,7 @@ function users_list()
 
     if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
     {
-	return FALSE;
+	message_die(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }
     
     echo ("<H2>List of users</H2>\n");
@@ -281,7 +282,7 @@ function users_list()
 	echo ("<THEAD>\n");
 	echo ("<TR>\n");
 	echo ("<TH>"._("Select")."</TH>\n");	
-	echo ("<TH>"._("Username")."</TH>\n");	
+	echo ("<TH>"._("User name")."</TH>\n");	
 	echo ("<TH>"._("Personal Name")."</TH>\n");
 	echo ("</TR>\n");
 	echo ("</THEAD>\n");
@@ -314,7 +315,7 @@ function users_delete()
 
     if (!has_permission(PC_ADMIN, PT_WRITE, NULL, $user_id))
     {
-	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions"));
+	message_die(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);	
     }
     else
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])

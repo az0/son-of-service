@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: systemcheck.php,v 1.4 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: systemcheck.php,v 1.5 2004/02/21 00:59:06 andrewziem Exp $
  *
  */
 
@@ -45,8 +45,11 @@ function system_check()
     
     $system_check_data = array();
     
+    if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
     
-    // check permissions
     // todo: do better
     
     // todo: same for Windows

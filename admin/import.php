@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.11 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: import.php,v 1.12 2004/02/21 00:59:06 andrewziem Exp $
  *
  */
 
@@ -298,6 +298,11 @@ function import_legacy3()
 
 function import_legacy()
 {
+    if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+
     if (!empty($_POST['import_legacy']) and 2 == $_POST['import_legacy'])
     {
 	import_legacy2();

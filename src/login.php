@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.10 2004/02/17 01:50:33 andrewziem Exp $
+ * $Id: login.php,v 1.11 2004/02/21 00:59:07 andrewziem Exp $
  *
  */
 
@@ -39,13 +39,13 @@ function request_login()
         
     echo ("<H3>Son of Service: Volunteer management database</H3>\n");
 
-    echo ("<P>Please log in using the username and password provided by the volunteer coordinator.</P>\n");
+    echo ("<P>Please log in using the user name and password provided by the volunteer coordinator.</P>\n");
     
     // fix me: return to refering page
     echo ("<FORM method=\"post\"  action=\"login.php\">\n");
     echo ("<TABLE border=\"0\">\n");
     echo ("<TR>\n");
-    echo ("<TD>Username</TD>\n");
+    echo ("<TD>User name</TD>\n");
     echo ("<TD><INPUT name=\"u\" type=\"text\" size=\"40\"></TD>\n");
     echo ("</TR>\n");
     echo ("<TR>\n");
@@ -87,7 +87,7 @@ if (isset($_POST['button_login']))
     }    
     else
     {
-	process_user_error(_("Invalid username or password."), "Is your caps lock key on?");
+	process_user_error(_("Invalid user name or password."), "Is your caps lock key on?");
 	request_login();
 	exit();
     }

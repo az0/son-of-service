@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.11 2004/02/15 00:09:18 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.12 2004/02/21 00:59:07 andrewziem Exp $
  *
  */
 
@@ -41,6 +41,12 @@ function volunteer_add()
        process_user_error(_("Please enter a longer last name or organization."));
        $errors_found++;
     }
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
+    {
+	process_user_error(_("Insufficient permissions."));
+	$errors_found++;	
+    }    
 
     if ($errors_found)
     {    
@@ -136,7 +142,7 @@ function volunteer_add()
     
     $volunteer_row = volunteer_get($vid);
     
-    echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
+    echo ("<P>"._("Volunteer added successfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
 
 
 } /* add_volunteer() */
