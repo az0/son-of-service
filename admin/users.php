@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.6 2003/11/22 18:14:03 netgamer7 Exp $
+ * $Id: users.php,v 1.7 2003/11/23 16:48:24 andrewziem Exp $
  *
  */
  
@@ -289,5 +289,68 @@ function users_list()
     }    
 } /* users_list() */
 
+
+function users_delete()
+{
+    global $db;
+    
+    
+    // to do: check permissions
+    
+    $user_id = intval($_POST['user_id']);
+    
+    if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
+    {
+	// delete user
+	
+	$result = $db->query("DELETE FROM users WHERE user_id = $user_id LIMIT 1");
+	
+	if (!$result)
+	{
+	    process_system_error(_("Error deleting data from database."), array('debug' => $db->get_error()));
+	}
+	else
+	{
+	    save_message(_("Deleted."), MSG_USER_NOTICE);
+
+	    // redirect to non-POST page
+	    
+	    header("Location: ./?users=1");
+	}
+    }
+    else
+    {
+
+	$sql = "SELECT * FROM users WHERE user_id = $user_id";
+    	$result = $db->query($sql);
+	
+	if (!$result)
+	{	
+	    process_system_error(_("Error querying database."));    
+	}
+	else if (1 != $db->num_rows($result))
+	{
+	    process_system_error("User not found.");    	
+	}
+	else
+	{
+    
+	    // ask for delete confirmation
+	
+	    echo ("<P>"._("Are you sure you want to delete this user?")."</P>\n");
+	
+	    $row = $db->fetch_array($result);
+	
+	    echo ("<P>".$row['personalname']." ($user_id)</P>\n");
+	
+	    $form = new formMaker();
+	    $form->open(FALSE, 'POST', '.', FS_PLAIN);
+	    $form->addHiddenField('user_id', $user_id);
+	    $form->addButton('button_user_delete', _("Delete"));
+	    echo (_("Confirm")."<INPUT type=\"checkbox\" name=\"delete_confirm\"><BR>\n"); 
+	    $form->close();		
+	}
+    }
+}
 
 ?>

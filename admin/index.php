@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.9 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: index.php,v 1.10 2003/11/23 16:48:24 andrewziem Exp $
  *
  */
 
@@ -162,7 +162,8 @@ if (array_key_exists('users', $_GET))
 else
 if (array_key_exists('button_user_delete', $_POST))
 {
-    process_system_error("To do: not yet implemented.");
+    include('users.php');
+    users_delete();
 }
 else    
 if (array_key_exists('button_user_edit', $_POST) or array_key_exists('add_user', $_GET))
