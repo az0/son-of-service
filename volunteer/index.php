@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.22 2003/11/27 04:06:59 andrewziem Exp $
+ * $Id: index.php,v 1.23 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -77,26 +77,17 @@ make_nav_begin();
   {
     include('workhistory.php');
     volunteer_work_history_save('add');
-    stats_update_volunteer($db, intval($_POST['vid']));
-    volunteer_view_work_history();
-    work_history_addedit('add');
   }
   else if (array_key_exists('button_update_work_history', $_POST))
   {
     include('workhistory.php');
     volunteer_work_history_save('update');
-    stats_update_volunteer($db, intval($_POST['vid']));
-    volunteer_view_work_history(); // show history
-    work_history_addedit('add');  // show form
   }
   else
   if (array_key_exists('button_delete_work_history', $_POST))
   {
     include('workhistory.php');
     volunteer_work_history_delete();
-    stats_update_volunteer($db, intval($_POST['vid']));
-    volunteer_view_work_history();
-    work_history_addedit('add');  // show form
   }
   else
   if (array_key_exists('button_edit_work_history', $_POST))

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: systemcheck.php,v 1.2 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: systemcheck.php,v 1.3 2003/11/28 16:25:47 andrewziem Exp $
  *
  */
 
@@ -47,9 +47,9 @@ function system_check()
     
     
     // check permissions
-    // to do: do better
+    // todo: do better
     
-    // to do: same for Windows
+    // todo: same for Windows
     $c['title'] = 'Security: /etc/shadow readable';
     $c['pass'] = !(is_file('/etc/shadow') and is_readable('/etc/shadow'));
     $c['result'] = bool_to_text(!$c['pass']);
@@ -60,7 +60,7 @@ function system_check()
     $dir = opendir(SOS_PATH);
     while (FALSE != ($fname = readdir($dir)))
     {
-	// to do: recursive
+	// todo: recursive
 	//echo ("$dir $fname<BR>\n");
 	$perm = fileperms(SOS_PATH.$fname);
 	if ($perm & 2)
@@ -122,7 +122,7 @@ function system_check()
     $c['title'] = 'Connection: SSL missing';
 
     // fails if SSL inactive and client uses public IP address
-    // to do: better SSL checking
+    // todo: better SSL checking
     $c['pass'] = ($_SERVER['SERVER_PORT'] == 443) or is_ip_private($_SERVER['REMOTE_ADDR']);
     $c['result'] = "SSL: ". bool_to_text($_SERVER['SERVER_PORT'] == 443). ", Remote IP public: ".bool_to_text(!is_ip_private($_SERVER['REMOTE_ADDR']));
     $system_check_data[] = $c;
@@ -131,7 +131,7 @@ function system_check()
     
     // check database for invalid values
     
-    // to do: check latest version against SOS web site
+    // todo: check latest version against SOS web site
     
     // display test results
     echo ("<TABLE border=\"1\">\n");

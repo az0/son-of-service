@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.9 2003/11/24 16:09:40 andrewziem Exp $
+ * $Id: welcome.php,v 1.10 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -18,7 +18,7 @@ define('SOS_PATH', '../');
 require_once(SOS_PATH . 'include/config.php');
 require_once(SOS_PATH . 'include/global.php');
 require_once(SOS_PATH . 'functions/html.php');
-require_once(SOS_PATH . 'functions/auth.php');
+require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 
 $db = new voldbMySql();

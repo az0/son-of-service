@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: global.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
+ * $Id: global.php,v 1.3 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -17,7 +17,7 @@ if (preg_match('/global.php/i', $_SERVER['PHP_SELF']))
 define('SOS_PATH', '../');
 
 require_once(SOS_PATH . 'include/config.php');
-require_once(SOS_PATH . 'functions/auth.php');
+require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 
 if (!empty($_POST) and !headers_sent())
@@ -27,8 +27,6 @@ if (!empty($_POST) and !headers_sent())
     header("Cache-Control: post-check=0, pre-check=0", FALSE);
     header('Pragma: no-cache');    
 }
-
-//print_r($_POST);
 
 error_reporting(E_ALL); // for debugging
 
@@ -40,67 +38,51 @@ if (version_compare(phpversion(),'4.1.0','<'))
     $_SERVER &= $HTTP_SERVER_VARS;
     $_SESSION &= $HTTP_SESSION_VARS;
     
-    // to do; define array_key_exists
+    // todo: define array_key_exists for old PHP compatibility
 }
 
-// to do: define _ and gettext for those without
+// todo: define _ and gettext for those without
 
 if (!extension_loaded('gettext'))
 {
-    $success = FALSE;
-
-/*
-    if (strtoupper(substr(PHP_OS, 0, 3) == 'WIN'))
-    {
-	$success = dl('gettext.dll');
-    }    
-    else
-    {
-	$success = dl('gettext.so');
-    }
-*/    
-    if (!$success)
-    {
-	// cheap replacements
-	// to do: implement full replacement
+    // cheap replacements
+    // todo: implement full replacement
     
-	function _($s)
-	{
-	    return $s;
-	}
+    function _($s)
+    {
+        return $s;
+    }
 
-	function gettext($s)
-	{
-	    echo $s;
-	}
-	
+    function gettext($s)
+    {
+        echo $s;
     }
 }
 
 function process_user_error($text)
 {
-    // to do: css
+    // todo: css
    echo ("<P><FONT color=\"red\">$text</FONT></P>\n");
 }
 
 
 function process_user_warning($text)
 {
-    // to do: css
+    // todo: css
    echo ("<P>Warning: $text</P>\n");
 }
 
 
 function process_user_notice($text)
 {
-    // to do: css
+    // todo: css
    echo ("<P>$text</P>\n");
 }
 
 
 function process_system_error($text, $options = NULL)
 {
-
+    // todo: logging
    echo ("<P><FONT color=\"red\">$text</FONT></P>\n");
    if (is_array($options) and array_key_exists('debug', $options))
    {

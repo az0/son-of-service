@@ -7,11 +7,11 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.1 2003/11/24 16:09:40 andrewziem Exp $
+ * $Id: reminders.php,v 1.2 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
  
-// to do: reminders not attached to volunteers
+// todo: reminders not attached to volunteers
 
 session_start();
 ob_start();
@@ -20,7 +20,7 @@ define('SOS_PATH', '../');
 
 require_once(SOS_PATH . 'include/config.php');
 require_once(SOS_PATH . 'include/global.php');
-require_once(SOS_PATH . 'functions/auth.php');
+require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 require_once(SOS_PATH . 'functions/html.php');
 
@@ -40,7 +40,7 @@ function show_reminders()
 {
     global $db;
     
-    // to do: method for getting volunteer name is slow because
+    // todo: method for getting volunteer name is slow because
     // volunteer_get may be called many times
     
     $sql = "SELECT note_id, dt, reminder_date, volunteer_id, message ".
@@ -65,14 +65,14 @@ function show_reminders()
 	require_once(SOS_PATH . 'functions/formmaker.php');    
 	require_once(SOS_PATH . 'functions/table.php');
 	
-	// to do: pagination
+	// todo: pagination
 	
 	$form = new formMaker();
 	$form->open(_("Reminders"), 'post', 'reminders.php', FS_PLAIN);
 
 	$table = new DataTableDisplay();
 
-	// to do: display message on second row	
+	// todo: display message on second row	
 	$fieldnames['note_id']['checkbox'] = TRUE;
 	$fieldnames['reminder_date']['label'] = _("Reminder date");		
 	$fieldnames['dt']['label'] = _("Creation date");	
@@ -89,7 +89,7 @@ function show_reminders()
 	}
 	$table->end();
 	
-	// to do: edit via volunteers/notes?
+	// todo: edit via volunteers/notes?
 	
 	$form->addButton('button_acknowledge_reminder', _("Acknowledge"));
 	$form->close();
@@ -137,7 +137,7 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
 	}
     }
         
-    // to do: relative path violates HTTP standards?
+    // todo: relative path violates HTTP standards?
     header("Location: reminders.php");
 
 }

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.8 2003/11/27 06:08:18 andrewziem Exp $
+ * $Id: notes.php,v 1.9 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -19,11 +19,15 @@ function volunteer_view_notes($brief = FALSE)
     global $db;
 
 
-    // todo: check permissions
-
     display_messages();
 
     $vid = intval($_GET['vid']);
+    
+    if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
+    {
+	process_user_error(_("Insufficient permissions."));
+	return FALSE;
+    }
 
     $sql = 'SELECT notes.*,u1.username as added_by, u2.username as assigned_to '.
 	'FROM notes '.
@@ -94,7 +98,7 @@ function volunteer_view_notes($brief = FALSE)
 	echo ("</TABLE>\n");
 	if (!$brief)
 	{
-		// to do: edit
+		// todo: edit
 		echo ("<INPUT type=\"submit\" name=\"button_delete_note\" value=\""._("Delete")."\">\n");
 		echo ("</FORM>\n");
 	}
@@ -108,11 +112,15 @@ function volunteer_add_note_form()
     global $db;
     
 
-    // todo: check permissions
     // todo: make searchable
     
     $vid = intval($_GET['vid']);
-
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	return FALSE;
+    }
+    
     echo ("<H4>"._("Add note")."</H4>\n");
 
     echo ("<FORM method=\"post\" action=\".\">\n");
@@ -177,10 +185,17 @@ function note_add()
     global $db;
 
 
-    // todo: check permissions
     // validate form input
     $errors_found = 0;
+    
+    $vid = intval($_POST['vid']);    
 
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+    }
+    
     $reminder_date = sanitize_date($_POST['reminder_date']);
 
     if (!preg_match("/^[0-9]+$/", $_POST['vid']) or (!empty($_POST['uid_assigned']) and !preg_match("/^[0-9]+$/", $_POST['uid_assigned'])))
@@ -201,7 +216,6 @@ function note_add()
 	$errors_found++;
     }        
     
-    $vid = intval($_POST['vid']);    
 
     if (!$errors_found)
     {
@@ -245,6 +259,14 @@ function note_delete()
     
     $vid = intval($_POST['vid']);
     
+    $errors_found = 0;
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+    }    
+    
     $note_ids = array();
 
     foreach ($_POST as $k => $v)
@@ -259,7 +281,7 @@ function note_delete()
     {
 	save_message(_("Select one or more options."), MSG_USER_ERROR);
     }
-    else
+    else if (0 == $errors_found)
     {    
 	$sql = "DELETE FROM notes WHERE volunteer_id = $vid AND (";
 	foreach ($note_ids as $nid)
@@ -281,7 +303,7 @@ function note_delete()
 	}
     }
         
-    // to do: relative path violates HTTP standards?
+    // todo: relative path violates HTTP standards?
     header("Location: ./?vid=$vid&menu=notes");
 
     

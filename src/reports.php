@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.5 2003/11/24 14:43:58 netgamer7 Exp $
+ * $Id: reports.php,v 1.6 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -54,7 +54,7 @@ $steps = array('Day', 'Week', 'Month', 'Year');
 
 function report_display($title, $result, $type)
 // type = 'html', 'csv'
-// to do: add XML
+// todo: add XML
 {
     global $db;
 
@@ -106,7 +106,7 @@ function report_display($title, $result, $type)
     {
 	echo ("</TABLE>\n");
 	$url = make_url($_REQUEST, array());
-	// to do: request gives too much
+	// todo: request gives too much
 	
 	echo ("<P><A href=\"$url&download=1\">Download CSV</A>\n");
     }

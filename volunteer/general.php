@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.3 2003/11/23 21:39:48 andrewziem Exp $
+ * $Id: general.php,v 1.4 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -64,7 +64,7 @@ function volunteer_view_general()
 
 
 // show custom fields
-// to do: SQL_CACHE
+// todo: SQL_CACHE
 
     $result_ext = $db->query("SELECT * FROM extended WHERE volunteer_id = $vid");
     
@@ -106,7 +106,7 @@ function volunteer_save()
     global $db;
     global $volunteer;
 
-    // to do: validate
+    // todo: validate
 
     // sanitize input
 

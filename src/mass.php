@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.5 2003/11/23 17:03:31 andrewziem Exp $
+ * $Id: mass.php,v 1.6 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -16,7 +16,7 @@ define('SOS_PATH', '../');
 
 require_once(SOS_PATH . 'include/config.php');
 require_once(SOS_PATH . 'include/global.php');
-require_once(SOS_PATH . 'functions/auth.php');
+require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 require_once(SOS_PATH . 'functions/forminput.php');
 require_once(SOS_PATH . 'functions/formmaker.php');
@@ -156,7 +156,7 @@ function email_volunteers_form()
 	$mailto .= $vids[$k]['email'];
     }
     
-    // to do: SquirrelMail, IMP, Hotmail, Yahoo e-mail
+    // todo: SquirrelMail, IMP, Hotmail, Yahoo e-mail
     
     echo ("<P><A href=\"mailto:".htmlentities(urlencode($mailto))."\">Use my e-mail client</A></P>\n");
     

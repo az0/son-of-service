@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.2 2003/11/27 06:08:18 andrewziem Exp $
+ * $Id: strings.php,v 1.3 2003/11/28 16:25:47 andrewziem Exp $
  *
  */
 
@@ -136,7 +136,7 @@ function strings_list()
 	echo ("<TH>"._("Select")."</TH>\n");
 	echo ("<TH>"._("Category")."</TH>\n");	
         echo ("<TH>"._("String")."</TH>\n");	
-// to do: fixme: quantity never zero
+// todo: fixme: quantity never zero
 //	echo ("<TH>"._("Quantity in use")."</TH>\n");	
 	echo ("</TR>\n");
 	while (FALSE != ($row = ($db->fetch_array($result))))

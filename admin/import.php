@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.8 2003/11/14 17:17:45 andrewziem Exp $
+ * $Id: import.php,v 1.9 2003/11/28 16:25:47 andrewziem Exp $
  *
  */
 
@@ -16,7 +16,7 @@ if (preg_match('/import.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
-// to do
+// todo
 // - progress indicator
 // - multiple instances
 // - automatically separate suffixes from last name field
@@ -144,7 +144,8 @@ function import_legacy3()
     global $db;
     
     
-    $dname = $_SESSION['import']['dname'];  // to do: validate here
+    // todo: validate here
+    $dname = $_SESSION['import']['dname'];  
         
     // gather and validate form input
     

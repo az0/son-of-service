@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.3 2003/11/14 17:17:45 andrewziem Exp $
+ * $Id: summary.php,v 1.4 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -72,15 +72,15 @@ volunteer_view_work_history(TRUE);
 
 // show skills
 
-// to do
+// todo
 
 // show availability
 
-// to do
+// todo
 
 // show custom fields
 
-// to do
+// todo
 
 // show relationships
 

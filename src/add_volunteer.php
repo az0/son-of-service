@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.7 2003/11/23 21:39:48 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.8 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -53,7 +53,7 @@ function volunteer_add()
     if ($errors_found)
     {    
 	  echo ("<P>Try <A href=\"add_volunteer.php\">again</A>.</P>\n");
-	  // to do: redisplay form here with valus in place
+	  // todo: redisplay form here with valus in place
 	  die();
     }
     

@@ -5,17 +5,17 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.13 2003/11/23 03:25:42 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.14 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
 
 
 
-// to do: add to found set (vs replace) ?
-// to do: advanced searching (e.g., not, match exact)
-// to do: search by availability
-// to do: query manager for saving queries
+// todo: add to found set (vs replace) ?
+// todo: advanced searching (e.g., not, match exact)
+// todo: search by availability
+// todo: query manager for saving queries
 
 function getmicrotime(){ 
 // this function from PHP documentation
@@ -208,7 +208,7 @@ function volunteer_search()
 	search_add('phone_home', 'phone_home', $where);		
 	search_add('phone_work', 'phone_work', $where);		
 	search_add('phone_cell', 'phone_cell', $where);		
-	// to do: search any phone
+	// todo: search any phone
 	
 	foreach ($_REQUEST as $key => $p)
 	{
@@ -262,7 +262,7 @@ function volunteer_search()
         else
         { 
 		// search successful
-		// to do: mass-action on found set (email)
+		// todo: mass-action on found set (email)
 		
                 if (0 == ($total_results = $db->num_rows($result)))
                 {
@@ -316,8 +316,8 @@ function volunteer_search()
 
         }
 
-        // to do: implement e-mail
-	// to do: what other mass actions?
+        // todo: implement e-mail
+	// todo: what other mass actions?
 
 	echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\""._("E-mail")."\">\n");
 	echo ("<INPUT type=\"submit\" name=\"button_delete_volunteers\" value=\""._("Delete")."\">\n");	
@@ -383,7 +383,7 @@ function volunteer_search()
 } /* volunteer_search () */
 
 function volunteer_search_form()
-// to do: find volunteers who helped with a project, department, or event
+// todo: find volunteers who helped with a project, department, or event
 {
     global $db;
     global $cm;

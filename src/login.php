@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.4 2003/11/23 19:49:43 andrewziem Exp $
+ * $Id: login.php,v 1.5 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
 
@@ -24,7 +24,7 @@ define('SOS_PATH', '../');
 
 require_once(SOS_PATH . 'include/config.php');
 require_once(SOS_PATH . 'include/global.php');
-require_once(SOS_PATH . 'functions/auth.php');
+require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 /*
 if (array_key_exists('logout', $_GET))

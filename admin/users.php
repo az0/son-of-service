@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.8 2003/11/27 06:08:18 andrewziem Exp $
+ * $Id: users.php,v 1.9 2003/11/28 16:25:47 andrewziem Exp $
  *
  */
  
@@ -23,8 +23,10 @@ function user_save()
     global $db;
     
     
-    
-    // todo: check permissions
+    if (!has_permission(PC_ADMIN, PT_WRITE, NULL, intval($_POST['user_id'])))
+    {
+	return FALSE;
+    }
     
     // add or update mode?
     
@@ -142,18 +144,22 @@ function user_addedit_form()
     global $db;
 
 
-    // todo: check permissions
-    
     $mode_edit = (array_key_exists('user_id', $_POST) and preg_match('/^[0-9]+$/', $_POST['user_id']));
     
     if ($mode_edit)
     {
+	// edit existing user mode
+	$user_id = intval($_POST['user_id']);
+	
+	if (!has_permission(PC_ADMIN, PT_WRITE, NULL, $user_id))
+	{
+	    return FALSE;
+	}
+    
 	echo ("<H2>Edit user</H2>\n");
 
 	echo ("<P class=\"instructiontext\">Leave the password fields blank to retain the old password.</P>\n");
-    
-	$user_id = intval($_POST['user_id']);
-    
+        
 	$result = $db->query("SELECT * FROM users WHERE user_id = $user_id");
 	
 	if (!$result)
@@ -174,7 +180,13 @@ function user_addedit_form()
     }	
     else
     {
-	//echo ("<H2>Add new user</H2>\n");
+	// add new user mode
+
+	if (!has_permission(PC_ADMIN, PT_WRITE, NULL, NULL))
+	{
+	    return FALSE;
+	}
+	
 	echo ("<FIELDSET>\n");
 	echo ("<LEGEND>Add new user</LEGEND>\n");
 	echo ("<P class=\"instructionstext\">A user administrates the volunteer database.  He may view and change volunteers' accounts.</P>\n");
@@ -238,6 +250,12 @@ function users_list()
 {
     global $db;
     
+
+
+    if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
+    {
+	return FALSE;
+    }
     
     echo ("<H2>List of users</H2>\n");
     
@@ -286,11 +304,14 @@ function users_delete()
 {
     global $db;
     
-    
-    // to do: check permissions
-    
+        
     $user_id = intval($_POST['user_id']);
-    
+
+    if (!has_permission(PC_ADMIN, PT_WRITE, NULL, $user_id))
+    {
+	save_message(_("Insufficient permissions"), MSG_SYSTEM_ERROR);
+    }
+    else
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
     {
 	// delete user
@@ -312,7 +333,8 @@ function users_delete()
     }
     else
     {
-
+	// request delete confirmation
+	
 	$sql = "SELECT * FROM users WHERE user_id = $user_id";
     	$result = $db->query($sql);
 	

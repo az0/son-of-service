@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.8 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: workhistory.php,v 1.9 2003/11/28 16:25:48 andrewziem Exp $
  *
  */
  
@@ -23,23 +23,38 @@ function volunteer_work_history_delete()
     
     $vid = intval($_POST['vid']);
     $work_id  = intval($_POST['work_id']);
+
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+    }    
     
     if (!is_numeric($_POST['vid']) or 0 == ($vid))
     {
-	process_system_error(_("Bad form input:").' vid');
-	die();
+	save_message(_("Bad form input:").' vid', MSG_SYSTEM_ERROR);
+	$errors_found++;
+    }
+    
+    if ($errors_found)
+    {
+	return FALSE;
     }
     
     $result = $db->query("DELETE FROM work WHERE work_id = $work_id AND volunteer_id = ".intval($vid));
 
     if (!$result)
     {
-	process_system_error(_("Error deleting data from database."), array('debug'=> $db->get_error()));
+	save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
     }
     else
     {
-	process_user_notice(_("Deleted."));
+	save_message(_("Deleted."), MSG_USER_NOTICE);
+	stats_update_volunteer($db, $vid);
     }
+    
+    // redirect user to non-POST page
+    header("Location: ?vid=$vid&menu=workhistory");
 
 }
 
@@ -55,6 +70,13 @@ function volunteer_work_history_save($mode)
     $date = sanitize_date($_POST['date']);
     $quality = intval($_POST['quality']);
     $vid = intval($_POST['vid']);
+    $errors_found = 0;
+
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+    }    
     
     if ('update' == $mode)
     {
@@ -66,15 +88,13 @@ function volunteer_work_history_save($mode)
     }
     else
     {
-	process_system_error('volunteers_work_history_save(): '._("Unexpected parameter."));
-	return FALSE;
-    }
-  
-    $errors_found = 0;
+	save_messsage('volunteers_work_history_save(): '._("Unexpected parameter."));
+	$errors_found++;
+    } 
     
     if (0 == strlen(trim($_POST['hours'])))
     {
-       process_user_error("Please return to the form and add a number to the Hours Credit of Work field.");
+       save_message(_("Add a number to the Hours Credit of Work field."), MSG_USER_ERROR);
        $errors_found++;
     }
     
@@ -82,10 +102,9 @@ function volunteer_work_history_save($mode)
     {
 	$hours = $matches[1] + ($matches[2]/60);
     }
-    else
-    if ($_POST['hours'] < 0.00 or !preg_match("/^[0-9\.]+$/",$_POST['hours']))
+    else if ($_POST['hours'] < 0.00 or !preg_match("/^[0-9\.]+$/", $_POST['hours']))
     {
-       process_user_error("Please add more hours to the Hours Credit of Work field.");
+       save_message(_("Please add more hours to the Hours Credit of Work field."), MSG_USER_ERROR);
        $errors_found++;       
     }
     else
@@ -95,11 +114,11 @@ function volunteer_work_history_save($mode)
 
     if (!$date)
     {
-	process_user_error(_("You must give a date."));
-	process_user_error(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."));
+	save_message(_("You must give a date."), MSG_USER_ERROR);
+	save_message(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."), MSG_USER_ERROR);
 	$errors_found++;       
     }
-    
+        
     $memo = $db->escape_string(sos_strip_tags($_POST['memo']));
 
     // add to database
@@ -109,7 +128,7 @@ function volunteer_work_history_save($mode)
 	    "(date, hours, volunteer_id, category_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
 	    "VALUES ('$date', '$hours', $vid, $category_id, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, '$memo', $quality)"; 
     }
-	else
+    else
     {
 	$sql = "UPDATE work ".
 	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = '$memo', quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
@@ -117,20 +136,26 @@ function volunteer_work_history_save($mode)
     }
     
     if (!$errors_found)
-	// to do: show form again, already filled out    
+	// todo: show form again, already filled out    
     {
     
 	$result = $db->query($sql);
 
 	if ($result)
 	{
-	    process_user_notice(_("Saved."));
+	    save_message(_("Saved."), MSG_USER_NOTICED);
+	    stats_update_volunteer($db, $vid);
         }
         else
         {
-            process_system_error(_("Error saving data to database."), array('debug' => $db->get_error()));
+            save_message(_("Error saving data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));
         }
      }
+     
+     // redirect client to non-POST page
+     
+     header("Location: ?vid=$vid&menu=workhistory");
+     
   } /* volunteer_work_history_save() */
 
 
@@ -139,9 +164,18 @@ function volunteer_view_work_history($brief = FALSE)
 {
     global $db;
     
+    
+    display_messages();
+    
     $vid = intval($_REQUEST['vid']);
     
-    // to do: pagination
+    if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
+    {
+	process_system_error(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+	return FALSE;
+    }    
+    
+    // todo: pagination
 
     $sql = "SELECT work.work_id AS work_id, work.hours AS hours, work.quality AS quality, work.date AS date, work.memo AS memo, strings.s AS category ".
 	"FROM work ".
@@ -154,9 +188,8 @@ function volunteer_view_work_history($brief = FALSE)
     if (!$result)
     {
 	process_system_error(_("Error querying database."), array('debug'=> $db->get_error().' '.$sql));
-	die();
+	return FALSE;
     }
-
 
     if (!$brief or 0 < $db->num_rows($result))
     {
@@ -223,6 +256,7 @@ function volunteer_view_work_history($brief = FALSE)
 
 
 function work_history_addedit($mode)
+// creates a form
 {
     global $db;
     
@@ -233,8 +267,14 @@ function work_history_addedit($mode)
 	return FALSE;
     }    
 
-    $vid = intval($_REQUEST['vid']);
+    $vid = intval($_POST['vid']);
 
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	process_system_error(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+	return FALSE;
+    }    
+    
     if ('edit' == $mode)
     {
 	$work_id = intval($_POST['work_id']);    
@@ -275,7 +315,7 @@ function work_history_addedit($mode)
  </tr>
 
 <tr>
-<?php // to do: allow subtraction and addition 
+<?php // todo: allow subtraction and addition 
  ?>
  <TH class="vert"><?php echo _("Hours"); ?></TH>
  <td> <INPUT TYPE="text" NAME="hours" SIZE="7" value="<?php echo $hours;?>"></td>

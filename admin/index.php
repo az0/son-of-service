@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.12 2003/11/27 06:08:18 andrewziem Exp $
+ * $Id: index.php,v 1.13 2003/11/28 16:25:47 andrewziem Exp $
  *
  */
 
@@ -16,6 +16,7 @@ session_start();
 define (SOS_PATH, '../');
 
 require_once (SOS_PATH . 'include/global.php');
+require_once (SOS_PATH . 'functions/access.php');
 require_once (SOS_PATH . 'functions/html.php');
 
 if (!array_key_exists('download_mailing_list',$_GET))
@@ -24,6 +25,11 @@ if (!array_key_exists('download_mailing_list',$_GET))
 }
 
 is_logged_in();
+
+if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
+{
+    die(_("Insufficient permissions."));
+}
 
 if (!array_key_exists('download_mailing_list',$_GET))
 {
@@ -90,7 +96,7 @@ function download_mailing_list()
     
     // <LI>Download mailing list [<A href="admin.php?download_mailing_list=1&type=postal&who=all">all</A>]</LI>
     
-    // to do: finish
+    // todo: finish
 
 }
 

@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.10 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: custom.php,v 1.11 2003/11/28 16:25:47 andrewziem Exp $
  *
  */
 
@@ -16,7 +16,7 @@ if (preg_match('/custom.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
-// to do
+// todo
 // - field position, ability to change position
 // - validation rules
 // - required
@@ -320,7 +320,7 @@ function custom_add_field_form3()
     
     if (!$result)
     {
-	// to do: roll back changes to _meta
+	// todo: roll back changes to _meta
 	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
 	$result = $db->query("DELETE FROM extended_meta WHERE code = '$code' LIMIT 1");
 	return;	
