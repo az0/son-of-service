@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.20 2003/11/24 16:09:40 andrewziem Exp $
+ * $Id: index.php,v 1.21 2003/11/27 03:54:28 andrewziem Exp $
  *
  */
 
@@ -65,7 +65,6 @@ make_nav_begin();
     //user pushed a button
      include('availability.php');
      volunteer_availability_add();
-     volunteer_view_availability();
   }
   else if (array_key_exists('button_delete_availability', $_POST))
   {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: availability.php,v 1.3 2003/11/27 03:54:28 andrewziem Exp $
  *
  */
  
@@ -22,17 +22,19 @@ function volunteer_delete_availability()
     $vid = intval($_REQUEST['vid']);
     $availability_id  = intval($_POST['availability_id']);
     
-    $result = $db->query("DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = ".intval($vid));
+    $result = $db->query("DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = $vid");
 
     if (!$result)
     {
-	process_system_error("Error querying database.", array('debug'=> $db->get_error()));
+	save_message(_("Error querying database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
     }
     else
     {
-	process_user_notice(_("Deleted."));
+	save_message(_("Deleted."), MSG_USER_NOTICE);
     }
-    volunteer_view_availability();
+    
+    // relocate client to non-POST page
+    header("Location: ./?vid=$vid&menu=availability");
 
 }
 
@@ -50,7 +52,7 @@ function volunteer_delete_availability()
       // always validate form input first
       if (!(preg_match("/^[0-9]+$/", $day_of_week) and preg_match("/^[0-9]+$/",$day_of_week)))
       {
-        process_system_error("Bad form input for day_of_week");
+	save_message(_("Bad form input:"). ' day_of_week', MSG_SYSTEM_ERROR);
       }
       else
       {
@@ -63,9 +65,11 @@ function volunteer_delete_availability()
     
         if (!$result)
         {
-    	    process_system_error(_("Error adding data to database."), array('debug' => $db->error()));
+	    save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->error()));
         }      
     }
+    
+    header ("Location: ./?vid=$vid&menu=availability");
     
     
   } /* volunteer_availability_add() */
@@ -78,6 +82,8 @@ function volunteer_delete_availability()
     global $user;
     global $daysofweek;
     
+    
+    display_messages();
 
     $vid = intval($_REQUEST['vid']);
     
