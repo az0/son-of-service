@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.13 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: html.php,v 1.14 2004/02/21 02:18:39 andrewziem Exp $
  *
  */
 
@@ -95,7 +95,10 @@ function make_nav_begin()
     }
 echo ("<div class=\"tab_area\">\n");
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/search_volunteer.php\">"._("Search")."</A>\n");
-echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
+if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
+{
+    echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
+}
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/reports.php\">".("Reports")."</A>\n");
 
 if ('1' == $_SESSION['user']['access_admin'])

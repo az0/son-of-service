@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.10 2004/02/15 15:20:06 andrewziem Exp $
+ * $Id: availability.php,v 1.11 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
  
@@ -150,7 +150,7 @@ function volunteer_view_availability($brief = FALSE)
 <TABLE border="1">
 <TR>
 <?php
-    if (!$brief)
+    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	echo ("<TH>" . _("Select") . "</TH>\n");
     }
@@ -167,7 +167,7 @@ function volunteer_view_availability($brief = FALSE)
 	    $availability['start_time'] = $int_to_timeofday[$availability['start_time']];
 	    $availability['end_time'] = $int_to_timeofday[$availability['end_time']];
 	    echo ("<TR>\n");
-	    if (!$brief)
+	    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	    {
 		echo ("<TD><INPUT type=\"radio\" name=\"availability_id\" value=\"".$availability['availability_id']."\"></TD>\n");
 	    }
@@ -179,14 +179,14 @@ function volunteer_view_availability($brief = FALSE)
 	}
 
 	echo ("</TABLE>\n");
-	if (!$brief)
+	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{
 	    // todo: allow multiple delete
 	    echo ("<INPUT type=\"submit\" name=\"button_delete_availability\" value=\""._("Delete")."\">\n");
 	}
     }
 
-    if (!$brief)
+    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	echo ("<H4>Add new availability</H4>\n");
 	echo ("<SELECT name=\"day_of_week\">\n");

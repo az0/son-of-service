@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.28 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: index.php,v 1.29 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
 
@@ -31,15 +31,12 @@ if ($db->_connectionID == '')
     die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
 }
 
-if (array_key_exists('vid', $_REQUEST))
+if (!array_key_exists('vid', $_REQUEST) or !is_numeric($_REQUEST['vid']))
 {
-    $volunteer_name = make_volunteer_name(volunteer_get(intval($_REQUEST['vid'])));
+    die_message(MSG_SYSTEM_ERROR, "vid must be numeric.  System error.", __FILE__, __LINE__);
+}
 
-}
-else
-{
-    $volunteer_name = "";
-}
+$volunteer_name = make_volunteer_name(volunteer_get(intval($_REQUEST['vid'])));
 
 make_html_begin(_("Volunteer account: ").$volunteer_name, array());
 
@@ -102,9 +99,20 @@ make_nav_begin();
   else
   if (array_key_exists('volunteer_add_phone', $_POST))
   {
-    $vid = intval($_POST['vid']);
-    $result = $db->Execute("INSERT INTO phone_numbers (volunteer_id) VALUES ($vid)");
-    save_message(MSG_USER_NOTICE, _("Added."));
+    $vid = intval($_POST['vid']);  
+    if (has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+        $result = $db->Execute("INSERT INTO phone_numbers (volunteer_id) VALUES ($vid)");
+	if (!$result)
+	{
+	    save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+	}	
+	save_message(MSG_USER_NOTICE, _("Added."));
+    }    
+    else
+    {
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);	
+    }
     redirect("?vid=$vid&menu=general");
   }
   else
@@ -162,11 +170,23 @@ function volunteer_delete()
     // validate form input
     
     $vid = intval($_POST['vid']);
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	$errors_found++;
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
 
     if (!preg_match("/^[0-9]+$/", $_POST['vid']))
     {
-	process_system_error(_("Bad form input:").' vid');
-	die();
+	$errors_found++;
+	save_message(MSG_USER_ERROR, _("Bad form input:").' vid');
+    }
+    
+    if ($errors_found)
+    {
+	redirect("./?vid=$vid");
+	exit();
     }
 
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])

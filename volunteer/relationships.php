@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.16 2004/02/15 15:20:06 andrewziem Exp $
+ * $Id: relationships.php,v 1.17 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
 
@@ -34,7 +34,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
         $row['volunteer2_name'] = make_volunteer_name($volunteer2_row);
 	
 	echo ("<LI>".$row['volunteer2_name']." [<A href=\"?vid=".$row['volunteer2_id']."\">account</A>, <A href=\"?vid=".$row['volunteer2_id']."&menu=relationships\">relationships</A>], ".$row['rname']."\n");
-	if (!$brief)
+	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $row['volunteer2_id'], NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{
 	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
 	}
@@ -190,8 +190,12 @@ function relationships_add_form()
 
 
     $vid = intval($_REQUEST['vid']);
-
-
+    
+    if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+	return FALSE;
+    }
+    
     echo ("<H3>"._("Add relationship")."</H3>\n");
 
     // remember relationship types for multiple uses
@@ -242,9 +246,9 @@ function relationships_add_form()
 	echo ("<LEGEND>Search results</LEGEND>\n");
 	echo ("<FORM method=\"post\" action=\".\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-	$needle = $db->qstr($_GET['volunteer2_name'], get_magic_quotes_gpc());
+	$needle = $db->qstr('%'.$_GET['volunteer2_name'].'%', get_magic_quotes_gpc());
 	// todo: portable concat
-	$sql = "SELECT volunteer_id FROM volunteers WHERE concat(first, middle, last, organization) like '%$needle%'";
+	$sql = "SELECT volunteer_id FROM volunteers WHERE concat(first, middle, last, organization) like $needle";
 	$result = $db->Execute($sql);
 	$c = 0;
 	while ($result and !$result->EOF)

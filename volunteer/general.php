@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.14 2004/02/15 15:20:06 andrewziem Exp $
+ * $Id: general.php,v 1.15 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
 
@@ -111,10 +111,13 @@ function volunteer_view_general()
 	$result_meta->Close();
     }
 
-    $form->addHiddenField('vid', $vid);
-    $form->addButton('volunteer_save', _("Save"));
-    $form->addButton('volunteer_add_phone', _("Add phone number"));    
-    $form->addButton('volunteer_delete', _("Delete volunteer"));
+    if (has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+    {
+        $form->addHiddenField('vid', $vid);
+	$form->addButton('volunteer_save', _("Save"));
+        $form->addButton('volunteer_add_phone', _("Add phone number"));    
+        $form->addButton('volunteer_delete', _("Delete volunteer"));
+    }
 
     $form->close();
 

@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.15 2004/02/21 00:59:05 andrewziem Exp $
+ * $Id: custom.php,v 1.16 2004/02/21 02:18:39 andrewziem Exp $
  *
  */
 
@@ -275,7 +275,6 @@ function custom_add_field_form3()
 	if (!$result)
 	{
 	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
-	    return;
 	}	
 	if (0 == $result->RecordCount() and !in_array(strtoupper($code), $reserved_codes))
 	{

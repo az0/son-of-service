@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.12 2004/02/21 01:03:15 andrewziem Exp $
+ * $Id: skills.php,v 1.13 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
 
@@ -112,7 +112,7 @@ function volunteer_view_skills($brief = FALSE)
     {
 	echo ("<TABLE border=\"1\">\n");
 	echo ("<TR>\n");
-	if (!$brief)
+	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{
 	    echo ("<TH>"._("Select")."</TH>\n");
 	}
@@ -124,7 +124,7 @@ function volunteer_view_skills($brief = FALSE)
 	{
 	    $vskill = $vskills_result->fields;
 	    echo ("<TR>\n");
-	    if (!$brief)
+	    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	    {
 		echo ("<TD><INPUT type=\"radio\" name=\"volunteer_skill_id\" value=\"".$vskill['volunteer_skill_id']."\"></TD>\n");
 	    }
@@ -135,14 +135,14 @@ function volunteer_view_skills($brief = FALSE)
 	}
 	echo ("</TABLE>\n");
 	
-	if (!$brief)
+	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{    
 	    echo ("<INPUT type=\"submit\" name=\"button_delete_volunteer_skill\" value=\""._("Delete")."\">\n");
 	}
     }    
 
     // add skill form
-    if (!$brief)
+    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$sql = "SELECT * FROM strings WHERE type = 'skill'";
 	$skills_list_result = $db->CacheExecute($db_cache_timeout, $sql);

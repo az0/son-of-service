@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.22 2004/02/21 00:59:08 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.23 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
 
@@ -51,11 +51,7 @@ class columnManager
     
     function addColumn($name, $display = FALSE)
     {
-	$this->columns[$name] = array('display' => FALSE);
-	if ($display)
-	{
-	    $this->columns[$name] = array('display' => TRUE);
-	}
+	$this->columns[$name] = array('display' => $display);
     }
     
     function setRadio($name)
@@ -89,6 +85,7 @@ class columnManager
     }
     
     function setColumnLink($column, $link= NULL)
+// doesn't do anything
     {
 	if (NULL == $link)
 	{
@@ -129,6 +126,7 @@ $cm->addColumn('first', TRUE);
 $cm->setColumnLink('first', SOS_PATH . "volunteer/?vid=#volunteer_id#");
 $cm->addColumn('middle', TRUE);
 $cm->addColumn('last', TRUE);
+$cm->setColumnLink('last', SOS_PATH . "volunteer/?vid=#volunteer_id#");
 $cm->addColumn('organization', TRUE);
 $cm->setColumnLink('organization', SOS_PATH  . "volunteer/?vid=#volunteer_id#");
 $cm->addColumn('street');
@@ -139,6 +137,7 @@ $cm->addColumn('country');
 $cm->addColumn('hours_life');
 
 function search_add($form_name, $column, &$where)
+// Adds a field to the search SQL and enables the field's display.
 {
     global $cm;
     global $db;
@@ -297,6 +296,7 @@ function volunteer_search()
 		    }
 		    
 		    $fieldnames['first']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    
+		    $fieldnames['last']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
 		    $fieldnames['organization']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
 		    $fieldnames['volunteer_id']['checkbox'] = TRUE;
 			
@@ -334,7 +334,10 @@ function volunteer_search()
 	// todo: what other mass actions?
 
 	echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\""._("E-mail")."\">\n");
-	echo ("<INPUT type=\"submit\" name=\"button_delete_volunteers\" value=\""._("Delete")."\">\n");	
+	if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
+	{
+	    echo ("<INPUT type=\"submit\" name=\"button_delete_volunteers\" value=\""._("Delete")."\">\n");	
+	}
 	echo ("</FORM>\n");
 	
 	// results navigation

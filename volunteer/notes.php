@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.15 2004/02/21 01:03:15 andrewziem Exp $
+ * $Id: notes.php,v 1.16 2004/02/21 02:18:40 andrewziem Exp $
  *
  */
 
@@ -164,6 +164,8 @@ function volunteer_addedit_note_form($mode)
 	$quality = $uid_assigned = 0;
     }
     
+    
+    echo ("<H3>$title</H3>\n");
     $form = new formMaker();
     $form->open($title, 'post', '.', FS_TABLE);
     $form->addHiddenField('vid', $vid);    
