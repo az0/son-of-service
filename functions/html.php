@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.9 2003/11/27 16:34:18 andrewziem Exp $
+ * $Id: html.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -15,31 +15,14 @@ if (preg_match('/html.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
-define('MSG_SYSTEM_ERROR', 1);
-define('MSG_SYSTEM_WARNING', 2);
-define('MSG_SYSTEM_NOTICE', 8);
-define('MSG_USER_ERROR', 256);
-define('MSG_USER_WARNING', 512);
-define('MSG_USER_NOTICE', 1024);
 
-/* save_message()
- * Saves a message to be displayed later (next page load).  Used with
- * forms processing.
- *
- */
-function save_message($message, $type, $options = FALSE)
+function display_message($type, $message, $file, $line, $sql, $sql_error)
 {
-    assert (is_int($type));
-    $_SESSION['messages'][] = array('message' => $message, 'type' => $type, 'options' => $options);
+    global $debug;
     
-    // todo: log error message here if applicable (refer to configurable log level)
-}
 
-
-
-function display_message($message, $type, $options = FALSE)
-{
-
+    assert(is_int($type));
+    
     switch ($type)
     {
 	case MSG_SYSTEM_ERROR:
@@ -55,10 +38,22 @@ function display_message($message, $type, $options = FALSE)
     }
     echo ("<P$class>$message</P>");
     
-    if (is_array($options) and array_key_exists('debug', $options))
+    if ($debug)
     {
-	// todo: disable debug in config.php
-	echo ("<P>"._("Debug:").' '.$options['debug']."</P>\n");
+	if ($file != NULL && $line != NULL)
+	{
+	    echo ("<P>Location: $file line: $line</P>\n");
+	}
+	
+    	if ($sql != NULL)
+	{
+	    echo ("<P>SQL: $sql</P>\n");
+	}
+
+        if ($sql_error != NULL)
+        {
+	    echo ("<P>SQL Error: $sql_error</P>\n");
+	}
     }
 }
 
@@ -78,7 +73,8 @@ function display_messages()
 	
 	foreach ($messages as $key => $msg)
 	{
-	    display_message($msg['message'], $msg['type'], $msg['options']);
+	    display_message($msg['type'], $msg['message'], $msg['file'], $msg['line'], 
+		$msg['sql'], $msg['sql_error']);
 	    unset($_SESSION['messages'][$key]);
 	}	
 	

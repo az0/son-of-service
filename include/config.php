@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: config.php,v 1.3 2003/11/22 16:53:48 andrewziem Exp $
+ * $Id: config.php,v 1.4 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -26,5 +26,7 @@ $smtp_hostname = 'localhost';
 // 2: admin-level users can include some HTML
 // 3: all users can include some HTM
 $html_security_level = 1;
+
+$debug = TRUE;
 
 ?>

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.11 2003/11/27 04:06:59 andrewziem Exp $
+ * $Id: relationships.php,v 1.12 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -297,22 +297,29 @@ function relationship_add()
     
     if (!volunteer_get($vid) or !volunteer_get($vid2))
     {
-	save_message(_("Volunteer not found."), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR, _("Volunteer not found."));
 	return FALSE;
     }
     
     $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid, $vid2, $string_id)";
     $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid2, $vid, $string_id)";
     $result1 = $db->query($sql1);    
-    $result2 = $db->query($sql2);
     
-    if (!$result1 or !$result2)
+    if (!$result1)
     {
-	save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));	
+	save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql1);	
     }
     else
     {
-	save_message(_("Added relationship."), MSG_USER_NOTICE);
+        $result2 = $db->query($sql2);
+	if (!$result2)
+	{
+	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql2);	
+	}
+	else
+	{
+	    save_message(MSG_USER_NOTICE, _("Added relationship."));
+	}
     }
     
     // redirect client to non-POST page
@@ -339,22 +346,30 @@ function relationship_delete()
     
     if (!$vid1 or !$vid2)
     {
-	save_message(_("Input missing."), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Input missing."), __FILE__, __LINE__);
 	return FALSE;
     }
     
     $sql1 = "DELETE FROM relationships WHERE volunteer1_id = $vid1 and volunteer2_id = $vid2";
     $sql2 = "DELETE FROM relationships WHERE volunteer1_id = $vid2 and volunteer2_id = $vid1";    
     $result1 = $db->query($sql1);
-    $result2 = $db->query($sql2);
+
     
-    if (!$result1 or !$result2)
+    if (!$result1)
     {
-	save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql1);
     }
     else
     {
-	save_message(_("Deleted."), MSG_USER_NOTICE);
+        $result2 = $db->query($sql2);
+	if (!$result2)
+	{
+	    save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql2);
+	}
+	else
+	{
+	    save_message(MSG_USER_NOTICE, _("Deleted."));
+	}
     }
     
     header("Location: ?vid=$vid1&menu=relationships");

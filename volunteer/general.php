@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.4 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: general.php,v 1.5 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -156,7 +156,7 @@ function volunteer_save()
 
     if (!$success_primary)
     {
-	save_message(_("Error updating primary volunteer record."), MSG_SYSTEM_ERROR, array('debug' => $db->error()." SQL: $sql"));
+	save_message(MSG_SYSTEM_ERROR, _("Error updating primary volunteer record."), __FILE__, __LINE__);
     }
 
     // gather custom fields from POST
@@ -174,8 +174,10 @@ function volunteer_save()
     // sanitize and validate custom fields
 
     // get extended fields data from database
+    
+    $sql = "SELECT * FROM extended_meta";
 
-    $result_meta = $db->query("SELECT * FROM extended_meta");
+    $result_meta = $db->query($sql);
 
     if ($result_meta)
     {
@@ -222,7 +224,7 @@ function volunteer_save()
     }
     else
     {    	
-	save_message(_("Error querying database."), MSG_SYSTEM_ERROR, array('debug' => $db->error()));	
+	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
     }
 
     $db->free_result($result_meta);
@@ -258,7 +260,7 @@ function volunteer_save()
     
 	if (!$success_extended)
 	{
-	    save_message(_("Error updating extended volunteer record."), MSG_SYSTEM_ERROR, array('debug' => $db->error()));
+	    save_message(MSG_SYSTEM_ERROR, _("Error updating extended volunteer record."), __FILE__, __LINE__, $sql);
 	}	
     }
     else
@@ -271,7 +273,7 @@ function volunteer_save()
 
     if ($success_primary and $success_extended)
     {
-	save_message(_("Updated."), MSG_USER_NOTICE);    
+	save_message(MSG_USER_NOTICE, _("Updated."));    
 //	$volunteer = volunteer_get($vid);
 //	include('general.php');
 //	volunteer_view_general();

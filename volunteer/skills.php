@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.5 2003/11/27 04:23:58 andrewziem Exp $
+ * $Id: skills.php,v 1.6 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -25,11 +25,13 @@ function volunteer_delete_skill()
     $vid = intval($_REQUEST['vid']);
     $volunteer_skill_id  = intval($_REQUEST['volunteer_skill_id']);
     
-    $result = $db->query("DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = $vid LIMIT 1");
+    $sql = "DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = $vid LIMIT 1";
+    
+    $result = $db->query($sql);
 
     if (!$result)
     {
-	save_message(_("Error querying database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
+	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     else
     {
@@ -138,15 +140,17 @@ function volunteer_skill_add()
     // always validate form input first
     if (!(preg_match("/^[0-9]+$/", $_POST['string_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
     {
-	save_message(_("Bad form input:").' string_id, skill_level', MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Bad form input:").' string_id, skill_level', __FILE__, __LINE__);
     }
     else
     {  
-        $result = $db->query("INSERT INTO volunteer_skills (volunteer_id, string_id, skill_level) VALUES ($vid, $string_id, $skill_level)");	
+	$sql = "INSERT INTO volunteer_skills (volunteer_id, string_id, skill_level) VALUES ($vid, $string_id, $skill_level)";
+    
+        $result = $db->query($sql);	
     
         if (!$result)
         {
-    	    save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR);
+    	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
         }      
     }
     

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.9 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: workhistory.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
  
@@ -27,12 +27,12 @@ function volunteer_work_history_delete()
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$errors_found++;
-	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
     
     if (!is_numeric($_POST['vid']) or 0 == ($vid))
     {
-	save_message(_("Bad form input:").' vid', MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Bad form input:").' vid', __FILE__, __LINE__);
 	$errors_found++;
     }
     
@@ -41,15 +41,17 @@ function volunteer_work_history_delete()
 	return FALSE;
     }
     
-    $result = $db->query("DELETE FROM work WHERE work_id = $work_id AND volunteer_id = ".intval($vid));
+    $sql = "DELETE FROM work WHERE work_id = $work_id AND volunteer_id = $vid";
+    
+    $result = $db->query($sql);
 
     if (!$result)
     {
-	save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
+	save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);
     }
     else
     {
-	save_message(_("Deleted."), MSG_USER_NOTICE);
+	save_message(MSG_USER_NOTICE, _("Deleted."));
 	stats_update_volunteer($db, $vid);
     }
     
@@ -75,7 +77,7 @@ function volunteer_work_history_save($mode)
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$errors_found++;
-	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."));
     }    
     
     if ('update' == $mode)
@@ -88,13 +90,13 @@ function volunteer_work_history_save($mode)
     }
     else
     {
-	save_messsage('volunteers_work_history_save(): '._("Unexpected parameter."));
+	save_message(MSG_SYSTEM_ERROR, 'volunteers_work_history_save(): '._("Unexpected parameter."));
 	$errors_found++;
     } 
     
     if (0 == strlen(trim($_POST['hours'])))
     {
-       save_message(_("Add a number to the Hours Credit of Work field."), MSG_USER_ERROR);
+       save_message(MSG_USER_ERROR, _("Add a number to the Hours Credit of Work field."));
        $errors_found++;
     }
     
@@ -104,7 +106,7 @@ function volunteer_work_history_save($mode)
     }
     else if ($_POST['hours'] < 0.00 or !preg_match("/^[0-9\.]+$/", $_POST['hours']))
     {
-       save_message(_("Please add more hours to the Hours Credit of Work field."), MSG_USER_ERROR);
+       save_message(MSG_USER_ERROR, _("Please add more hours to the Hours Credit of Work field."));
        $errors_found++;       
     }
     else
@@ -114,8 +116,8 @@ function volunteer_work_history_save($mode)
 
     if (!$date)
     {
-	save_message(_("You must give a date."), MSG_USER_ERROR);
-	save_message(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR,  _("You must give a date."));
+	save_message(MSG_USER_ERROR, _("Use the date format YYYY-MM-DD or MM/DD/YYYY."));
 	$errors_found++;       
     }
         
@@ -143,12 +145,12 @@ function volunteer_work_history_save($mode)
 
 	if ($result)
 	{
-	    save_message(_("Saved."), MSG_USER_NOTICED);
+	    save_message(MSG_USER_NOTICE, _("Saved."));
 	    stats_update_volunteer($db, $vid);
         }
         else
         {
-            save_message(_("Error saving data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));
+            save_message(MSG_SYSTEM_ERROR, _("Error saving data to database."), __FILE__, __LINE__, $sql);
         }
      }
      

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.9 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: notes.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -193,7 +193,7 @@ function note_add()
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$errors_found++;
-	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }
     
     $reminder_date = sanitize_date($_POST['reminder_date']);
@@ -201,18 +201,18 @@ function note_add()
     if (!preg_match("/^[0-9]+$/", $_POST['vid']) or (!empty($_POST['uid_assigned']) and !preg_match("/^[0-9]+$/", $_POST['uid_assigned'])))
     {
 	$errors_found++;
-	save_message(_("Bad form input:".' POST: vid or uid_assigned'), MSG_SYSTEM_ERROR);    
+	save_message(MSG_SYSTEM_ERROR, _("Bad form input:".' POST: vid or uid_assigned'), __FILE__, __LINE__);    
     }
 
     if (!$reminder_date and !empty($_POST['reminder_date']))
     {
-	save_message(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR, _("Use the date format YYYY-MM-DD or MM/DD/YYYY."));
 	$errors_found++;
     }
         
     if (!array_key_exists('message', $_POST) or strlen($_POST['message']) < 2)
     {
-	save_message(_("Too short:").' '._("Message"), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR, _("Too short:").' '._("Message"));
 	$errors_found++;
     }        
     
@@ -238,11 +238,11 @@ function note_add()
 
 	if ($result)
 	{
-	    save_message(_("Recorded."), MSG_USER_NOTICE);
+	    save_message(MSG_USER_NOTICE, _("Recorded."));
 	}
 	else
 	{
-	    save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));
+	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
 	}
 
     }
@@ -264,7 +264,7 @@ function note_delete()
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$errors_found++;
-	save_message(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
     
     $note_ids = array();
@@ -279,7 +279,7 @@ function note_delete()
     
     if (0 == count($note_ids))
     {
-	save_message(_("Select one or more options."), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR, _("Select one or more options."));
     }
     else if (0 == $errors_found)
     {    
@@ -299,7 +299,7 @@ function note_delete()
 	
 	if (!$result)
 	{
-	    save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));	
+	    save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);	
 	}
     }
         

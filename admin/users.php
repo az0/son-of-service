@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.9 2003/11/28 16:25:47 andrewziem Exp $
+ * $Id: users.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
  
@@ -38,18 +38,18 @@ function user_save()
     
     if (!isset($_POST['personalname']) or 0 == strlen(trim($_POST['personalname'])))
     {
-       save_message(_("Personal name is blank."), MSG_USER_WARNING);
+       save_message(MSG_USER_WARNING, _("Personal name is blank."));
     }
 
     if (!isset($_POST['username']) or 4 > strlen(trim($_POST['username'])))
     {
-       save_message(_("Username is too short: 4 or more characters reqired."), MSG_USER_ERROR);
+       save_message(MSG_USER_ERROR, _("Username is too short: 4 or more characters reqired."));
        $errors_found++;
     }
 
     if (!$mode_update and (!isset($_POST['password1']) or 4 > strlen(trim($_POST['password1']))))
     {
-	save_message(_("Account password is too short: 4 or more characters required."), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR, _("Account password is too short: 4 or more characters required."));
 	$errors_found++;
     }
     else    
@@ -57,8 +57,8 @@ function user_save()
 	{
 	   if (0 != strcmp($_POST['password1'], $_POST['password2']))
 	   {
-	          save_message(_("Passwords do not match."), MSG_USER_ERROR);
-		  $errors_found++;
+		save_message(MSG_USER_ERROR, _("Passwords do not match."));
+		$errors_found++;
 	   }
     }
 
@@ -121,15 +121,11 @@ function user_save()
 	if (!$result) 
 	{ 
 	    // unsuccessful save
-            save_message(_("Error saving data to database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
-	}
-	else if ($mode_update)
-	{
-	    save_message(_("Updated."), MSG_USER_NOTICE);
+            save_message(MSG_SYSTEM_ERROR, _("Error saving data to database."), __FILE__, __LINE__, $sql);
 	}
 	else
 	{
-	    save_message(_("Saved."), MSG_USER_NOTICE);
+	    save_message(MSG_USER_NOTICE, $mode_update ? _("Updated.") : _("Saved."));
 	}
     
 	// redirect to GET to prevent POST form reposting
@@ -309,22 +305,24 @@ function users_delete()
 
     if (!has_permission(PC_ADMIN, PT_WRITE, NULL, $user_id))
     {
-	save_message(_("Insufficient permissions"), MSG_SYSTEM_ERROR);
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions"));
     }
     else
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
     {
 	// delete user
 	
-	$result = $db->query("DELETE FROM users WHERE user_id = $user_id LIMIT 1");
+	$sql = "DELETE FROM users WHERE user_id = $user_id LIMIT 1";
+	
+	$result = $db->query($sql);
 	
 	if (!$result)
 	{
-	    save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));
+	    save_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);
 	}
 	else
 	{
-	    save_message(_("Deleted."), MSG_USER_NOTICE);
+	    save_message(MSG_USER_NOTICE, _("Deleted."));
 
 	    // redirect to non-POST page
 	    

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: global.php,v 1.3 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: global.php,v 1.4 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
 
@@ -19,6 +19,7 @@ define('SOS_PATH', '../');
 require_once(SOS_PATH . 'include/config.php');
 require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
+require_once(SOS_PATH . 'functions/functions.php');
 
 if (!empty($_POST) and !headers_sent())
 {
@@ -59,7 +60,15 @@ if (!extension_loaded('gettext'))
     }
 }
 
+define('MSG_SYSTEM_ERROR', 1);
+define('MSG_SYSTEM_WARNING', 2);
+define('MSG_SYSTEM_NOTICE', 8);
+define('MSG_USER_ERROR', 256);
+define('MSG_USER_WARNING', 512);
+define('MSG_USER_NOTICE', 1024);
+
 function process_user_error($text)
+// deprecated
 {
     // todo: css
    echo ("<P><FONT color=\"red\">$text</FONT></P>\n");
@@ -67,6 +76,7 @@ function process_user_error($text)
 
 
 function process_user_warning($text)
+// deprecated
 {
     // todo: css
    echo ("<P>Warning: $text</P>\n");
@@ -74,6 +84,7 @@ function process_user_warning($text)
 
 
 function process_user_notice($text)
+// deprecated
 {
     // todo: css
    echo ("<P>$text</P>\n");
@@ -81,6 +92,7 @@ function process_user_notice($text)
 
 
 function process_system_error($text, $options = NULL)
+// depracated
 {
     // todo: logging
    echo ("<P><FONT color=\"red\">$text</FONT></P>\n");
@@ -95,17 +107,6 @@ function process_system_error($text, $options = NULL)
 
 }
 
-function make_volunteer_name($row)
-// $row: an array containing first, middle, last, organization
-// return: name, e.g. John Smith (Smith Inc.)
-{
-    if (!is_array($row))
-	return FALSE;
-    $name = trim($row['first'].' '.$row['middle'].' '.$row['last']);
-    if (!empty($row['organization']))
-	$name .= ' ('.$row['organization'].')';
-    return $name;	
-}
 
 
 $daysofweek = array(1 => 'Sunday' , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');	

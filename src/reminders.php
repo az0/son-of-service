@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.2 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: reminders.php,v 1.3 2003/11/29 22:06:38 andrewziem Exp $
  *
  */
  
@@ -111,7 +111,7 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
     
     if (0 == count($note_ids))
     {
-	save_message(_("Select one or more options."), MSG_USER_ERROR);
+	save_message(MSG_USER_ERROR, _("Select one or more options."), __FILE__, __LINE__, NULL);
     }
     else
     {
@@ -133,7 +133,7 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
 	
 	if (!$result)
 	{
-	    save_message(_("Error updating data in database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));	
+	    save_message(MSG_SYSTEM_ERROR, _("Error updating data in database."), __FILE__, __LINE__, $sql));	
 	}
     }
         
