@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.22 2004/03/12 15:57:30 andrewziem Exp $
+ * $Id: index.php,v 1.23 2004/03/14 22:39:06 andrewziem Exp $
  *
  */
 
@@ -145,21 +145,26 @@ if (array_key_exists('system_check', $_GET))
 }
 else
 // STRINGS
-if (array_key_exists('button_string_add', $_POST))
+if (array_key_exists('button_string_add', $_POST) or array_key_exists('button_string_save', $_POST))
 {
     include('strings.php');
-    strings_add();
+    strings_addedit();
 }
 else if (array_key_exists('strings', $_GET))
 {
     include('strings.php');
     strings_list();
-    strings_add_form();    
+    strings_addedit_form();    
 }
 else if (array_key_exists('button_string_delete', $_POST))
 {
     include('strings.php');
     strings_delete();
+}
+else if (array_key_exists('button_string_edit', $_POST))
+{
+    include('strings.php');
+    strings_edit();
 }
 else
 // USERS

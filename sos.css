@@ -59,10 +59,9 @@ A {
  text-decoration:none;
  }
 
-A: hover
+A:hover
 {
-  color: #CC0033;
-  text-decoration: underline;
+  background-color: #eef;
 }
 
 div.tab_area {

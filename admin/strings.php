@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.9 2004/03/12 15:57:30 andrewziem Exp $
+ * $Id: strings.php,v 1.10 2004/03/14 22:39:06 andrewziem Exp $
  *
  */
 
@@ -17,7 +17,15 @@ if (preg_match('/strings.php/i', $_SERVER['PHP_SELF']))
 
 $category_map = array('relationship' => _("Relationship"), 'work' => _("Work category"), 'skill' => _("Skill"));
 
-function strings_add()
+/**
+ * strings_addedit()
+ *
+ * Given parameters in $_POST, adds or update a record to the strings table.
+ *
+ * @return void
+ */
+
+function strings_addedit()
 {
     global $db;
     global $category_map;
@@ -29,6 +37,9 @@ function strings_add()
     }    
 
     $errors_found = 0;
+    
+    // add or edit?
+    $mode_edit = array_key_exists('button_string_save', $_POST);
 
     if (strlen($_POST['string_name']) > 100)
     {
@@ -42,24 +53,38 @@ function strings_add()
 	$errors_found++;	
     }
     
-    if (!array_key_exists($_POST['string_category'], $category_map))
+    if (!$mode_edit and !array_key_exists($_POST['string_category'], $category_map))
     {
 	save_message(MSG_USER_ERROR, _("Choose a category from the list."));
+	$errors_found++;
+    }
+    
+    if ($mode_edit and !is_numeric($_POST['string_id']))
+    {
+	save_message(MSG_SYSTEM_ERROR, 'string_id invalid', __FILE__, __LINE__);
 	$errors_found++;
     }
 
     if (0 == $errors_found)
     {
 	$string_name = $db->qstr(htmlentities($_POST['string_name']), get_magic_quotes_gpc());
-	$string_category = $db->qstr(htmlentities($_POST['string_category']), get_magic_quotes_gpc());    
 	
-	$sql = "INSERT INTO strings (s, type) VALUES ($string_name, $string_category)";
+	if ($mode_edit)
+	{
+	    $string_id = intval($_POST['string_id']);
+	    $sql = "UPDATE strings SET s=$string_name WHERE string_id = $string_id LIMIT 1";
+	}
+	else
+	{
+	    $string_category = $db->qstr($_POST['string_category'], get_magic_quotes_gpc());    
+	    $sql = "INSERT INTO strings (s, type) VALUES ($string_name, $string_category)";
+	}
 	
 	$result = $db->Execute($sql);
 
 	if (FALSE != $result)
 	{
-	    save_message(MSG_USER_NOTICE, _("Added."));	
+	    save_message(MSG_USER_NOTICE, $mode_edit ? _("Saved") : _("Added."));	
 	}
 	else
 	{
@@ -67,33 +92,70 @@ function strings_add()
 	}
     }
     redirect("?strings");
-} /* strings_add() */
+} /* strings_addedit() */
 
 
-function strings_add_form()
+function strings_addedit_form($values = NULL)
 {
     global $category_map;
     
     
+    if (NULL == $values)
+    {
+	$values['string_category'] = NULL;
+	$values['string_name'] = "";	
+	$values['string_id'] = NULL;
+    }
+    
     echo ("<FIELDSET>\n");
-    echo ("<LEGEND>Add a string</LEGEND>\n");
+    
+    if (NULL == $values['string_id'])
+    {
+	echo ("<LEGEND>" . _("Add a string"). "</LEGEND>\n");
+    }
+    else
+    {
+	echo ("<LEGEND>" . _("Edit a string"). "</LEGEND>\n");
+    }
     
     echo ("<FORM method=\"POST\" action=\".\">\n");
-    $i = 0;
-    foreach ($category_map as $key => $value)
+    if (is_numeric($values['string_id']))
     {
-	if ($i > 0)
-	{
-	    echo ("<BR>\n");
-	}
-	echo ("<INPUT type=\"radio\" name=\"string_category\" value=\"$key\">$value\n");
-	$i++;
+	echo ("<INPUT type=\"hidden\" name=\"string_id\" value=\"" . $values['string_id'] . "\">\n");
     }
-    echo ("<BR>"._("Name") . " <INPUT type=\"type\" name=\"string_name\" maxlength=\"100\">\n");
-    echo ("<BR><INPUT type=\"submit\" name=\"button_string_add\" value=\""._("Add")."\">\n");    
+
+    if (NULL == $values['string_id'])
+    {
+        $i = 0;
+    
+	foreach ($category_map as $key => $value)
+        {
+    	    if ($i > 0)
+	    {
+		echo ("<BR>\n");
+	    }
+	    echo ("<INPUT type=\"radio\" name=\"string_category\" value=\"$key\">$value\n");
+	    $i++;
+	}
+	echo ("<BR>\n");
+    }
+    echo (_("Name") . " <INPUT type=\"type\" name=\"string_name\" maxlength=\"100\"");
+    if (is_numeric($values['string_id']))
+    {
+	echo (" value=\"" . $values['string_name'] . "\"");
+    }
+    echo (">\n");	
+    if (is_numeric($values['string_id']))
+    {
+	echo ("<BR><INPUT type=\"submit\" name=\"button_string_save\" value=\"" . _("Save") . "\">\n");        
+    }    
+    else
+    {    
+	echo ("<BR><INPUT type=\"submit\" name=\"button_string_add\" value=\"" . _("Add") . "\">\n");    
+    }
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
-} /* strings_add_form() */
+} /* strings_addedit_form() */
 
 
 function strings_list()
@@ -134,7 +196,7 @@ function strings_list()
     else
     {
 	echo ("<H2>"._("Strings")."</H2>\n");
-	echo ("<P style=\"instructions\">To edit or delete a string, select the radio button by it.  Then click edit or delete (respectively).</P>\n");
+	echo ("<P class=\"instructionstext\">To edit or delete a string, select the radio button by it.  Then click edit or delete (respectively).</P>\n");
     
 	echo ("<FORM method=\"post\" action=\".\">\n");
     
@@ -248,5 +310,52 @@ function strings_delete()
     redirect("?strings");
     
 } /* strings_delete() */
+
+
+/**
+ * strings_edit()
+ *
+ * Given string_id in $_POST, retrieves string information and passes it to strings_addedit_form().
+ *
+ * @return void
+ */
+
+function strings_edit()
+{
+    global $db;
+    
+    
+    if (!has_permission(PC_ADMIN, PT_WRITE))
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+    }    
+
+    if (!array_key_exists('string_id', $_POST))
+    {
+	save_message(MSG_USER_ERROR, _("You must make a selection."));
+	redirect("?strings");
+	die();
+    }    
+    
+    $string_id = intval($_POST['string_id']);
+    
+    $sql = "SELECT * FROM strings WHERE string_id = $string_id";
+    $result = $db->Execute($sql);
+    
+    if (!$result)
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+    else if (1 != $result->RecordCount())
+    {
+	die_message(MSG_SYSTEM_ERROR, "Cannot find string.", __FILE__, __LINE__, $sql);	
+    }
+    
+    $values = array('string_id' => $string_id, 'string_category' => $result->fields['type'], 'string_name' => $result->fields['s']);
+    strings_addedit_form($values);
+    
+    
+} /* strings_edit() */
+
 
 ?>
