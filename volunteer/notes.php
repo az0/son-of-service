@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
+ * $Id: notes.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -32,7 +32,7 @@ $result = $db->query($sql);
 
 if (!$result)
 {
-	process_system_error("Unable to query hours from database: ".mysql_error());
+	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
 	die();
 }
 
@@ -221,7 +221,7 @@ function note_add()
      }
      else
      {
-            process_system_error("Unable to send data to database.", array('debug' => mysql_error()));
+            process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
      }
 
 	volunteer_view_notes();

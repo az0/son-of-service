@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.5 2003/11/01 05:01:26 andrewziem Exp $
+ * $Id: import.php,v 1.6 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -281,7 +281,7 @@ function import_legacy3()
 	    
 	    if (!$result)
 	    {
-		process_system_error("Unable to add volunteer: line $lc", array('debug' => mysql_error()));
+		process_system_error("Unable to add volunteer: line $lc", array('debug' => $db->get_error()));
 	    }
 	    else
 	    {

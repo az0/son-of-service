@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.2 2003/10/31 06:23:02 andrewziem Exp $
+ * $Id: reports.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -34,7 +34,7 @@ $db = new voldbMySql();
 
 if ($db->get_error())
 {
-    process_system_error("Unable to establish database connection: ".$db->get_error());    
+    process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
     die();	
 }
 
@@ -171,7 +171,7 @@ function report_hours()
     
     if (!$result)
     {
-	process_system_error("Database doesn't like query", array('debug'=>mysql_error()." $sql"));
+	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()." $sql"));
     }
     
     if (0 == $db->num_rows($result))
@@ -221,7 +221,7 @@ function report_active_volunteers()
     
     if (!$result)
     {
-	process_system_error("Database doesn't like query", array('debug'=>mysql_error()." $sql"));
+	process_system_error(_("Error querying database."), array('debug' => $db->get_error()." $sql"));
     }
     
     if (0 == $db->num_rows($result))
@@ -246,13 +246,13 @@ function reports_menu()
     echo ("<FORM method=\"get\" action=\"reports.php\">\n");
     echo ("<SELECT name=\"step\">\n");
     echo ("<OPTION>--Step</OPTION>\n");
-    echo ("<OPTION>Day</OPTION>\n");    
-    echo ("<OPTION>Week</OPTION>\n");    
-    echo ("<OPTION>Month</OPTION>\n");
-    echo ("<OPTION>Year</OPTION>\n");    
+    echo ("<OPTION>"._("Day")."</OPTION>\n");    
+    echo ("<OPTION>"._("Week")."</OPTION>\n");    
+    echo ("<OPTION>"._("Month")."</OPTION>\n");
+    echo ("<OPTION>"._("Year")."</OPTION>\n");    
     echo ("</SELECT>\n");
     echo ("<SELECT DISABLED><OPTION>--Project</OPTION></SELECT>\n");
-    echo ("<BR><INPUT type=\"submit\" name=\"report_hours\" value=\"Make report\">\n");
+    echo ("<BR><INPUT type=\"submit\" name=\"report_hours\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
 
@@ -261,7 +261,7 @@ function reports_menu()
     echo ("<FORM method=\"get\" action=\"reports.php\">\n");
     echo ("Beginning <INPUT type=\"text\" name=\"beginning_date\" value=\"2000-01-01\" size=\"10\">\n");
     echo ("Ending <INPUT type=\"text\" name=\"ending_date\" value=\"".date('Y-m-d')."\" size=\"10\">\n");
-    echo ("<BR><INPUT type=\"submit\" name=\"report_active_volunteers\" value=\"Make report\">\n");
+    echo ("<BR><INPUT type=\"submit\" name=\"report_active_volunteers\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
 }

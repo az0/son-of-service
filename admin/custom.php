@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.3 2003/10/24 14:34:29 andrewziem Exp $
+ * $Id: custom.php,v 1.4 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -121,7 +121,7 @@ function custom_add_field_form2()
     if (strlen($label) < 2)
     {
 	$errors_found++;            
-	process_user_error(_("Give a longer value for label."));
+	process_user_error(_("Too short:").' '._("Label"));
     }
     
     $attributes = array();
@@ -195,7 +195,7 @@ function custom_add_field_form3()
     if (empty($_POST['label']) or strlen(trim($_POST['label'])) < 3)
     {
 	$errors_found++;
-	process_user_error(_("Label too short"));
+	process_user_error(_("Too short:").' '._("Label"));
     }
     
     if ($errors_found)
@@ -216,7 +216,7 @@ function custom_add_field_form3()
 	$result = $db->query("SELECT code from extended_meta where code = '$code'");
 	if (!$result)
 	{
-	    process_system_error(_("Error while querying database").' code', array('debug',mysql_error()));
+	    process_system_error(_("Error querying database.").' code', array('debug', $db->get_error()));
 	    return;
 	}	
 	if (0 == $db->num_rows($result))
@@ -250,22 +250,22 @@ function custom_add_field_form3()
     
     $result = $db->query($sql_meta);
     
-    echo (mysql_error());
+    echo ($db->get_error());
 
     if (!$result)
     {
-	process_system_error(_("Error while adding custom meta data."), array('debug', mysql_error()) );
+	process_system_error(_("Error adding data to database."), array('debug', $db->get_error()) );
 	return;	
     }    
     
     $result = $db->query($sql_ext);
     
-    echo ("$sql_ext:".mysql_error());
+    echo ("$sql_ext:".$db->get_error());
     
     if (!$result)
     {
 	// to do: roll back changes to _meta
-	process_system_error(_("Error while adding column to table extended."), array('debug', mysql_error()));
+	process_system_error(_("Error adding data to database."), array('debug', $db->get_error()));
 	$result = $db->query("DELETE FROM extended_meta where code = '$code'");
 	return;	
     }    

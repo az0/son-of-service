@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.3 2003/11/06 15:55:18 andrewziem Exp $
+ * $Id: db.php,v 1.4 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -164,7 +164,18 @@ class voldbMySql extends voldbDatabase
     
     function fetch_array($result)
     {
-	return (mysql_fetch_array($result));
+	$row = mysql_fetch_array($result);
+	
+	if (!$row)
+	{
+	    $this->is_error = TRUE;
+	    $this->error_message = mysql_error();
+	    //process_system_error("Could not execute query.<BR>Explication ".mysql_errno().": ".mysql_error());
+	    return FALSE;
+	}
+	
+	return $row;
+
     }
     
     function escape_string($string, $fromcgi = TRUE)

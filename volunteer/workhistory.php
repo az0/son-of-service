@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
+ * $Id: workhistory.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -26,7 +26,7 @@ function volunteer_work_history_delete()
     
     if (!is_numeric($vid) or !is_numeric($vid))
     {
-	process_system_error(_("Bad input."));
+	process_system_error(_("Bad form input:").'vid');
 	die();
     }
     
@@ -34,11 +34,11 @@ function volunteer_work_history_delete()
 
     if (!$result)
     {
-	process_system_error(_("Error deleting data from database."), array('debug'=>mysql_error()));
+	process_system_error(_("Error deleting data from database."), array('debug'=> $db->get_error()));
     }
     else
     {
-	process_user_notice(_("Work history unit deleted."));
+	process_user_notice(_("Deleted."));
     }
 
 }
@@ -119,19 +119,19 @@ function volunteer_work_history_save($mode)
 
 	if ($result)
 	{
-	    process_user_notice("Saved worked history");
+	    process_user_notice(_("Saved worked history."));
         }
         else
         {
-            process_system_error("Error saving work history to database:".mysql_error());
+            process_system_error(_("Error saving data to database."), array('debug' => $db->get_error()));
         }
      }
   } /* volunteer_work_history_save() */
 
 
 
-  function volunteer_view_work_history($brief = FALSE)
-  {
+function volunteer_view_work_history($brief = FALSE)
+{
     global $db;
     
     $vid = intval($_REQUEST['vid']);
@@ -141,20 +141,22 @@ function volunteer_work_history_save($mode)
 
     if (!$result)
     {
-	process_system_error(_("Error while querying database."), array('debug'=> $db->get_error().' '.$sql));
+	process_system_error(_("Error querying database."), array('debug'=> $db->get_error().' '.$sql));
 	die();
     }
 
 
-	if (!$brief or 0 < $db->num_rows($result))
-	{
-		echo ("<H3>Work history</H3>\n");
-	}
+    if (!$brief or 0 < $db->num_rows($result))
+    {
+	echo ("<H3>Work history</H3>\n");
+    }
 
     if (0 == $db->num_rows($result))
     {
 	if (!$brief)
-	    process_user_notice(_("No work history."));
+	{
+	    process_user_notice(_("None found."));
+	}
     }
     else
     { // display work history

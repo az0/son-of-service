@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.5 2003/11/02 15:19:20 andrewziem Exp $
+ * $Id: welcome.php,v 1.6 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -59,12 +59,17 @@ criticism of the overall design is appropriate now.</P>
 <P>Currently implementing:<P>
 <UL>
 <LI>Easy, web method for volunteer coordinator to add custom data fields
-<LI>Better reminder system
-<LI>Relationship system
+<LI>Categorization of work
 </UL>
 
 <P>To do soon:</P>
 <UL>
-<LI>Categorization of work
+<LI>Better reminder system
+</UL>
 </P>
 
+<?php
+
+make_html_end();
+
+?>

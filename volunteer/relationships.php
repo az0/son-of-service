@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.4 2003/11/06 15:55:18 andrewziem Exp $
+ * $Id: relationships.php,v 1.5 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -134,7 +134,7 @@ function relationships_view()
 
     if (0 == $c)
     {
-	echo ("<P>"._("No relationships found.")."</P>\n");
+	echo ("<P>"._("None found.")."</P>\n");
     }
     
     // button for changing maximum depth
@@ -269,7 +269,7 @@ function relationship_add()
     
     if (!$result1 or !$result2)
     {
-	process_system_error(_("Error adding data to database."), array('debug' => mysql_error()));
+	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
     }
     else
     {
@@ -313,7 +313,7 @@ function relationship_delete()
     }
     else
     {
-	process_user_notice(_("Relationship deleted."));
+	process_user_notice(_("Deleted."));
     }
     
     relationships_view();

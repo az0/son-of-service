@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.4 2003/11/03 05:12:58 andrewziem Exp $
+ * $Id: index.php,v 1.5 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -48,7 +48,7 @@ function download_mailing_list()
     
     if (!$result)
     {
-	process_system_error("Unable to query database.", array('debug'=>mysql_error()));
+	process_system_error("Unable to query database.", array('debug'=> $db->get_error()));
     }
     else
     if (0 == $db->num_rows($result))

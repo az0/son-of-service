@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.8 2003/11/02 15:19:20 andrewziem Exp $
+ * $Id: index.php,v 1.9 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -27,7 +27,7 @@ $db = new voldbMySql();
 
 if ($db->get_error())
 {
-    process_system_error(_("Unable to establish database connection"), array('debug'=>$db->get_error()));    
+    process_system_error(_("Unable to establish database connection."), array('debug'=>$db->get_error()));    
     die();	
 }
 
@@ -139,9 +139,7 @@ make_nav_begin();
     {
 	volunteer_view();  
     }
-  } 
-
-
+} 
 
 
 function volunteer_delete()
@@ -155,7 +153,7 @@ function volunteer_delete()
 
     if (!preg_match("/^[0-9]+$/", $_POST['vid']))
     {
-	process_system_error("Bad form input (VID)");
+	process_system_error(_("Bad form input:").' vid');
 	die();
     }
 
@@ -164,7 +162,7 @@ function volunteer_delete()
       
 	// delete related records
 
-	echo "<P>Deleting related records...</P>\n";
+	echo ("<P>Deleting related records...</P>\n");
 	echo ("<UL>\n");
         echo (" <LI>Deleting notes..\n");
         $result = $db->query("DELETE FROM notes WHERE vid=$vid");
@@ -190,9 +188,8 @@ function volunteer_delete()
         }
 	else
         {
-    	    process_system_error("Error deleting volunteer from database: " .
-            mysql_error());
-	 }
+    	    process_system_error(_("Error deleting data from database."), array('debug' => $db->get_error()));
+	}
     }
     else
     {
@@ -212,7 +209,7 @@ function volunteer_delete()
 <INPUT type="hidden" name="vid" value="<?php echo $vid;?>">          
 
 <input type="Submit" name="volunteer_delete" value="Delete volunteer">
-<input type="checkbox" name="delete_confirm"> Confirm
+<input type="checkbox" name="delete_confirm"> <?php echo _("Confirm"); ?>
 
 
 <?php
@@ -377,7 +374,7 @@ else
 
 if ($success_primary and $success_extended)
 {
-    echo("<P>Volunteer details updated.</P>\n");
+    echo("<P>"._("Updated.")."</P>\n");
     $volunteer = volunteer_get($vid);
     volunteer_view_general();
 }
@@ -432,7 +429,7 @@ $phone_cell = $volunteer['phone_cell'];
  <td><input type="Text" name="middle" value="<?php echo($middle); ?>" size="20"></td>
  </tr>
 <tr>
- <th class="vert">Last name</th>
+ <th class="vert"><?php echo _("Last name");?></th>
  <td><input type="Text" name="last" value="<?php echo ($last); ?>" size="40"></td>
  </tr>
 <tr>
@@ -441,46 +438,46 @@ $phone_cell = $volunteer['phone_cell'];
  </tr>
 
 <tr>
- <th class="vert">Organization</th>
+ <th class="vert"><?php echo _("Organization");?></th>
  <td><input type="Text" name="organization" value="<?php echo $organization ?>" size="40"></td>
  </tr>
 <tr>
- <th class="vert">Street</th>
+ <th class="vert"><?php echo _("Street");?></th>
  <td><input type="Text" name="street" value="<?php echo ($street); ?>" size="40"></td>
  </tr>
 <tr>
- <th class="vert">City</th>
+ <th class="vert"><?php echo _("City");?></th>
  <td><input type="Text" name="city"  value="<?php echo ($city); ?>" size="20"></td>
  </tr>
 <tr>
- <th class="vert">State</th>
+ <th class="vert"><?php echo _("State/Province");?></th>
  <td><input type="Text" name="state"  value="<?php echo ($state); ?>" size="2"></td>
  </tr>
 <tr>
- <th class="vert">Zip</th>
+ <th class="vert"><?php echo _("Zip/Postal code");?></th>
  <td><input type="Text" name="zip"  value="<?php echo ($zip); ?>" size="5"></td>
  </tr>
 <tr>
- <th class="vert">Home Phone</th>
+ <th class="vert"><?php echo _("Home phone");?></th>
  <td><input type="Text" name="phone_home" value="<?php echo ($volunteer["phone_home"]); ?>" size="20"></td>
  </tr>
 <tr>
- <th class="vert">Work Phone</th>
+ <th class="vert"><?php echo _("Work phone");?></th>
  <td><input type="Text" name="phone_work" value="<?php echo ($volunteer["phone_work"]); ?>" size="20"></td>
  </tr>
 <tr>
- <th class="vert">Cell Phone</th>
+ <th class="vert"><?php echo _("Cell phone");?></th>
  <td><input type="Text" name="phone_cell" value="<?php echo ($volunteer["phone_cell"]); ?>" size="20"></td>
  </tr>
 <tr>
- <th class="vert">Email</th>
+ <th class="vert"><?php echo _("E-mail");?></th>
  <td><input type="Text" name="email_address" value="<?php echo ($volunteer["email_address"]); ?>" size="40"></td>
  </tr>
 <tr>
  <th class="vert">Monthly mail</th>
  <td>
    <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("p", $volunteer["wants_monthly_information"])); ?>> Postal mail
-   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("e", $volunteer["wants_monthly_information"])); ?>>E-mail
+   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("e", $volunteer["wants_monthly_information"])); ?>><?php echo_("E-mail");?>
    <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("n", $volunteer["wants_monthly_information"])); ?>>None
    </TD>
  </tr>
@@ -544,7 +541,7 @@ global $vid;
 
 if (!array_key_exists('vid', $_REQUEST))
 {
-	process_system_error("You have reached this page incorrectly.");
+	process_system_error(_("You have reached this page incorrectly."));
 	die();
 }
 
@@ -606,7 +603,7 @@ if (array_key_exists('menu', $_GET))
 		volunteer_view_general();
 	}
 	else
-		process_system_error('Unexpected value for menu in GET');
+		process_system_error(_("Bad form input:").' GET[menu]');
 
 
 }

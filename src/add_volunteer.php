@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -37,19 +37,20 @@ function volunteer_add()
 
     if (!isset($_POST['first']) or 0 == strlen(trim($_POST['first'])))
     {
-       process_user_error("Please return to the form and give volunteer a first name.");
+       process_user_error(_("Too short:").' '._("First name"));
        $errors_found++;
     }
 
     if (!isset($_POST['last']) or 0 == strlen(trim($_POST['last'])))
     {
-       process_user_error("Please return to the form and give volunteer a last name.");
+       process_user_error(_("Too short:").' '._("Last name"));       
        $errors_found++;
     }
 
     if ($errors_found)
     {    
 	  echo ("<P>Try <A href=\"add_volunteer.php\">again</A>.</P>\n");
+	  // to do: redisplay form here with valus in place
 	  die();
     }
     
@@ -59,7 +60,7 @@ function volunteer_add()
 
     if ($db->get_error())
     {
-	process_system_error("Unable to establish database connection: ".$db->get_error());    
+	process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
 	die();	
     }
     
@@ -91,13 +92,13 @@ function volunteer_add()
 
     if (!$result) { // unsuccessful save
 	    // fixme: put mysql_Error seperatly for security
-	    process_system_error(_("Error adding volunteer to database."), array('debug' => mysql_error()));
+	    process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
             exit();
     }
     
     $vid = mysql_insert_id();
 
-    echo ("<P>You have added <A href=\"${base_url}volunteer/?vid=$vid\">" . $first . " " . $last . "</A>.</P>\n");
+    echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"${base_url}volunteer/?vid=$vid\">" . $first . " " . $last . "</A></P>\n");
 
 
 } /* add_volunteer() */
@@ -135,37 +136,37 @@ function volunteer_add_form()
  <td><input type="Text" name="street"></td>
  </tr>
 <tr>
- <th class="vert">City</th>
+ <th class="vert"><?php echo _("City"); ?></th>
  <td><input type="Text" name="city"></td>
  </tr>
 <tr>
- <th class="vert">State</th>
+ <th class="vert"><?php echo _("State/Province"); ?></th>
  <td><input type="Text" name="state"></td>
  </tr>
 <tr>
- <th class="vert">Zip</th>
+ <th class="vert"><?php echo _("Zip/Postal code"); ?></th>
  <td><input type="Text" name="zip"></td>
  </tr>
 <tr>
- <th class="vert">Home Phone</th>
+ <th class="vert"><?php echo _("Home phone"); ?></th>
  <td><input type="Text" name="phone_home"></td>
  </tr>
 <tr>
- <th class="vert">Work Phone</th>
+ <th class="vert"><?php echo _("Work phone"); ?></th>
  <td><input type="Text" name="phone_work"></td>
  </tr>
 <tr>
- <th class="vert">Cell Phone</th>
+ <th class="vert"><?php echo _("Cell phone"); ?></th>
  <td><input type="Text" name="phone_cell"></td>
  </tr>
 <tr>
- <th class="vert">Email Address</th>
+ <th class="vert"><?php echo _("E-mail"); ?></th>
  <td><input type="Text" name="email_address"></td>
  </tr>
 
 
 </table>
-<input type="submit" name="button_add_volunteer" value="<?php echo _("Save new volunteer");?>">
+<input type="submit" name="button_add_volunteer" value="<?php echo _("Add");?>">
 <input type="reset" value="Erase form">
 
 </form>
@@ -174,9 +175,13 @@ function volunteer_add_form()
 } /* volunteer_add_form() */
 
 if (array_key_exists('button_add_volunteer', $_POST)) 
-  volunteer_add();
-  else 
-  volunteer_add_form();  
+{
+    volunteer_add();
+}
+else 
+{
+    volunteer_add_form();  
+}
   
   
 

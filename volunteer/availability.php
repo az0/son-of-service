@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.1 2003/10/05 16:14:52 andrewziem Exp $
+ * $Id: availability.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
  
@@ -26,11 +26,11 @@ function volunteer_delete_availability()
 
     if (!$result)
     {
-	process_system_error("Error querying database.", array('debug'=>mysql_error()));
+	process_system_error("Error querying database.", array('debug'=> $db->get_error()));
     }
     else
     {
-	process_user_notice(_("Availability unit deleted."));
+	process_user_notice(_("Deleted."));
     }
     volunteer_view_availability();
 
@@ -87,7 +87,7 @@ function volunteer_delete_availability()
     
     if (!$result)
     {
-	process_system_error("Unable to query availability from database: ".mysql_error());
+	process_system_error(_("Error querying database."). array('debug' => $db->geterror()));
     }
     
     
@@ -96,7 +96,7 @@ function volunteer_delete_availability()
     
     if (0 == $db->num_rows($result))
     {
-	process_user_notice(_("No availability registered with this volunteer"));
+	process_user_notice(_("None found."));
     }
     else
     {

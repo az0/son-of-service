@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.3 2003/11/06 15:55:18 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.4 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -255,7 +255,7 @@ function volunteer_search()
 
         if (!$result)
         { // search failed
-	    process_system_error("Database error while searching for volunteers", array('debug'=> mysql_error()." ".$sql));
+	    process_system_error(_("Error querying database."), array('debug'=> $db->get_error()." ".$sql));
 
         }
         else
@@ -300,7 +300,9 @@ function volunteer_search()
 		    {
 			$row = $db->fetch_array($result);
 			if (!$row)
-			    echo (mysql_error());
+			{
+			    process_system_error(_("Database error."), array('debug' => $db->get_error()));
+			}
 		        $tab->addRow($row);
 		    }
 		    
@@ -404,54 +406,54 @@ section.</P>
  <th colspan="2">Personal Information</th>
 </tr>
 <tr>
- <th class="vert">First name</th>
+ <th class="vert"><?php echo _("First name"); ?></th>
  <td><input type="Text" name="first"></td>
  </tr>
 <tr>
- <th class="vert">Last name</th>
+ <th class="vert"><?php echo _("Last name"); ?></th>
  <td><input type="Text" name="last"></td>
  </tr>
 <tr>
- <th class="vert">Organization</th>
+ <th class="vert"><?php echo _("Organization"); ?></th>
  <td><INPUT type="text" name="organization"></td>
  </tr>
 <tr>
- <th class="vert">Street</th>
+ <th class="vert"><?php echo _("Street"); ?></th>
  <td><input type="text" name="street"></td>
  </tr>
 <tr>
- <th class="vert">City</th>
+ <th class="vert"><?php echo _("City");?>/th>
  <td><input type="text" name="city"></td>
  </tr>
 <tr>
- <th class="vert">Zip</th>
+ <th class="vert"><?php echo _("Zip/Postal code"); ?></th>
  <td><input type="Text" name="zip" size="8"></td>
  </tr>
 <tr>
- <th class="vert">Home phone</th>
+ <th class="vert"><?php echo _("Home phone"); ?></th>
  <td><input type="Text" name="phone_home"></td>
  </tr>
 <tr>
- <th class="vert">Work phone</th>
+ <th class="vert"><?php echo _("Work phone"); ?></th>
  <td><input type="Text" name="phone_work"></td>
  </tr>
 <tr>
- <th class="vert">Cell phone</th>
+ <th class="vert"><?php echo _("Cell phone"); ?></th>
  <td><input type="Text" name="phone_cell"></td>
  </tr>
 
 <tr>
- <th class="vert">Email</th>
+ <th class="vert"><?php echo _("E-mail"); ?></th>
  <td><input type="Text" name="email_address"></td>
  </tr>
 </table>
 
 <TABLE border="0" style="margin:6pt">
 <tr>
- <th colspan="2">Results</th>
+ <th colspan="2"><?php echo _("Results"); ?></th>
 </tr>
 <tr>
- <th class="vert">Sort by</th>
+ <th class="vert"><?php echo _("Sort by"); ?></th>
  <td><SELECT name="sortby">
  <?php
  foreach ($cm->getNames() as $c)
@@ -521,7 +523,7 @@ $db = new voldbMySql();
 
 if ($db->get_error())
 {
-    process_system_error(_("Unable to establish database connection").$db->get_error());    
+    process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
     die();	
 }
 

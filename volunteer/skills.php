@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.1 2003/10/05 16:14:46 andrewziem Exp $
+ * $Id: skills.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -29,11 +29,11 @@ function volunteer_delete_skill()
 
     if (!$result)
     {
-	process_system_error("Error querying database.", array('debug'=>mysql_error()));
+	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()));
     }
     else
     {
-	process_user_notice(_("Skill deleted"));
+	process_user_notice(_("Deleted."));
     }
     volunteer_view_skills();
 
@@ -47,7 +47,7 @@ function volunteer_view_skills()
     
     //print_r($skill_levels);
 
-echo ("<H3>Skills, interests</H3>\n");
+echo ("<H3>"._("Skills, interests")."</H3>\n");
 
 echo ("<FORM action=\".\" method=\"post\">\n");
 echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
@@ -58,15 +58,14 @@ $vskills_result = $db->query("SELECT volunteer_skills.skill_id, volunteer_skills
 
 if (!$vskills_result)
 {
-    process_system_error("Error querying database.", array('debug'=>mysql_error()));
+    process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
 }
 else
 if (0 ==  $db->num_rows($vskills_result))
 {
-    process_user_notice("No skills registered with this volunteer.");
+    process_user_notice(_("None found."));
 }
 else
-if ($vskills_result and 0 < $db->num_rows($vskills_result))
 {
     echo ("<TABLE border=\"1\">\n");
     echo ("<TR>\n");
@@ -88,10 +87,6 @@ if ($vskills_result and 0 < $db->num_rows($vskills_result))
     
     echo ("<INPUT type=\"submit\" name=\"button_delete_volunteer_skill\" value=\"Delete\">\n");
 }    
-else
-{
-    echo mysql_error();
-}
 
 // add skill form
 $skills_list_result = $db->query("SELECT * FROM skills");
@@ -99,7 +94,7 @@ $skills_list_result = $db->query("SELECT * FROM skills");
 if ($skills_list_result and 0 < $db->num_rows($skills_list_result))
 {
     
-    echo ("<H4>Add new skill</H4>\n");
+    echo ("<H4>"._("Add new skill")."</H4>\n");
 
     //echo ("<TD colspan=\"2\">\n");
     echo ("<SELECT name=\"skill_id\">\n");
@@ -108,14 +103,13 @@ if ($skills_list_result and 0 < $db->num_rows($skills_list_result))
 	echo ("<OPTION value=\"".$skill['skill_id']."\">".$skill['name']."</OPTION>\n");
     }
     echo ("</SELECT>\n");
-    //print_r($skill_levels);
     echo ("<SELECT name=\"skill_level\">\n");
     for ($i = 2 ; $i <= 5; $i++)
+    {
 	echo ("<OPTION value=\"$i\">".$skill_levels[$i]."</OPTION>\n");
+    }
     echo ("</SELECT>\n");
     echo ("<INPUT type=\"submit\" name=\"add_skill\" value=\""._("Add")."\">\n");
-
-
 }
 
 echo ("</FORM>\n");
@@ -123,35 +117,34 @@ echo ("</FORM>\n");
 } /* volunteer_view_skills() */
 
 
-  function volunteer_skill_add()
-  {
-      global $db;
+function volunteer_skill_add()
+{
+    global $db;
       
       
-      $vid = intval($_POST['vid']);
-      $skill_id = intval($_POST['skill_id']);
-      $skill_level = intval($_POST['skill_level']);
+    $vid = intval($_POST['vid']);
+    $skill_id = intval($_POST['skill_id']);
+    $skill_level = intval($_POST['skill_level']);
       
-      // always validate form input first
-      if (!(preg_match("/^[0-9]+$/", $_POST['skill_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
-      {
-        process_system_error("Bad form input for skill");
+    // always validate form input first
+    if (!(preg_match("/^[0-9]+$/", $_POST['skill_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
+    {
+	process_system_error(_("Bad form input:").' skill_id, skill_level');
 	die();
-      }
-      else
-      {
-      
+    }
+    else
+    {  
         $result = $db->query("INSERT INTO volunteer_skills (volunteer_id, skill_id, skill_level) VALUES ($vid, $skill_id, $skill_level)");	
     
         if (!$result)
         {
-    	    process_system_error("Unable to add volunteer skill");
+    	    process_system_error(_("Error adding data to database."));
         }      
     }
     
     volunteer_view_skills();
     
-  } /* volunteer_skill_add() */
+} /* volunteer_skill_add() */
 
 
 ?>

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.1 2003/11/03 05:12:58 andrewziem Exp $
+ * $Id: relationships.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
  *
  */
 
@@ -50,7 +50,7 @@ function relationship_type_add()
 	}
 	else
 	{
-	    process_system_error(_("Error adding."));
+	    process_system_error(_("Error adding data to database."));
 	}
     }
 } /* relationship_add() */
@@ -94,7 +94,7 @@ function relationship_type_list()
     
     if (!$result)
     {
-	process_system_error(_("Database error."), array('debug' => mysql_error()));
+	process_system_error(_("Database error."), array('debug' => $db->get_error()));
     }
     else if (0 == $db->num_rows($result))
     {
@@ -155,7 +155,7 @@ function relationship_type_delete()
 	}
 	else
 	{
-	    process_user_notice(_("Error removing."));	
+	    process_user_notice(_("Error deleting data from database."));	
 	}
     }
 } /* relationship_type_delete() */
