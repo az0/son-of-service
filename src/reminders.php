@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.6 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: reminders.php,v 1.7 2004/01/20 04:06:05 andrewziem Exp $
  *
  */
  
@@ -23,7 +23,6 @@ require_once(SOS_PATH . 'include/global.php');
 require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 require_once(SOS_PATH . 'functions/html.php');
-
 
 $db = connect_db();
 
@@ -86,6 +85,7 @@ function show_reminders()
 	    $v = volunteer_get($row['volunteer_id']);
 	    $row['volunteer'] = make_volunteer_name($v);
 	    $table->addRow($row);
+	    $result->MoveNext();
 	}
 	$table->end();
 	
