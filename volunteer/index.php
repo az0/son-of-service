@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.14 2003/11/14 17:17:45 andrewziem Exp $
+ * $Id: index.php,v 1.15 2003/11/22 15:52:41 andrewziem Exp $
  *
  */
 
@@ -407,171 +407,12 @@ if ($success_primary and $success_extended)
 {
     echo("<P>"._("Updated.")."</P>\n");
     $volunteer = volunteer_get($vid);
+    include('general.php');
     volunteer_view_general();
 }
 
 
 } /* volunteer_save() */
-
-
-function volunteer_view_general()
-{
-global $db;
-global $volunteer;
-
-$vid = intval($_REQUEST['vid']);
-
-//    echo ("<H3>General information</H3>\n");
-
-$prefix = $volunteer['prefix'];
-$first = $volunteer['first'];
-$middle = $volunteer['middle'];
-$last = $volunteer['last'];
-$suffix = $volunteer['suffix'];
-
-$organization = $volunteer['organization'];
-
-$street = $volunteer['street'];
-$city = $volunteer['city'];
-$state = $volunteer['state'];
-$postal_code = $volunteer['postal_code'];
-$country = $volunteer['country'];
-
-$email_address = $volunteer['email_address'];
-$phone_home = $volunteer['phone_home'];
-$phone_work = $volunteer['phone_work'];
-$phone_cell = $volunteer['phone_cell'];
-
-?>
-
-
-<form method="post" action=".">
-
-<table border="0" cellspacing="0" cellpadding="0" table="60%" class="form">
-<tr>
- <th class="vert"><?php echo _("Prefix");?></th>
- <td><input type="Text" name="prefix" value="<?php echo $prefix ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("First name");?></th>
- <td><input type="Text" name="first" value="<?php echo $first ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert">Middle name</th>
- <td><input type="Text" name="middle" value="<?php echo($middle); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Last name");?></th>
- <td><input type="Text" name="last" value="<?php echo ($last); ?>" size="40"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Suffix");?></th>
- <td><input type="Text" name="suffix" value="<?php echo $suffix ?>" size="10"></td>
- </tr>
-
-<tr>
- <th class="vert"><?php echo _("Organization");?></th>
- <td><input type="Text" name="organization" value="<?php echo $organization ?>" size="40"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Street");?></th>
- <td><input type="Text" name="street" value="<?php echo ($street); ?>" size="40"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("City");?></th>
- <td><input type="Text" name="city"  value="<?php echo ($city); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("State/Province");?></th>
- <td><input type="Text" name="state"  value="<?php echo ($state); ?>" size="2"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Zip/Postal code");?></th>
- <td><input type="Text" name="postal_code"  value="<?php echo ($postal_code); ?>" size="10"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Country");?></th>
- <td><input type="Text" name="country"  value="<?php echo ($country); ?>" size="30"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Home phone");?></th>
- <td><input type="Text" name="phone_home" value="<?php echo ($volunteer["phone_home"]); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Work phone");?></th>
- <td><input type="Text" name="phone_work" value="<?php echo ($volunteer["phone_work"]); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Cell phone");?></th>
- <td><input type="Text" name="phone_cell" value="<?php echo ($volunteer["phone_cell"]); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("E-mail");?></th>
- <td><input type="Text" name="email_address" value="<?php echo ($volunteer["email_address"]); ?>" size="40"></td>
- </tr>
-<tr>
- <th class="vert">Monthly mail</th>
- <td>
-   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("p", $volunteer["wants_monthly_information"])); ?>> Postal mail
-   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("e", $volunteer["wants_monthly_information"])); ?>><?php echo _("E-mail");?>
-   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("n", $volunteer["wants_monthly_information"])); ?>>None
-   </TD>
- </tr>
-<?php
-// show custom fields
-// to do: SQL_CACHE
-
-$result_ext = $db->query("SELECT * FROM extended WHERE volunteer_id = $vid");
-if ($result_ext)
-{
-    $row_ext = $db->fetch_array($result_ext);
-}
-else 
-{
-    $row_ext = array();
-}
-
-$result_meta = $db->query("SELECT * FROM extended_meta");
-if ($result_meta)
-{
-    while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
-    {
-	echo ("<TR>\n");
-	echo ("<TH class=\"vert\">".$row_meta['label']."</TH>\n");		
-	echo ("<TD>");
-	switch ($row_meta['fieldtype'])
-	{
-	    case 'string':
-		$attributes = array('length' => $row_meta['size1']);
-		break;
-	    case 'date':
-	    case 'integer':
-		$attributes = array();
-		break;		
-	    case 'textarea':
-		$attributes = array('rows' => $row_meta['size3'], 'cols' => $row_meta['size2']);
-		break;		
-	    default:
-		process_system_error("Unexpected type in extended_meta");
-		break;
-	}
-	$value = $row_ext[$row_meta['code']];
-	render_form_field($row_meta['fieldtype'], 'custom_'.$row_meta['code'], $attributes, $value);
-	echo ("<TD>\n");
-	echo ("</TR>\n");	
-    }
-}
-$db->free_result($result_meta);
-?>
-</table>
-
-<INPUT type="hidden" name="vid" value="<?php echo $vid; ?>">
-<INPUT type="submit" name="volunteer_save" value="<?php echo _("Save"); ?>">
-<INPUT type="submit" name="volunteer_delete" VALUE="<?php echo _("Delete volunteer"); ?>">
-</FORM>
-<?
-
-} /* volunteer_view_general() */
 
 
 function volunteer_view()
@@ -643,6 +484,7 @@ if (array_key_exists('menu', $_GET))
 	}
 	else if ('general' == $_GET['menu'])
 	{
+		include('general.php');
 		volunteer_view_general();
 	}
 	else
