@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.24 2004/03/11 03:10:53 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.25 2004/03/11 04:31:38 andrewziem Exp $
  *
  */
 
@@ -459,6 +459,15 @@ function volunteer_search()
     global $db, $cm;
     
     $results_per_page = 25;
+    if (array_key_exists('results_per_page', $_REQUEST) and 9 < $_REQUEST['results_per_page'])
+    {
+	$results_per_page = intval($_REQUEST['results_per_page']);
+    }
+
+    if (array_key_exists('results_per_page', $_REQUEST) and 'i' == $_REQUEST['results_per_page'])
+    {
+	$results_per_page = 999999999999;
+    }
 
     $offset = 0;
     if (array_key_exists('offset', $_REQUEST))
@@ -608,6 +617,21 @@ else
  ?>
  </SELECT>
   </td>
+<?php
+ // todo: user profile specifies default results per page
+ ?>
+ <tr>
+ <th class="vert"><?php echo _("Results per page"); ?></th>
+ <td><select name="results_per_page"> 
+  <option>10</option>
+  <option selected>25</option>
+  <option>50</option>
+  <option>100</option>
+  <option>500</option>  
+  <option>1000</option>    
+  <option value="i"><?php echo _("Unlimited"); ?></option>  
+  </select>
+  </td>  
  </tr>
 </TABLE>
 </TD>
