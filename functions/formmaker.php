@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.6 2003/12/09 05:17:09 andrewziem Exp $
+ * $Id: formmaker.php,v 1.7 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -35,7 +35,7 @@ function render_form_field($type, $name, $attributes, $value)
 		$htype = 'password';
 	    }	    
 
-	    if (empty($value))
+	    if (0 == strlen(trim($value)))
 	    {
 		$v = '';
 	    }
@@ -55,7 +55,7 @@ function render_form_field($type, $name, $attributes, $value)
 	    break;
 	    
 	case 'date':		    
-	    if (empty($value))
+	    if (0 == strlen(trim($value)))
 	    {
 		$v = '';
 	    }
@@ -76,9 +76,26 @@ function render_form_field($type, $name, $attributes, $value)
 	    $rows = intval($attributes['rows']);
 	    $cols = intval($attributes['cols']);
 	    echo ("<TEXTAREA name=\"$name\" rows=\"$rows\" cols=\"$cols\">");
-	    if (!empty($value))
+	    if (0 < strlen(trim($value)))
 		echo $value;
 	    echo ("</TEXTAREA>\n");
+	    break;
+	    
+	case 'select':
+	    echo ("<SELECT name=\"$name\">\n");
+	    foreach ($attributes as $k => $v)
+	    {
+		if (is_array($v) and array_key_exists('value', $v) and array_key_exists('label', $v))
+		{
+		    $selected = "";
+		    if ($v['value'] == $value)
+		    {
+			$selected = " selected";
+		    }
+		    echo ("<OPTION value=\"".$v['value']."\"$selected>".$v['label']."</OPTION>\n");
+		}
+	    }
+	    echo ("</SELECT>\n");	    
 	    break;
 	    
 	default:

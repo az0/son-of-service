@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.5 2003/12/07 02:07:26 andrewziem Exp $
+ * $Id: strings.php,v 1.6 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -67,7 +67,7 @@ function strings_add()
 	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
 	}
     }
-    redirect("./?strings");
+    redirect("?strings");
 } /* strings_add() */
 
 
@@ -180,7 +180,7 @@ function strings_delete()
     if (!array_key_exists('string_id', $_POST))
     {
 	save_message(MSG_USER_ERROR, _("You must make a selection."));
-	redirect("./?strings");
+	redirect("?strings");
 	die();
     }    
     
@@ -250,7 +250,7 @@ function strings_delete()
     }
     
     // redirect user to non-POST page
-    redirect("./?strings");
+    redirect("?strings");
     
 } /* strings_delete() */
 

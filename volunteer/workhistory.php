@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.17 2003/12/22 00:19:08 andrewziem Exp $
+ * $Id: workhistory.php,v 1.18 2003/12/29 00:44:11 andrewziem Exp $
  *
  */
  
@@ -172,10 +172,9 @@ function volunteer_work_history_save($mode)
      
      // redirect client to non-POST page
      
-     header("Location: ?vid=$vid&menu=workhistory");
+     redirect("?vid=$vid&menu=workhistory");
      
   } /* volunteer_work_history_save() */
-
 
 
 function volunteer_view_work_history($brief = FALSE)
@@ -226,13 +225,7 @@ function volunteer_view_work_history($brief = FALSE)
     { 
 	// display work history
 	
-	if (!$brief)
-	{
-		echo ("<FORM method=\"post\" action=\".\">\n");
-		echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-	}
-	
-	$dtp = new DataTablePager($db, $result);
+	$dtp = new DataTablePager();
 	if ($brief)
 	{
 	    // show last ten	    
@@ -242,6 +235,8 @@ function volunteer_view_work_history($brief = FALSE)
 	else
 	{
 	    $dtp->setPagination(10);
+	    echo ("<FORM method=\"post\" action=\".\">\n");
+	    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	}
 	$headers = array();
 	$headers['work_id'] = array('checkbox' => TRUE, 'label' => _("Select"));
@@ -252,11 +247,6 @@ function volunteer_view_work_history($brief = FALSE)
 	$headers['memo'] = array('label' => _("Memo"), 'sortable' => TRUE);	
 	$dtp->setHeaders($headers);
 	$dtp->setDatabase($db, $result);
-	$offset = 0;
-	if (array_key_exists('offset', $_GET))
-	{
-	    $offset = intval($_GET['offset']);
-	}
 	$dtp->render();
 	if (!$brief)
 	{
@@ -265,11 +255,7 @@ function volunteer_view_work_history($brief = FALSE)
 	    echo ("</FORM>\n");
 	}
     }
-
-
-    //work_history_addedit('add');
 }     /* volunteer_view_work_history() */
-
 
 
 function work_history_addedit($mode)
@@ -278,11 +264,7 @@ function work_history_addedit($mode)
     global $db;
     
 
-    if (!('add' == $mode or 'edit' == $mode))
-    {
-	process_system_error('work_history_addedit(): '._("Unexpected parameter."));
-	return FALSE;
-    }    
+    assert('add' == $mode or 'edit' == $mode);
 
     $vid = intval($_REQUEST['vid']);
 

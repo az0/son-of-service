@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.4 2003/12/22 00:19:08 andrewziem Exp $
+ * $Id: functions.php,v 1.5 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -82,11 +82,27 @@ function sqldate_to_local($sql_date)
     
     
     $unixdate = $db->Unixdate($sql_date);
-    // todo: what is error return?
+    if (0 == $unixdate)
+    {
+	return "";    
+    }
     
     // todo: localize    
-    return (strftime("%D", $unixdate));
+    return (strftime("%D", $unixdate));    
+}
+
+function sqldatetime_to_local($sql_datetime)
+{
+    global $db;
     
+    
+    $unixdate = $db->UnixTimeStamp($sql_datetime);
+    if (0 == $unixdate)
+    {
+	return "";    
+    }
+    
+    return (strftime("%c", $unixdate));    
 }
 
 ?>

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.14 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: relationships.php,v 1.15 2003/12/29 00:44:11 andrewziem Exp $
  *
  */
 
@@ -247,7 +247,7 @@ function relationships_add_form()
 	$sql = "SELECT volunteer_id FROM volunteers WHERE concat(first, middle, last, organization) like '%$needle%'";
 	$result = $db->Execute($sql);
 	$c = 0;
-	while (!$result->EOF)
+	while ($result and !$result->EOF)
 	{
 	    $row = $result->fields;
 	    $c++;
@@ -337,7 +337,7 @@ function relationship_add()
     }
     
     // redirect client to non-POST page
-    header("Location: ./?vid=$vid&menu=relationships");
+    redirect("?vid=$vid&menu=relationships");
     
 } /* relationship_add() */
 
@@ -386,8 +386,7 @@ function relationship_delete()
 	}
     }
     
-    header("Location: ?vid=$vid1&menu=relationships");
-
+    redirect("?vid=$vid1&menu=relationships");
 } /* relationship_delete() */
 
 ?>

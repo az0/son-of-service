@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.11 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: notes.php,v 1.12 2003/12/29 00:44:11 andrewziem Exp $
  *
  */
 
@@ -13,6 +13,7 @@ if (preg_match('/notes.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
 }
+
 
 function volunteer_view_notes($brief = FALSE)
 {
@@ -28,12 +29,16 @@ function volunteer_view_notes($brief = FALSE)
 	process_user_error(_("Insufficient permissions."));
 	return FALSE;
     }
+    
+    $column_names = array('added_by', 'assigned_to', 'dt', 'reminder_date', 'quality');
+    $orderby = make_orderby($_GET, $column_names, 'dt', 'DESC');
 
     $sql = 'SELECT notes.*,u1.username as added_by, u2.username as assigned_to '.
 	'FROM notes '.
 	'LEFT JOIN users as u1 ON notes.uid_added = u1.user_id '.
 	'LEFT JOIN users as u2 ON notes.uid_assigned = u2.user_id '.
-	"WHERE notes.volunteer_id = $vid ORDER BY dt DESC";
+	"WHERE notes.volunteer_id = $vid ".
+	$orderby;
 
     $result = $db->Execute($sql);
 
@@ -55,52 +60,45 @@ function volunteer_view_notes($brief = FALSE)
     else
     { 
 	// display work history
-	if (!$brief)
-	{
-		echo ("<FORM method=\"post\" action=\".\">\n");
-		echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-	}
-	echo ("<TABLE border=\"1\">\n");
-	echo ("<TR>\n");
-	if (!$brief)
-	{
-	    echo ("<TH>"._("Select")."</TH>\n");
-	}
-	echo ("<TH>"._("Time")."</TH>\n");
-	echo ("<TH>"._("Reminder date")."</TH>\n");
-	echo ("<TH>"._("Added by")."</TH>\n");
-	echo ("<TH>"._("Assigned to")."</TH>\n");
-	echo ("<TH>"._("Quality")."</TH>\n");
-	echo ("</TR>\n");
-	echo ("<TR>\n");
-	echo ("<TH colspan=\"6\">"._("Memo")."</TH>\n");
-	echo ("</TR>\n");
 
-	while (!$result->EOF)
+	require_once(SOS_PATH . 'functions/table.php');
+
+	$dtp = new DataTablePager();
+	
+	if ($brief)
 	{
-	    $note = $result->fields;
-	    echo ("<TR>\n");
-	    if (!$brief)
-	    {
-		echo ("<TD><INPUT type=\"checkbox\" name=\"note_id_".$note['note_id']."\" value=\"0\"></TD>\n");
-	    }
-	    echo ("<TD>".$note['dt']."</TD>\n");
-	    echo ("<TD align=\"right\">".($note['reminder_date'] == '0000-00-00' ? '&nbsp' : $note['reminder_date'])."</TD>\n");
-	    echo ("<TD align=\"right\">".$note['added_by']."</TD>\n");
-	    echo ("<TD align=\"right\">".nbsp_if_null($note['assigned_to'])."</TD>\n");
-	    echo ("<TD align=\"right\">".$note['quality']."</TD>\n");
-	    echo ("</TR>\n");
-	    echo ("<TR>\n");
-	    echo ("<TD colspan=\"6\">".$note['message']."</TD>\n");
-	    echo ("</TR>\n");
-	    $result->MoveNext();
+	    // show last ten	    
+	    $dtp->setPrintable(TRUE);
+	    $dtp->setPagination(10, $result->RecordCount() > 10 ? $result->RecordCount() - 10 : 0);
 	}
-	
-	echo ("</TABLE>\n");
-	
+	else
+	{
+	    $dtp->setPagination(10);
+	    echo ("<FORM method=\"post\" action=\".\">\n");
+	    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
+	}
+
+	$headers = array();
+	$headers['note_id'] = array('checkbox' => TRUE, 'label' => _("Select"));
+	$headers['dt'] =  array('label' => _("Time"), 'type' => TT_DATETIME, 'sortable' => TRUE);	
+	$headers['reminder_date'] =  array('label' => _("Reminder date"), 'type' => TT_DATE, 'sortable' => TRUE);		
+	$headers['added_by'] =  array('label' => _("Added by"), 'sortable' => TRUE);		
+	$headers['assigned_to'] =  array('label' => _("Assigned to"), 'sortable' => TRUE);		
+	$headers['quality'] =  array('label' => _("Quality"), 'sortable' => TRUE);			
+	$headers[] = array('break_row' => TRUE);			
+	$colspan = 6;
+	if (is_printable())
+	{
+	    $colspan--;
+	}
+	$headers['message'] = array('label' => _("Message"), 'colspan' => $colspan);
+	$dtp->setHeaders($headers);
+	$dtp->setDatabase($db, $result);
+	$dtp->render();
+
 	if (!$brief)
 	{
-	    // todo: edit
+	    echo ("<INPUT type=\"submit\" name=\"button_edit_note\" value=\""._("Edit")."\">\n");
 	    echo ("<INPUT type=\"submit\" name=\"button_delete_note\" value=\""._("Delete")."\">\n");
 	    echo ("</FORM>\n");
 	}
@@ -109,52 +107,76 @@ function volunteer_view_notes($brief = FALSE)
 } /* volunteer_view_notes() */
 
 
-function volunteer_add_note_form()
+function volunteer_addedit_note_form($mode)
 {
     global $db;
     global $db_cache_timeout;
-    
+
 
     // todo: make searchable
     
-    $vid = intval($_GET['vid']);
+    assert('add' == $mode or 'edit' == $mode);
+    
+    $vid = intval($_REQUEST['vid']);
     
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	return FALSE;
     }
     
-    echo ("<H4>"._("Add note")."</H4>\n");
-
-    echo ("<FORM method=\"post\" action=\".\">\n");
-    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-
-
-?>
-<table border="1" width="40%">
-<tr>
- <TH class="vert"><?php echo _("Message"); ?></TH>
- <td>
- <TEXTAREA name="message" rows="6" cols="64"></TEXTAREA>
- </td>
- </tr>
-<TR>
- <TH class="vert"><?php echo _("Quality"); ?></TH>
- <TD>
-  <SELECT name="quality">
-  <OPTION value="-1"><?php echo _("Negative"); ?></OPTION>
-  <OPTION value="0" SELECTED><?php echo _("Neutral"); ?></OPTION>
-  <OPTION value="1"><?php echo _("Positive"); ?></OPTION>
-  </SELECT>
- </TR>
-<TR>
- <TH class="vert"><?php echo _("Reminder date"); ?></TH>
- <TD><INPUT type="text" name="reminder_date"></TD>
- </TR>
-<TR>
- <TH class="vert"><?php echo _("Assigned to"); ?></TH>
- <TD>
-<?php
+    if ('edit' == $mode)
+    {
+	$title = _("Edit note");
+	$note_ids = find_values_in_request($_POST, 'note_id');
+	if (0 == count($note_ids))
+	{
+	    save_message(MSG_USER_ERROR, _("You must make a selection."));
+	    redirect("?vid=$vid&menu=notes");
+	    return FALSE;
+	}
+	
+	if (1 < count($note_ids))
+	{
+	    process_user_warning(_("You may only edit one at a time."));
+	}
+	$note_id = $note_ids[0];    
+	$sql = "SELECT * FROM notes WHERE note_id = $note_id";
+	$result = $db->SelectLimit($sql, 1);
+	if (!$result)
+	{
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+	}
+	$row = $result->fields;
+	$message = $row['message'];
+	$reminder_date = $row['reminder_date'];
+	if ("0000-00-00" == $reminder_date)
+	{
+	    $reminder_date = "";
+	}
+	$uid_assigned = $row['uid_assigned'];
+	$quality = $row['quality'];
+    }
+    else
+    {
+	$title = _("Add note");
+	$message = $reminder_date = "";
+	$quality = $uid_assigned = 0;
+    }
+    
+    $form = new formMaker();
+    $form->open($title, 'post', '.', FS_TABLE);
+    $form->addHiddenField('vid', $vid);    
+    if ('edit' == $mode)
+    {
+	$form->addHiddenField('note_id', $note_id);
+    }
+    $form->addField(_("Message"), 'textarea', 'message', array('rows' => 6, 'cols' => 64), $message);
+    $attr = array();
+    $attr[] = array('value' => -1, 'label' => _("Negative"));
+    $attr[] = array('value' => 0, 'label' => _("Neutral"));    
+    $attr[] = array('value' => 1, 'label' => _("Positive"));
+    $form->addField(_("Quality"), 'select', 'quality', $attr, $quality);
+    $form->addField(_("Reminder date"), 'date', 'reminder_date', array(), $reminder_date);
 
     $sql = 'SELECT user_id, personalname, username FROM users';
 
@@ -166,29 +188,34 @@ function volunteer_add_note_form()
     }
     else
     {
-	echo ("<SELECT name=\"uid_assigned\">\n");
-	echo ("<OPTION value=\"\">"._("Nobody")."</OPTION>\n");
+	$attr = array();
+	$attr[] = array('value' => '', 'label' => _("Nobody"));
 	while (!$result->EOF)
 	{
-	    $user = $result->fields;
-	    echo ('<OPTION value="'.$user['user_id'].'">'.$user['personalname'].' ('.$user['username'].")</OPTION>\n");
+	    $user = $result->fields;	
+	    print_r($user);
+	    $attr[] = array('value' => $user['user_id'], 'label' => $user['personalname']. " (".$user['username'].")");
 	    $result->MoveNext();
 	}
-	echo ("</SELECT>\n");
-
+	print_r($attr);
+	$form->addField(_("Assigned to"), 'select', 'uid_assigned', $attr, $uid_assigned);
     }
-?>
- </TD>
- </TR>
 
-</table>
-<input type="Submit" name="button_add_note" value="<?php echo _("Add"); ?>">
-</form>
-<?php
-  }
+    if ('add' == $mode)
+    {
+	$form->addButton('button_add_note', _("Add"));    
+    }
+    else
+    {
+	$form->addButton('button_save_note', _("Save"));
+    }
+
+    $form->close();
+    
+}
 
 
-function note_add()
+function note_addedit()
 {
     global $db;
 
@@ -196,7 +223,8 @@ function note_add()
     // validate form input
     $errors_found = 0;
     
-    $vid = intval($_POST['vid']);    
+    $vid = intval($_POST['vid']);
+    $edit_mode = array_key_exists('note_id', $_POST);
 
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
@@ -224,6 +252,10 @@ function note_add()
 	$errors_found++;
     }        
     
+    if ($edit_mode)
+    {
+	$note_id = intval($_POST['note_id']);
+    }
 
     if (!$errors_found)
     {
@@ -238,9 +270,25 @@ function note_add()
 	    $uid_assigned = 'NULL';
 	}
 
-	$nowdate = date("Y-m-d H:i:s");
- 
-	$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) VALUES ($message, '$nowdate', $vid, $quality,".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date', 1)";
+//	$nowdate = date("Y-m-d H:i:s");
+	$nowdate = 'now()';
+	
+	if ($edit_mode)
+	{
+	    $sql = "UPDATE notes SET ".
+		    "message = $message, ".
+		    "volunteer_id = $vid, ".
+		    "quality = $quality, ".
+		    "reminder_date = '$reminder_date', ".
+		    "acknowledged = 1 ".
+		    "WHERE note_id = $note_id";
+	    // todo: check acnowlegde
+	}
+	else
+	{
+		$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) ".
+		"VALUES ($message, $nowdate, $vid, $quality,".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date', 1)";
+	}
 
 	$result = $db->Execute($sql);
 
@@ -255,7 +303,7 @@ function note_add()
 
     }
     
-    header("Location: ./?vid=$vid&menu=notes");
+    redirect("?vid=$vid&menu=notes");
 } /* note_add() */
 
 
@@ -312,10 +360,7 @@ function note_delete()
     }
         
     // todo: relative path violates HTTP standards?
-    header("Location: ./?vid=$vid&menu=notes");
-
-    
-    
+    redirect("?vid=$vid&menu=notes");
 }
 
 

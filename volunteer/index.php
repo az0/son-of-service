@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.27 2003/12/09 05:17:09 andrewziem Exp $
+ * $Id: index.php,v 1.28 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -105,13 +105,19 @@ make_nav_begin();
     $vid = intval($_POST['vid']);
     $result = $db->Execute("INSERT INTO phone_numbers (volunteer_id) VALUES ($vid)");
     save_message(MSG_USER_NOTICE, _("Added."));
-    redirect("./?vid=$vid&menu=general");
+    redirect("?vid=$vid&menu=general");
   }
   else
-  if (array_key_exists('button_add_note', $_POST))
+  if (array_key_exists('button_add_note', $_POST) or array_key_exists('button_save_note', $_POST))
   {
     include('notes.php');
-    note_add();
+    note_addedit();
+  }
+  else
+  if (array_key_exists('button_edit_note', $_POST))
+  {
+    include('notes.php');
+    volunteer_addedit_note_form('edit');
   }
   else if (array_key_exists('button_delete_note', $_POST))
   {
@@ -260,7 +266,7 @@ if (array_key_exists('menu', $_GET))
 	{
 		include('notes.php');
 		volunteer_view_notes();
-		volunteer_add_note_form();
+		volunteer_addedit_note_form('add');
 	}
 	else if ('relationships' == $_GET['menu'])
 	{
@@ -283,7 +289,6 @@ if (array_key_exists('menu', $_GET))
 		include('summary.php');
 		volunteer_summary();
 	}
-//	    volunteer_view_general();
 }
 
 } /* volunteer_view() */

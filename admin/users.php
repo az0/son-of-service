@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.12 2003/12/09 05:17:08 andrewziem Exp $
+ * $Id: users.php,v 1.13 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
  
@@ -134,7 +134,7 @@ function user_save()
 
     }
     
-    header("Location: " . SOS_PATH . "admin/?users");
+    redirect("?users");
 
 } /* user_save() */
 
@@ -335,7 +335,7 @@ function users_delete()
 
 	    // redirect to non-POST page
 	    
-	    header("Location: ./?users");
+	    redirect("?users");
 	}
     }
     else

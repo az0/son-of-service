@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.7 2003/12/22 00:19:08 andrewziem Exp $
+ * $Id: table.php,v 1.8 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -40,15 +40,17 @@ class DataTableDisplay
     }
 
     function setHeaders($headers)
-    // $headers: an array
+    // $headers: an array of arrays
     //  key: field name (for addRow())
     //  subkey: label (string)
     //  subkey: checkbox (boolean)
     //  subkey: link
     //  subkey: type (see TT_*)
     //  subkey: sortable (boolean)
+    //  subkey: break_row
+    //  subkey: colspan (integer)
     {
-	assert(is_array($headers));
+	assert(is_array($headers));	
 	$this->headers = $headers;
     }
     
@@ -81,10 +83,20 @@ class DataTableDisplay
 		if (array_key_exists('checkbox', $v) and $v['checkbox'] and $this->printable)
 		{
 		}
+		elseif (array_key_exists('break_row', $v) and $v['break_row'])
+		{
+		    echo ("</TR>\n<TR>\n");
+		}
 		else
 		{
-		    echo ("<TH>$label\n");
-		    if (array_key_exists('sortable', $v) and $v['sortable'])
+		    $colspan = "";
+		    if (array_key_exists('colspan', $v))
+		    {
+			$colspan = " colspan=\"".$v['colspan']."\"";
+			
+		    }
+		    echo ("<TH$colspan>$label\n");
+		    if (!$this->printable and array_key_exists('sortable', $v) and $v['sortable'])
 		    {
 			// display sorting option
 			$url = make_url($_GET, 'orderby');
@@ -141,7 +153,13 @@ class DataTableDisplay
 		else
 		{
 		    // display cell data
-		    echo ("<TD>");
+		    
+		    $colspan = "";
+		    if (array_key_exists('colspan', $v))
+		    {
+			$colspan = " colspan=\"".$v['colspan']."\"";
+		    }
+		    echo ("<TD$colspan>");
 
 		    if (0 == strlen(trim($row[$k])))
 		    {
@@ -151,8 +169,13 @@ class DataTableDisplay
 		    elseif (array_key_exists('type', $v) and TT_DATE == $v['type'])
 		    {
 			// format date
-			$c = sqldate_to_local($row[$k]);
+			$c = nbsp_if_null(sqldate_to_local($row[$k]));
 		    }
+		    elseif (array_key_exists('type', $v) and TT_DATETIME == $v['type'])
+		    {
+			// format date+time
+			$c = nbsp_if_null(sqldatetime_to_local($row[$k]));
+		    }		    
 		    else
 		    {
 		        $c = $row[$k];
@@ -185,15 +208,6 @@ class DataTableDisplay
 		    echo ("</TD>\n");
 	    
 		}
-/*		
-	    else
-	    {
-		foreach ($row as $c)
-		{
-	    	    echo ("<TD>$c</TD>");
-		}
-	    }
-*/
 	    }	    
     	}
 

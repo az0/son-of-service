@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.10 2003/12/21 23:39:06 andrewziem Exp $
+ * $Id: general.php,v 1.11 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -338,7 +338,7 @@ function volunteer_save()
     
     // redirect user to non-POST page
     ob_end_clean();
-    header("Location: ./?vid=$vid&menu=general");
+    redirect("?vid=$vid&menu=general");
 
 
 } /* volunteer_save() */

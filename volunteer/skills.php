@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.9 2003/12/21 18:05:38 andrewziem Exp $
+ * $Id: skills.php,v 1.10 2003/12/29 00:44:11 andrewziem Exp $
  *
  */
 
@@ -41,7 +41,7 @@ function volunteer_delete_skill()
     }
 
     // redirect client to non-POST page
-    header("Location: ?vid=$vid&menu=skills");
+    redirect("?vid=$vid&menu=skills");
 }
 
 function volunteer_view_skills($brief = FALSE)
@@ -182,7 +182,7 @@ function volunteer_skill_add()
         }      
     }
 
-    header("Location: ?vid=$vid&menu=skills");
+    redirect("?vid=$vid&menu=skills");
     
 } /* volunteer_skill_add() */
 

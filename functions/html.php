@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.12 2003/12/21 18:05:37 andrewziem Exp $
+ * $Id: html.php,v 1.13 2003/12/29 00:44:10 andrewziem Exp $
  *
  */
 
@@ -278,7 +278,7 @@ function find_values_in_request($request, $prefix)
 
 function nbsp_if_null($s)
 {
-    if (NULL == $s or empty($s))
+    if (NULL == $s or 0 == strlen($s))
     {
 	return "&nbsp";
     }
