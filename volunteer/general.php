@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.12 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: general.php,v 1.13 2004/02/15 14:42:31 andrewziem Exp $
  *
  */
 
@@ -91,6 +91,9 @@ function volunteer_view_general()
 	    {
 		case 'string':
 		    $attributes = array('length' => $row_meta['size1']);
+		    break;
+		case 'textarea':
+		    $attributes = array('length' => $row_meta['size1'], 'cols' => $row_meta['size2'], 'rows' => $row_meta['size3']);
 		    break;
 		case 'integer':
 		case 'date':
