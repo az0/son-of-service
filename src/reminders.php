@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.3 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: reminders.php,v 1.4 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
  
@@ -25,9 +25,9 @@ require_once(SOS_PATH . 'functions/db.php');
 require_once(SOS_PATH . 'functions/html.php');
 
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
     process_system_error(_("Unable to establish database connection."), array ('debug' => $db->get_error()));    
     die();	
@@ -54,7 +54,7 @@ function show_reminders()
     {
 	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
     }
-    elseif (0 == $db->num_rows($result))
+    elseif (0 == $result->RecordCount())
     {
 	process_user_notice(_("No reminders."));
     }
@@ -81,8 +81,9 @@ function show_reminders()
 	
 	$table->setHeaders($fieldnames);
 	$table->begin();
-	while (FALSE != ($row = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $row = $result->fields;
 	    $v = volunteer_get($row['volunteer_id']);
 	    $row['volunteer'] = make_volunteer_name($v);
 	    $table->addRow($row);
@@ -129,11 +130,11 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
 	}
 	$sql .= ')';
 	
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 	
 	if (!$result)
 	{
-	    save_message(MSG_SYSTEM_ERROR, _("Error updating data in database."), __FILE__, __LINE__, $sql));	
+	    save_message(MSG_SYSTEM_ERROR, _("Error updating data in database."), __FILE__, __LINE__, $sql);	
 	}
     }
         

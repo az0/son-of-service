@@ -7,7 +7,7 @@
  *
  * Volunteer statistics.
  *
- * $Id: stat.php,v 1.2 2003/11/27 16:34:18 andrewziem Exp $
+ * $Id: stat.php,v 1.3 2003/12/03 17:23:04 andrewziem Exp $
  *
  */
 
@@ -42,35 +42,67 @@ function stats_update_volunteer($db, $vid)
 	return FALSE;
     }
 
-    $result = $db->query("SELECT sum(hours) as hours FROM work WHERE volunteer_id = $vid");
+    $result = $db->Execute("SELECT sum(hours) as hours FROM work WHERE volunteer_id = $vid");
+    
     if (!$result)
+    {
 	return FALSE;
-    $row = $db->fetch_array($result);
+    }
+    $row = $result->fields;
     if (!$row)
+    {
 	return FALSE;
+    }
     $hours_life = $row['hours'];
-    
-    $db->query("UPDATE volunteers SET hours_life = $hours_life WHERE volunteer_id = $vid LIMIT 1");
 
-    $result = $db->query("SELECT sum(hours) as hours FROM work WHERE volunteer_id = $vid and year(date) = ".(date('Y')-1)."");
+    // todo: portable LIMIT 1 for UPDATE
+    $db->Execute("UPDATE volunteers SET hours_life = $hours_life WHERE volunteer_id = $vid");
+
+    $sql = "SELECT sum(hours) as hours FROM work WHERE volunteer_id = $vid and year(date) = ".(date('Y')-1)."";
+    
+    $result = $db->Execute($sql);
+    
     if (!$result)
+    {
 	return FALSE;
-    $row = $db->fetch_array($result);
+    }
+    
+    $row = $results->fields;
+    
     if (!$row)
+    {
 	return FALSE;
+    }
+    
     $hours_ly = $row['hours'];
-    
-    $db->query("UPDATE volunteers SET hours_ly = $hours_ly WHERE volunteer_id = $vid  LIMIT 1");
 
-    $result = $db->query("SELECT sum(hours) as hours FROM work WHERE volunteer_id = $vid and year(date) = ".date('Y')."");
+    // todo: portable LIMIT 1 for UPDATE    
+    $sql = "UPDATE volunteers SET hours_ly = $hours_ly WHERE volunteer_id = $vid";
+    
+    $db->Execute($sql);
+
+    $sql = "SELECT sum(hours) as hours FROM work WHERE volunteer_id = $vid and year(date) = ".date('Y')."";
+    
+    $result = $db->Execute($sql);
+    
     if (!$result)
+    {
 	return FALSE;
-    $row = $db->fetch_array($result);
+    }
+    
+    $row = $result->fields;
+    
     if (!$row)
+    {
 	return FALSE;
+    }
+    
     $hours_ytd = $row['hours'];
     
-    $db->query("UPDATE volunteers SET hours_ytd = $hours_ytd WHERE volunteer_id = $vid LIMIT 1");
+    // todo: portable LIMIT 1 for UPDATE    
+    $sql = "UPDATE volunteers SET hours_ytd = $hours_ytd WHERE volunteer_id = $vid";
+    
+    $db->Execute($sql);
 	
 }
 

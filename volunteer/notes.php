@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: notes.php,v 1.11 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
 
@@ -35,21 +35,19 @@ function volunteer_view_notes($brief = FALSE)
 	'LEFT JOIN users as u2 ON notes.uid_assigned = u2.user_id '.
 	"WHERE notes.volunteer_id = $vid ORDER BY dt DESC";
 
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
 
     if (!$result)
     {	
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
-	die();
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
 
-    if (!$brief or 0 < $db->num_rows($result))
+    if (!$brief or 0 < $result->RecordCount())
     {
 	echo ("<H3>"._("Notes")."</H3>\n");
     }
 
-
-    if (0 == $db->num_rows($result))
+    if (0 == $result->RecordCount())
     {
 	if (!$brief)
 	process_user_notice(_("None found."));
@@ -78,29 +76,33 @@ function volunteer_view_notes($brief = FALSE)
 	echo ("<TH colspan=\"6\">"._("Memo")."</TH>\n");
 	echo ("</TR>\n");
 
-	while (FALSE != ($note = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
-	echo ("<TR>\n");
-	if (!$brief)
-	{
-	    echo ("<TD><INPUT type=\"checkbox\" name=\"note_id_".$note['note_id']."\" value=\"0\"></TD>\n");
+	    $note = $result->fields;
+	    echo ("<TR>\n");
+	    if (!$brief)
+	    {
+		echo ("<TD><INPUT type=\"checkbox\" name=\"note_id_".$note['note_id']."\" value=\"0\"></TD>\n");
+	    }
+	    echo ("<TD>".$note['dt']."</TD>\n");
+	    echo ("<TD align=\"right\">".($note['reminder_date'] == '0000-00-00' ? '&nbsp' : $note['reminder_date'])."</TD>\n");
+	    echo ("<TD align=\"right\">".$note['added_by']."</TD>\n");
+	    echo ("<TD align=\"right\">".nbsp_if_null($note['assigned_to'])."</TD>\n");
+	    echo ("<TD align=\"right\">".$note['quality']."</TD>\n");
+	    echo ("</TR>\n");
+	    echo ("<TR>\n");
+	    echo ("<TD colspan=\"6\">".$note['message']."</TD>\n");
+	    echo ("</TR>\n");
+	    $result->MoveNext();
 	}
-	echo ("<TD>".$note['dt']."</TD>\n");
-	echo ("<TD align=\"right\">".($note['reminder_date'] == '0000-00-00' ? '&nbsp' : $note['reminder_date'])."</TD>\n");
-	echo ("<TD align=\"right\">".$note['added_by']."</TD>\n");
-	echo ("<TD align=\"right\">".nbsp_if_null($note['assigned_to'])."</TD>\n");
-	echo ("<TD align=\"right\">".$note['quality']."</TD>\n");
-	echo ("</TR>\n");
-	echo ("<TR>\n");
-	echo ("<TD colspan=\"6\">".$note['message']."</TD>\n");
-	echo ("</TR>\n");
-	}
+	
 	echo ("</TABLE>\n");
+	
 	if (!$brief)
 	{
-		// todo: edit
-		echo ("<INPUT type=\"submit\" name=\"button_delete_note\" value=\""._("Delete")."\">\n");
-		echo ("</FORM>\n");
+	    // todo: edit
+	    echo ("<INPUT type=\"submit\" name=\"button_delete_note\" value=\""._("Delete")."\">\n");
+	    echo ("</FORM>\n");
 	}
     }
 
@@ -110,6 +112,7 @@ function volunteer_view_notes($brief = FALSE)
 function volunteer_add_note_form()
 {
     global $db;
+    global $db_cache_timeout;
     
 
     // todo: make searchable
@@ -152,7 +155,10 @@ function volunteer_add_note_form()
  <TH class="vert"><?php echo _("Assigned to"); ?></TH>
  <TD>
 <?php
-    $result = $db->query('SELECT user_id, personalname, username FROM users');
+
+    $sql = 'SELECT user_id, personalname, username FROM users';
+
+    $result = $db->CacheExecute($db_cache_timeout, $sql);
 
     if (!$result)
     {
@@ -162,9 +168,11 @@ function volunteer_add_note_form()
     {
 	echo ("<SELECT name=\"uid_assigned\">\n");
 	echo ("<OPTION value=\"\">"._("Nobody")."</OPTION>\n");
-	while (FALSE != ($user = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $user = $result->fields;
 	    echo ('<OPTION value="'.$user['user_id'].'">'.$user['personalname'].' ('.$user['username'].")</OPTION>\n");
+	    $result->MoveNext();
 	}
 	echo ("</SELECT>\n");
 
@@ -219,7 +227,7 @@ function note_add()
 
     if (!$errors_found)
     {
-	$message = $db->escape_string(sos_strip_tags($_POST['message']));
+	$message = $db->qstr(sos_strip_tags($_POST['message']), get_magic_quotes_gpc());
 
 	$uid_assigned = intval($_POST['uid_assigned']);        
 	
@@ -232,9 +240,9 @@ function note_add()
 
 	$nowdate = date("Y-m-d H:i:s");
  
-	$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) VALUES ('$message', '$nowdate', $vid, $quality,".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date', 1)";
+	$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) VALUES ($message, '$nowdate', $vid, $quality,".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date', 1)";
 
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 
 	if ($result)
 	{
@@ -295,7 +303,7 @@ function note_delete()
 	}
 	$sql .= ')';
 	
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 	
 	if (!$result)
 	{

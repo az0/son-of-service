@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.10 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: workhistory.php,v 1.11 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
  
@@ -43,7 +43,7 @@ function volunteer_work_history_delete()
     
     $sql = "DELETE FROM work WHERE work_id = $work_id AND volunteer_id = $vid";
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
 
     if (!$result)
     {
@@ -66,6 +66,7 @@ function volunteer_work_history_save($mode)
 // return: nothing
 {
     global $db;
+
 
     // check form input        
     $category_id = intval($_POST['category_id']);
@@ -116,24 +117,24 @@ function volunteer_work_history_save($mode)
 
     if (!$date)
     {
-	save_message(MSG_USER_ERROR,  _("You must give a date."));
+	save_message(MSG_USER_ERROR, _("You must give a date."));
 	save_message(MSG_USER_ERROR, _("Use the date format YYYY-MM-DD or MM/DD/YYYY."));
 	$errors_found++;       
     }
         
-    $memo = $db->escape_string(sos_strip_tags($_POST['memo']));
+    $memo = $db->qstr(sos_strip_tags($_POST['memo']), get_magic_quotes_gpc());
 
     // add to database
     if ('add' == $mode)
     {
 	$sql = "INSERT INTO work ".
 	    "(date, hours, volunteer_id, category_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
-	    "VALUES ('$date', '$hours', $vid, $category_id, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, '$memo', $quality)"; 
+	    "VALUES ('$date', '$hours', $vid, $category_id, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, $memo, $quality)"; 
     }
     else
     {
 	$sql = "UPDATE work ".
-	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = '$memo', quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
+	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = $memo, quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
 	    "WHERE work_id = $work_id AND volunteer_id = $vid LIMIT 1";
     }
     
@@ -141,7 +142,7 @@ function volunteer_work_history_save($mode)
 	// todo: show form again, already filled out    
     {
     
-	$result = $db->query($sql);
+	$result = $db->Execute($sql);
 
 	if ($result)
 	{
@@ -185,20 +186,20 @@ function volunteer_view_work_history($brief = FALSE)
 	"WHERE volunteer_id = $vid ".
 	"ORDER BY date DESC";
 	
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
 
     if (!$result)
     {
-	process_system_error(_("Error querying database."), array('debug'=> $db->get_error().' '.$sql));
+	die_messaeg(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	return FALSE;
     }
 
-    if (!$brief or 0 < $db->num_rows($result))
+    if (!$brief or 0 < $result->RecordCount())
     {
 	echo ("<H3>"._("Work history")."</H3>\n");
     }
 
-    if (0 == $db->num_rows($result))
+    if (0 == $result->RecordCount())
     {
 	if (!$brief)
 	{
@@ -225,8 +226,9 @@ function volunteer_view_work_history($brief = FALSE)
 	echo ("<TH>"._("Memo")."</TH>\n");
 	echo ("</TR>\n");
 
-	while (FALSE != ($work = $db->fetch_array($result)))
+	while (!$result->EOF)
 	{
+	    $work = $result->fields;
 	    if (empty($work['memo']))
 	    {
 	    	$work['memo'] = '&nbsp;';
@@ -241,6 +243,7 @@ function volunteer_view_work_history($brief = FALSE)
 	    echo ("<TD align=\"right\">".$work['category']."</TD>\n");	    
 	    echo ("<TD align=\"right\">".$work['quality']."</TD>\n");
 	    echo ("<TD>".$work['memo']."</TD>\n");
+	    $result->MoveNext();
 	}
 	echo ("</TABLE>\n");
 	if (!$brief)
@@ -261,6 +264,7 @@ function work_history_addedit($mode)
 // creates a form
 {
     global $db;
+    global $db_cache_timeout;
     
 
     if (!('add' == $mode or 'edit' == $mode))
@@ -269,7 +273,7 @@ function work_history_addedit($mode)
 	return FALSE;
     }    
 
-    $vid = intval($_POST['vid']);
+    $vid = intval($_REQUEST['vid']);
 
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
@@ -280,13 +284,13 @@ function work_history_addedit($mode)
     if ('edit' == $mode)
     {
 	$work_id = intval($_POST['work_id']);    
-	$result = $db->query("SELECT * FROM work WHERE work_id = $work_id LIMIT 1");
+	$sql = "SELECT * FROM work WHERE work_id = $work_id";
+	$result = $db->SelectLimit($sql, 1);
 	if (!$result)
 	{
-	    process_system_error(_("Error querying database."));
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	}
-	$work = $db->fetch_array($result);
-	//print_r($work);
+	$work = $result->fields;
 	$date = $work['date'];
 	$hours = $work['hours'];	
 	$memo = $work['memo'];		
@@ -327,24 +331,28 @@ function work_history_addedit($mode)
  <TD> 
  <?php
  
+ // get a list of categories
+ 
  $sql = "SELECT string_id, s FROM strings WHERE type = 'work'";
  
- $result = $db->query($sql);
+ $result = $db->CacheExecute($sql, $db_cache_timeout);
  
  if (!$result)
  {
     process_system_error(_("Error querying database."));    
  }
- else if (0 == $db->num_rows($result))
+ else if (0 == $result->RecordCount())
  {
     process_user_error(_("None found."));
  }
  else
  {
     echo ("<SELECT name=\"category_id\">\n");
-    while (FALSE != ($row = $db->fetch_array($result)))
+    while (!$result->EOF)
     {
+	$row = $result->fields;
 	echo ("<OPTION value=\"".$row['string_id']."\">".$row['s']."</OPTION>\n");
+	$result->MoveNext();
     }
     echo ("</SELECT>\n");
  }

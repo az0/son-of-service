@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.5 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: general.php,v 1.6 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
 
@@ -20,6 +20,8 @@ function volunteer_view_general()
 {
     global $db;
     global $volunteer;
+    global $db_cache_timeout;
+
 
     $vid = intval($_REQUEST['vid']);
 
@@ -66,29 +68,34 @@ function volunteer_view_general()
 // show custom fields
 // todo: SQL_CACHE
 
-    $result_ext = $db->query("SELECT * FROM extended WHERE volunteer_id = $vid");
+    $sql = "SELECT * FROM extended WHERE volunteer_id = $vid";
+
+    $result_ext = $db->CacheExecute($db_cache_timeout, $sql);
     
     if ($result_ext)
     {
-	$row_ext = $db->fetch_array($result_ext);
+	$row_ext = $result_ext->fields;
     }
     else 
     {
 	$row_ext = array();
     }
+    
+    $sql = "SELECT * FROM extended_meta";
 
-    $result_meta = $db->query("SELECT * FROM extended_meta");
+    $result_meta = $db->CacheExecute($db_cache_timeout, $sql);
 
     if ($result_meta)
     {
-	while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
+	while (!$result_meta->EOF)
 	{
-
+	    $row_meta = $result_meta->fields;
 	    $form->addField($row_meta['label'], $row_meta['fieldtype'], 'custom_'.$row_meta['code'], $attributes, $value);
+	    $result_meta->MoveNext();
 	}
+	
+	$result_meta->Close();
     }
-    
-    $db->free_result($result_meta);
 
     $form->addHiddenField('vid', $vid);
     $form->addButton('volunteer_save', _("Save"));
@@ -105,58 +112,63 @@ function volunteer_save()
 
     global $db;
     global $volunteer;
+    global $db_cache_timeout;
+    
+    
 
     // todo: validate
 
     // sanitize input
 
-    $organization = $db->escape_string(htmlentities($_POST['organization']));
+    $organization = $db->qstr(htmlentities($_POST['organization']), get_magic_quotes_gpc());
 
-    $prefix = $db->escape_string(htmlentities($_POST['prefix']));
-    $first = $db->escape_string(htmlentities($_POST['first']));
-    $middle = $db->escape_string(htmlentities($_POST['middle']));
-    $last = $db->escape_string(htmlentities($_POST['last']));
-    $suffix = $db->escape_string(htmlentities($_POST['suffix']));
+    $prefix = $db->qstr(htmlentities($_POST['prefix']), get_magic_quotes_gpc());
+    $first = $db->qstr(htmlentities($_POST['first']), get_magic_quotes_gpc());
+    $middle = $db->qstr(htmlentities($_POST['middle']), get_magic_quotes_gpc());
+    $last = $db->qstr(htmlentities($_POST['last']), get_magic_quotes_gpc());
+    $suffix = $db->qstr(htmlentities($_POST['suffix']), get_magic_quotes_gpc());
 
-    $street = $db->escape_string(htmlentities($_POST['street']), TRUE);
-    $city = $db->escape_string(htmlentities($_POST['city']), TRUE);
-    $state = $db->escape_string(htmlentities($_POST['state']), TRUE);
-    $postal_code = $db->escape_string(htmlentities($_POST['postal_code']));
-    $country = $db->escape_string(htmlentities($_POST['country']));
+    $street = $db->qstr(htmlentities($_POST['street']), get_magic_quotes_gpc());
+    $city = $db->qstr(htmlentities($_POST['city']), get_magic_quotes_gpc());
+    $state = $db->qstr(htmlentities($_POST['state']), get_magic_quotes_gpc());
+    $postal_code = $db->qstr(htmlentities($_POST['postal_code']), get_magic_quotes_gpc());
+    $country = $db->qstr(htmlentities($_POST['country']), get_magic_quotes_gpc());
 
-    $email_address = $db->escape_string(htmlentities($_POST['email_address']));
+    $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());
     
-    $phone_home = $db->escape_string(htmlentities($_POST['phone_home']));
-    $phone_work = $db->escape_string(htmlentities($_POST['phone_work']));
-    $phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));
+    $phone_home = $db->qstr(htmlentities($_POST['phone_home']), get_magic_quotes_gpc());
+    $phone_work = $db->qstr(htmlentities($_POST['phone_work']), get_magic_quotes_gpc());
+    $phone_cell = $db->qstr(htmlentities($_POST['phone_cell']), get_magic_quotes_gpc());
 
     $vid = intval($_POST['vid']);
+    
+    // todo: portable LIMIT for UPDATE
 
     $sql = "UPDATE volunteers SET " .
-	"organization='$organization', ".
-	"prefix='$prefix', " .
-	"first='$first', " .
-	"middle='$middle', " .
-	"last='$last', " .
-	"suffix='$suffix', " .
-	"street='$street', " .
-	"city='$city', " .
-	"state='$state', " .
-	"postal_code='$postal_code', " .
-	"country='$country', " .	
-	"email_address='$email_address', " .
-	"phone_home='$phone_home', " .
-	"phone_cell='$phone_cell', " .
-	"phone_work='$phone_work' " .
-	"WHERE volunteer_id=$vid LIMIT 1";
+	"organization=$organization, ".
+	"prefix=$prefix, " .
+	"first=$first, " .
+	"middle=$middle, " .
+	"last=$last, " .
+	"suffix=$suffix, " .
+	"street=$street, " .
+	"city=$city, " .
+	"state=$state, " .
+	"postal_code=$postal_code, " .
+	"country=$country, " .	
+	"email_address=$email_address, " .
+	"phone_home=$phone_home, " .
+	"phone_cell=$phone_cell, " .
+	"phone_work=$phone_work " .
+	"WHERE volunteer_id = $vid";
 
     // update primary volunteer record
 
-    $success_primary = FALSE != $db->query($sql);
+    $success_primary = FALSE != $db->Execute($sql);
 
     if (!$success_primary)
     {
-	save_message(MSG_SYSTEM_ERROR, _("Error updating primary volunteer record."), __FILE__, __LINE__);
+	save_message(MSG_SYSTEM_ERROR, _("Error updating primary volunteer record."), __FILE__, __LINE__, $sql);
     }
 
     // gather custom fields from POST
@@ -167,7 +179,7 @@ function volunteer_save()
     {
 	if (preg_match('/^custom_(\w{1,})$/', $key, $matches))
         {
-		$custom[$matches[1]] = array('value' => $value, 'save' => FALSE);	
+	    $custom[$matches[1]] = array('value' => $value, 'save' => FALSE);	
 	}
     }
 
@@ -177,12 +189,13 @@ function volunteer_save()
     
     $sql = "SELECT * FROM extended_meta";
 
-    $result_meta = $db->query($sql);
+    $result_meta = $db->CacheExecute($db_cache_timeout, $sql);
 
     if ($result_meta)
     {
-	while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
+	while (!$result_meta->EOF)
 	{
+	    $row_meta = $result_meta->fields;
     	    if (array_key_exists($row_meta['code'], $custom))
 	    {
 		switch ($row_meta['fieldtype'])
@@ -209,7 +222,7 @@ function volunteer_save()
 		    
 		    case 'string':		
 		    case 'textarea':		
-	    		$custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']]['value']))."'";
+	    		$custom[$row_meta['code']]['value'] = $db->qstr(htmlentities($custom[$row_meta['code']]['value']), get_magic_quotes_gpc());
 	    		$custom[$row_meta['code']]['save'] = TRUE;
 		    break;
 
@@ -220,6 +233,7 @@ function volunteer_save()
 	    
 		}    
 	    }
+	    $result_meta->MoveNext();
 	}
     }
     else
@@ -227,7 +241,7 @@ function volunteer_save()
 	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
     }
 
-    $db->free_result($result_meta);
+    $result_meta->Close();
 
     // save extended data
 
@@ -274,9 +288,6 @@ function volunteer_save()
     if ($success_primary and $success_extended)
     {
 	save_message(MSG_USER_NOTICE, _("Updated."));    
-//	$volunteer = volunteer_get($vid);
-//	include('general.php');
-//	volunteer_view_general();
     }
     
     // redirect user to non-POST page

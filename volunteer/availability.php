@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.5 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: availability.php,v 1.6 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
  
@@ -27,7 +27,7 @@ function volunteer_delete_availability()
     
     $sql = "DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = $vid";
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
 
     if (!$result)
     {
@@ -44,47 +44,47 @@ function volunteer_delete_availability()
 }
 
  
-  function volunteer_availability_add()
-  {
-      global $db;
+function volunteer_availability_add()
+{
+    global $db;
       
       
-      // todo: check permissions      
+    // todo: check permissions      
       
-      $vid = intval($_POST['vid']);
-      $day_of_week = intval($_POST['day_of_week']);
-      $start_time = $db->escape_string($_POST['start_time']); // should just be char      
-      $end_time = $db->escape_string($_POST['end_time']); // should just be char
+    $vid = intval($_POST['vid']);
+    $day_of_week = intval($_POST['day_of_week']);
+    // should just be char      
+    $start_time = $db->qstr($_POST['start_time'], get_magic_quotes_gpc()); 
+    // should just be char
+    $end_time = $db->qstr($_POST['end_time'], get_magic_quotes_gpc()); 
   
-      // always validate form input first
-      if (!(preg_match("/^[0-9]+$/", $day_of_week) and preg_match("/^[0-9]+$/",$day_of_week)))
-      {
+    // always validate form input first
+    if (!(preg_match("/^[0-9]+$/", $day_of_week) and preg_match("/^[0-9]+$/",$day_of_week)))
+    {
 	save_message(MSG_SYSTEM_ERROR, _("Bad form input:"). ' day_of_week', __FILE__, __LINE__);
-      }
-      else
-      {
-      
-        $sql = "INSERT INTO availability ".
+    }
+    else
+    {  
+	$sql = "INSERT INTO availability ".
 	    "(volunteer_id, day_of_week, start_time, end_time, dt_added, uid_added, dt_modified,uid_modified) ".
-	    "VALUES ($vid, $day_of_week, '$start_time', '$end_time', now(), ".$_SESSION['user_id'].", dt_added, uid_added)";
+	    "VALUES ($vid, $day_of_week, $start_time, $end_time, now(), ".get_user_id().", dt_added, uid_added)";
       
-        $result = $db->query($sql);	
+	$result = $db->Execute($sql);	
     
         if (!$result)
         {
-	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE, $sql);
+	    save_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
         }      
     }
     
     header ("Location: ./?vid=$vid&menu=availability");
     
-    
-  } /* volunteer_availability_add() */
+} /* volunteer_availability_add() */
 
 
 
- function volunteer_view_availability()
- {
+function volunteer_view_availability()
+{
     global $db;
     global $user;
     global $daysofweek;
@@ -93,23 +93,25 @@ function volunteer_delete_availability()
     //todo: check permissions
     
     display_messages();
-
+    
     $vid = intval($_REQUEST['vid']);
     
     echo ("<H3>Availability</H3>\n");
+    
+    $sql = "SELECT * FROM availability WHERE volunteer_id = $vid ORDER BY day_of_week";
 
-    $result = $db->query("SELECT * FROM availability WHERE volunteer_id = $vid ORDER BY day_of_week");
+    $result = $db->Execute($sql);
     
     if (!$result)
     {
-	process_system_error(_("Error querying database."). array('debug' => $db->geterror()));
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     
     
     echo ("<FORM method=\"post\" action=\".\">\n");
     echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
     
-    if (0 == $db->num_rows($result))
+    if (0 == $result->RecordCount())
     {
 	process_user_notice(_("None found."));
     }
@@ -127,14 +129,16 @@ function volunteer_delete_availability()
 </TR>
 <?php
 
-    while (FALSE != ($availability = ($db->fetch_array($result))))
+    while (!$result->EOF)
     {
+	$availability = $result->fields;
 	echo ("<TR>\n");
 	echo ("<TD><INPUT type=\"radio\" name=\"availability_id\" value=\"".$availability['availability_id']."\"></TD>\n");
 	echo ("<TD>".(0< $availability['day_of_week'] ? $daysofweek[$availability['day_of_week']]:"bad value")."</TD>\n");
 	echo ("<TD>".$availability['start_time']."</TD>\n");	
 	echo ("<TD>".$availability['end_time']."</TD>\n");		
 	echo ("</TR>\n");	
+	$result->MoveNext();
     }
 
 echo ("</TABLE>\n");

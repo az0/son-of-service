@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.23 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: index.php,v 1.24 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
 
@@ -24,12 +24,11 @@ require_once (SOS_PATH . 'functions/html.php');
 require_once (SOS_PATH . 'functions/forminput.php');
 require_once (SOS_PATH . 'functions/formmaker.php');
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
-    process_system_error(_("Unable to establish database connection."), array('debug'=>$db->get_error()));    
-    die();	
+    die_message(_("Unable to establish database connection."), __FILE__, __LINE__);
 }
 
 if (array_key_exists('vid', $_REQUEST))

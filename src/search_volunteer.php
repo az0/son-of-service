@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.15 2003/12/03 04:53:18 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.16 2003/12/03 17:23:05 andrewziem Exp $
  *
  */
 
@@ -147,7 +147,7 @@ function search_add($form_name, $column, &$where)
 
     if (array_key_exists($form_name, $_REQUEST) and trim(strlen($_REQUEST[$form_name])) > 0)
     {
-	$where .= " AND $column LIKE '%".$db->escape_string($_REQUEST[$form_name])."%'";
+	$where .= " AND $column LIKE ".$db->qstr('%'.$_REQUEST[$form_name].'%', get_magic_quotes_gpc())."";
 
 	if ($cm->columnExists($column))		
 	{
@@ -257,7 +257,7 @@ function volunteer_search()
         if (!$result)
         { 
 	    // search failed
-	    process_system_error(_("Error querying database."), array('debug' => $db->get_error()." ".$sql));
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	    
         }
         else
         { 
@@ -279,7 +279,13 @@ function volunteer_search()
 
 		    $tab = new DataTableDisplay();
 		    
-		    $fieldnames = $db->fieldnames($result);
+		    $fieldnames = array();
+		    
+		    for ($i = 0, $max = $result->FieldCount(); $i < $max; $i++)
+		    {
+			$fld = $result->FetchField($i);		    
+			$fieldnames[$fld->name] = array();
+		    }
 		    
 		    $fieldnames['first']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    
 		    $fieldnames['organization']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
@@ -287,7 +293,7 @@ function volunteer_search()
 			
 		    if ($offset > 0)
 		    {
-			$db->data_seek($result, $offset);	    
+			$result->Move($offset);	    
 		    }
 		    
 		    $max = $results_per_page;
@@ -299,13 +305,14 @@ function volunteer_search()
 		    {
 			$max = $total_results - 1;
 		    }
-
+		    
 		    $tab->setHeaders($fieldnames);
 		    $tab->begin();
 		    
 		    while (!$result->EOF)
 		    {
 		        $tab->addRow($result->fields);
+			$result->MoveNext();
 		    }
 		    
 		    $tab->end();
@@ -527,8 +534,7 @@ $db = connect_db();
 
 if (!$db)
 {
-    process_system_error(_("Unable to establish database connection."), array('debug' => $db->ErrMsg()));    
-    die();	
+    die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
 }
 
 

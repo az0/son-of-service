@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.7 2003/12/03 04:48:08 andrewziem Exp $
+ * $Id: db.php,v 1.8 2003/12/03 17:23:04 andrewziem Exp $
  *
  */
 
@@ -43,7 +43,7 @@ function volunteer_get($vid)
 	return FALSE;
     }
 
-    if (1 != $db->RecordCount($result))
+    if (1 != $result->RecordCount())
     {
 	process_system_error(_("Volunteer not found."));
 	return FALSE;
