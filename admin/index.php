@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.2 2003/10/06 00:33:32 andrewziem Exp $
+ * $Id: index.php,v 1.3 2003/10/24 14:34:29 andrewziem Exp $
  *
  */
 
@@ -84,10 +84,7 @@ function download_mailing_list()
 	
     }
     
-    
     // <LI>Download mailing list [<A href="admin.php?download_mailing_list=1&type=postal&who=all">all</A>]</LI>
-    
-    
     
     // to do: finish
 
