@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.6 2003/11/22 16:53:48 andrewziem Exp $
+ * $Id: html.php,v 1.7 2003/11/23 21:39:48 andrewziem Exp $
  *
  */
 
@@ -27,15 +27,17 @@ define('MSG_USER_NOTICE', 1024);
  * forms processing.
  *
  */
-function save_message($message, $type)
+function save_message($message, $type, $options = FALSE)
 {
     assert (is_int($type));
-    $_SESSION['messages'][] = array('message' => $message, 'type' => $type);
+    $_SESSION['messages'][] = array('message' => $message, 'type' => $type, 'options' => $options);
+    
+    // to do: log error message here if applicable (refer to configurable log level)
 }
 
 
 
-function display_message($message, $type)
+function display_message($message, $type, $options = FALSE)
 {
 
     switch ($type)
@@ -44,7 +46,7 @@ function display_message($message, $type)
 	case MSG_SYSTEM_WARNING:
 	case MSG_USER_ERROR:
 	case MSG_USER_WARNING:
-	    $class = "CLASS=\"errortext\"";
+	    $class = " CLASS=\"errortext\"";
 	    break;
 	
 	default:
@@ -52,6 +54,12 @@ function display_message($message, $type)
 	    break;
     }
     echo ("<P$class>$message</P>");
+    
+    if (is_array($options) and array_key_exists('debug', $options))
+    {
+	// to do: disable debug in config.php
+	echo ("<P>"._("Debug:").' '.$options['debug']."</P>\n");
+    }
 }
 
 
@@ -66,7 +74,7 @@ function display_messages()
     {
 	foreach ($_SESSION['messages'] as $key => $msg)
 	{
-	    display_message($msg['message'], $msg['type']);
+	    display_message($msg['message'], $msg['type'], $msg['options']);
 	    unset($_SESSION['messages'][$key]);
 	}	
 	

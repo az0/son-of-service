@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.6 2003/11/22 16:53:48 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.7 2003/11/23 21:39:48 andrewziem Exp $
  *
  */
 
@@ -76,8 +76,6 @@ function volunteer_add()
     $phone_home = $db->escape_string(htmlentities($_POST['phone_home']));
     $phone_work = $db->escape_string(htmlentities($_POST['phone_work']));   
     $phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));      
-
-   //$wants_monthly_information = $_POST['wants_monthly_information'];             
 
     $sql = 'INSERT INTO volunteers '.
 	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,phone_home,phone_work,phone_cell,email_address, dt_added, uid_added) '.

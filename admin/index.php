@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.10 2003/11/23 16:48:24 andrewziem Exp $
+ * $Id: index.php,v 1.11 2003/11/23 21:39:48 andrewziem Exp $
  *
  */
 
@@ -48,7 +48,7 @@ function download_mailing_list()
 	die();
     }
     
-    $result = $db->query("SELECT concat(first, ' ',middle,' ',last) as personalname, organization, street, city, state, postal_code, wants_monthly_information FROM volunteers");
+    $result = $db->query("SELECT concat(first, ' ',middle,' ',last) as personalname, organization, street, city, state, postal_code FROM volunteers");
     
     if (!$result)
     {

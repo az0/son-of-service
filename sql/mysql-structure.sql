@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.15 2003/11/23 19:49:43 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.16 2003/11/23 21:39:48 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -31,8 +31,6 @@ CREATE TABLE volunteers (
         phone_work varchar(20) NOT NULL,
         phone_cell varchar(20) NOT NULL,
         email_address varchar(45) NOT NULL,
-
-	wants_monthly_information CHAR, # E (email), P (postal mail), N (no)
 
         hours_life decimal(10,2),
         hours_ly decimal(10,2),	

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.18 2003/11/23 17:14:55 andrewziem Exp $
+ * $Id: index.php,v 1.19 2003/11/23 21:39:48 andrewziem Exp $
  *
  */
 
@@ -229,7 +229,10 @@ if (!array_search($vid, $_SESSION['recent_vid']))
 
 // execute requested action
 if (array_key_exists('volunteer_save', $_POST))
-	volunteer_save();
+{
+    require_once('general.php');
+    volunteer_save();
+}
 else
 {
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.2 2003/11/23 17:14:55 andrewziem Exp $
+ * $Id: general.php,v 1.3 2003/11/23 21:39:48 andrewziem Exp $
  *
  */
 
@@ -24,6 +24,8 @@ function volunteer_view_general()
     $vid = intval($_REQUEST['vid']);
 
     //    echo ("<H3>General information</H3>\n");
+    
+    display_messages();
 
 
     $form = new FormMaker();
@@ -128,15 +130,6 @@ function volunteer_save()
     $phone_work = $db->escape_string(htmlentities($_POST['phone_work']));
     $phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));
 
-    if (array_key_exists('wants_monthly_information', $_POST))
-    {
-	$wants_monthly_information = $db->escape_string($_POST['wants_monthly_information']);
-    }
-    else
-    {
-	$wants_monthly_information = 'N';
-    }
-
     $vid = intval($_POST['vid']);
 
     $sql = "UPDATE volunteers SET " .
@@ -154,8 +147,7 @@ function volunteer_save()
 	"email_address='$email_address', " .
 	"phone_home='$phone_home', " .
 	"phone_cell='$phone_cell', " .
-	"phone_work='$phone_work', " .
-	"wants_monthly_information='$wants_monthly_information' ".
+	"phone_work='$phone_work' " .
 	"WHERE volunteer_id=$vid LIMIT 1";
 
     // update primary volunteer record
@@ -164,7 +156,7 @@ function volunteer_save()
 
     if (!$success_primary)
     {
-	process_system_error(_("Error updating primary volunteer record."), array('debug'=>$db->error()));
+	save_message(_("Error updating primary volunteer record."), MSG_SYSTEM_ERROR, array('debug' => $db->error()." SQL: $sql"));
     }
 
     // gather custom fields from POST
@@ -230,7 +222,7 @@ function volunteer_save()
     }
     else
     {    	
-	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+	save_message(_("Error querying database."), MSG_SYSTEM_ERROR, array('debug' => $db->error()));	
     }
 
     $db->free_result($result_meta);
@@ -266,7 +258,7 @@ function volunteer_save()
     
 	if (!$success_extended)
 	{
-    	    process_system_error(_("Error updating extended volunteer record."), array('debug' => $db->error()));    
+	    save_message(_("Error updating extended volunteer record."), MSG_SYSTEM_ERROR, array('debug' => $db->error()));
 	}	
     }
     else
@@ -279,11 +271,15 @@ function volunteer_save()
 
     if ($success_primary and $success_extended)
     {
-	echo("<P>"._("Updated.")."</P>\n");
-	$volunteer = volunteer_get($vid);
-	include('general.php');
-	volunteer_view_general();
+	save_message(_("Updated."), MSG_USER_NOTICE);    
+//	$volunteer = volunteer_get($vid);
+//	include('general.php');
+//	volunteer_view_general();
     }
+    
+    // redirect user to non-POST page
+    ob_end_clean();
+    header("Location: ./?vid=$vid&menu=general");
 
 
 } /* volunteer_save() */
