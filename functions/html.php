@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.2 2003/11/01 17:24:55 andrewziem Exp $
+ * $Id: html.php,v 1.3 2003/11/02 15:19:20 andrewziem Exp $
  *
  */
 
@@ -68,14 +68,14 @@ function make_html_begin($title, $options)
 {
     global $base_url;
 
-    echo "<HTML>\n";
-    echo "<HEAD>\n";
-    echo "<TITLE>$title</TITLE>";
-    echo "<STYLE type=\"text/css\" media=\"screen\">\n";
-    echo "<!--   @import url($base_url/sos.css);    --></STYLE>\n";
+    echo ("<HTML>\n");
+    echo ("<HEAD>\n");
+    echo ("<TITLE>$title</TITLE>");
+    echo ("<STYLE type=\"text/css\" media=\"screen\">\n");
+    echo ("<!--   @import url($base_url/sos.css);    --></STYLE>\n");
     echo ("<META name=\"robots\" content=\"noindex,nofollow\">\n");    
-    echo "</HEAD>\n";
-    echo "<BODY>\n";
+    echo ("</HEAD>\n");
+    echo ("<BODY>\n");
 }
 
 

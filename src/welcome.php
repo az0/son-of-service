@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.4 2003/10/31 17:13:21 andrewziem Exp $
+ * $Id: welcome.php,v 1.5 2003/11/02 15:19:20 andrewziem Exp $
  *
  */
 
@@ -58,7 +58,6 @@ criticism of the overall design is appropriate now.</P>
 
 <P>Currently implementing:<P>
 <UL>
-<LI>Easy, web method for volunteer coordinator to import simple legacy data from a CSV file
 <LI>Easy, web method for volunteer coordinator to add custom data fields
 <LI>Better reminder system
 <LI>Relationship system

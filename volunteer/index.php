@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.7 2003/11/01 17:24:55 andrewziem Exp $
+ * $Id: index.php,v 1.8 2003/11/02 15:19:20 andrewziem Exp $
  *
  */
 
@@ -23,12 +23,6 @@ require_once (SOS_PATH . 'include/global.php');
 require_once (SOS_PATH . 'functions/html.php');
 require_once (SOS_PATH . 'functions/forminput.php');
 
-make_html_begin(_("Volunteer account"), array());
-
-is_logged_in();
-
-make_nav_begin();
-
 $db = new voldbMySql();
 
 if ($db->get_error())
@@ -37,8 +31,21 @@ if ($db->get_error())
     die();	
 }
 
-//debug
-//print_r($_POST);
+if (array_key_exists('vid', $_REQUEST))
+{
+    $volunteer_name = make_volunteer_name(volunteer_get(intval($_REQUEST['vid'])));
+
+}
+else
+{
+    $volunteer_name = "";
+}
+
+make_html_begin(_("Volunteer account: ").$volunteer_name, array());
+
+is_logged_in();
+
+make_nav_begin();
 
   if (array_key_exists('add_skill', $_POST))
   {
@@ -103,13 +110,36 @@ if ($db->get_error())
     volunteer_delete();
   }
   else
-
   if (array_key_exists('button_add_note', $_POST))
   {
     include('notes.php');
     note_add();
   }
-  else volunteer_view();
+  else 
+  {
+    $found = FALSE;
+    foreach ($_POST as $pk => $pv)
+    {
+	if (preg_match('/add_relationship/', $pk))
+	{
+	    $found = TRUE;
+	    include('relationships.php');
+	    relationship_add();
+
+	}
+	else if (preg_match('/delete_relationship_/', $pk))
+	{
+	    $found = TRUE;
+	    include('relationships.php');
+	    relationship_delete();
+	
+	}
+    }
+    if (!$found)
+    {
+	volunteer_view();  
+    }
+  } 
 
 
 
@@ -132,7 +162,7 @@ function volunteer_delete()
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
     {
       
-    // delete related records
+	// delete related records
 
 	echo "<P>Deleting related records...</P>\n";
 	echo ("<UL>\n");
@@ -144,6 +174,8 @@ function volunteer_delete()
         $result = $db->query("DELETE FROM availability WHERE vid=$vid");      
         echo (" <LI>Deleting skills..\n");
         $result = $db->query("DELETE FROM volunteer_skills WHERE vid=$vid");            
+	echo (" <LI>Deleting relationships..\n");
+        $result = $db->query("DELETE FROM relationships WHERE volunteer1_id = $vid OR volunteer2_id = $vid");            	
 	echo " </UL>\n";
       
         // delete primary record

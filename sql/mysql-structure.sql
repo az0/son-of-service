@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.4 2003/11/01 17:24:55 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.5 2003/11/02 15:19:20 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -131,7 +131,6 @@ CREATE TABLE work (
     index (volunteer_id)
 );
 
-
 CREATE TABLE users (
         user_id int NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
 
@@ -149,7 +148,8 @@ CREATE TABLE users (
 
 	INDEX (user_id),
 	INDEX (username(5)),
-	INDEX (password(5)));
+	INDEX (password(5))
+);
 
 CREATE TABLE relationships (
 	relationship_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -158,6 +158,8 @@ CREATE TABLE relationships (
 	volunteer2_id INT NOT NULL,	
 	
 	rtype int,
+	
+	UNIQUE(volunteer1_id,volunteer2_id,rtype)
 );
 
 CREATE TABLE relationship_types (

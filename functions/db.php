@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: db.php,v 1.2 2003/11/02 15:19:20 andrewziem Exp $
  *
  */
 
@@ -24,15 +24,17 @@ function volunteer_get($vid)
     global $db;
     
 
-    if (!is_integer($vid))
+    if (!is_numeric($vid))
     {
-	process_system_error("volunteer_get():"._("Expected integer."));
+	process_system_error("volunteer_get(): Expected integer.");
 	return FALSE;
     }
     
+    $vid = intval($vid);
+    
     $result = $db->query("SELECT * " .
-                          "FROM volunteers " .
-                         "WHERE volunteer_id=" . intval($vid));
+                         "FROM volunteers " .
+                         "WHERE volunteer_id=$vid");
 
     if (!$result)
     {
@@ -40,8 +42,6 @@ function volunteer_get($vid)
 	return FALSE;
     }
 
-//    echo "<P>Debug: Found " . mysql_num_rows($result) . " results.</P>\n";
-    
     if (1 != $db->num_rows($result))
     {
 	process_system_error(_("Volunteer not found"));
