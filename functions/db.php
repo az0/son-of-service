@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.5 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: db.php,v 1.6 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -44,7 +44,7 @@ function volunteer_get($vid)
 
     if (1 != $db->num_rows($result))
     {
-	process_system_error(_("Volunteer not found"));
+	process_system_error(_("Volunteer not found."));
 	return FALSE;
     }
 

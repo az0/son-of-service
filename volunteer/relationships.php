@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.6 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: relationships.php,v 1.7 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -49,7 +49,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
 	
 	if (!$result)
 	{
-	    process_system_error(_("Database error."), 	array('debug' => $db->get_error()));
+	    process_system_error(_("Error querying database."),	array('debug' => $db->get_error()));
 	}
 	else if ($db->num_rows($result) > 0)
         {
@@ -64,10 +64,16 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
 	    echo ("</UL>\n");	    
 	}
     }	
+    else
+    {
+        echo ("<LI>"._("Error")."\n");
+        echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
+    }
+    
 } /* show_relationship_leaf() */
 
 
-function relationships_view()
+function relationships_view($brief = FALSE)
 {
     global $db;
     global $ignore_relationships;
@@ -95,7 +101,7 @@ function relationships_view()
     
     $c = 0;            
 
-    echo ("<H2>"._("Relationships")."</H2>\n");
+
 
     // query primary relationships
     
@@ -115,11 +121,14 @@ function relationships_view()
     }
     else if ($db->num_rows($result) > 0)
     {
+
+	echo ("<H2>"._("Relationships")."</H2>\n");
+    
 	echo ("<FORM action=\".\" method=\"post\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	echo ("<UL>\n");
 	echo ("<LH>".make_volunteer_name(volunteer_get($vid))."</LH>\n");
-    
+		
 	while (FALSE != ($row = $db->fetch_array($result)))
 	{
 	    $c++;
@@ -130,19 +139,21 @@ function relationships_view()
 	echo ("</FORM>\n");
     }
 
-    if (0 == $c)
+    if (0 == $c and !$brief)
     {
 	echo ("<P>"._("None found.")."</P>\n");
     }
     
     // button for changing maximum depth
     
+    if (!$brief)
+    {
+    
     echo ("<FORM method=\"\" action=\".\">\n");    
     echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
     echo ("<INPUT type=\"hidden\" name=\"menu\" value=\"relationships\">\n");    
     echo (_("Maximum depth")."\n");    
     echo ("<SELECT name=\"max_depth\">\n");
-    // to do: remember, default=3
     for ($i = 1; $i < 10; $i++)
     {
 	$selected = "";
@@ -156,6 +167,17 @@ function relationships_view()
     echo ("<INPUT type=\"submit\" value=\""._("Go")."\">\n");
     echo ("</FORM>\n");
     
+    }
+}
+    
+function relationships_add_form()
+{    
+    global $db;
+
+
+    $vid = intval($_REQUEST['vid']);
+
+
     echo ("<H3>"._("Add relationship")."</H3>\n");
 
     // remember relationship types for multiple uses
@@ -260,6 +282,12 @@ function relationship_add()
     
     $vid = intval($_POST['vid']);
     
+    if (!volunteer_get($vid) or !volunteer_get($vid2))
+    {
+	process_user_error(_("Volunteer not found."));
+	return FALSE;
+    }
+    
     $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, relationship_type_id) VALUES ($vid, $vid2, $rtype)";
     $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, relationship_type_id) VALUES ($vid2, $vid, $rtype)";
     $result1 = $db->query($sql1);    
@@ -273,8 +301,6 @@ function relationship_add()
     {
 	process_user_notice(_("Added relationship."));
     }
-    
-    relationships_view();
     
 } /* relationship_add() */
 
@@ -298,6 +324,7 @@ function relationship_delete()
     if (!$vid1 or !$vid2)
     {
 	process_system_error(_("Input missing."));
+	return FALSE;
     }
     
     $sql1 = "DELETE FROM relationships WHERE volunteer1_id = $vid1 and volunteer2_id = $vid2";
@@ -313,9 +340,6 @@ function relationship_delete()
     {
 	process_user_notice(_("Deleted."));
     }
-    
-    relationships_view();
-    
 
 } /* relationship_delete() */
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.6 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.7 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -390,7 +390,7 @@ section.</P>
 <FORM method="get" action="search_volunteer.php">
 
 
-<TABLE border="0" style="border:none" cellspacing="5">
+<TABLE border="0" class="clear" cellspacing="5">
 <TR>
 <TD valign="top">
 <TABLE border="0" style="margin:6pt">

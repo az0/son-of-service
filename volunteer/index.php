@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.12 2003/11/09 20:21:22 andrewziem Exp $
+ * $Id: index.php,v 1.13 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -126,6 +126,8 @@ make_nav_begin();
 	    $found = TRUE;
 	    include('relationships.php');
 	    relationship_add();
+	    relationships_view();
+	    relationships_add_form();
 
 	}
 	else if (preg_match('/delete_relationship_/', $pk))
@@ -133,7 +135,8 @@ make_nav_begin();
 	    $found = TRUE;
 	    include('relationships.php');
 	    relationship_delete();
-	
+	    relationships_view();
+	    relationships_add_form();	    
 	}
     }
     if (!$found)
@@ -315,20 +318,33 @@ if ($result_meta)
 		case 'date':			
 		    $new_value = sanitize_date($custom[$row_meta['code']]['value']);		  
 
-		    if ($custom[$row_meta['code']]['value'])
+
+
+		    if ($new_value)
 		    {
 		    	$custom[$row_meta['code']]['save'] = TRUE;
+			$custom[$row_meta['code']]['value'] = "'$new_value'";
+		    }
+		    elseif (empty($custom[$row_meta['code']]['value']))
+		    {
+			$custom[$row_meta['code']]['value'] = "NULL";
 		    }
 		    else
 		    {
 			process_user_error("Bad date format.");
+			$custom[$row_meta['code']]['value'] = "NULL";
 		    }
-		    $custom[$row_meta['code']]['value'] = "'$new_value'";
+
 		break;
 		    
 		case 'string':		
 		case 'textarea':		
 	    	    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']]['value']))."'";
+	    	    $custom[$row_meta['code']]['save'] = TRUE;
+		break;
+
+		case 'integer':		
+	    	    $custom[$row_meta['code']]['value'] = intval($custom[$row_meta['code']]['value']);
 	    	    $custom[$row_meta['code']]['save'] = TRUE;
 		break;
 	    
@@ -522,6 +538,7 @@ if ($result_meta)
 		$attributes = array('length' => $row_meta['size1']);
 		break;
 	    case 'date':
+	    case 'integer':
 		$attributes = array();
 		break;		
 	    case 'textarea':
@@ -616,6 +633,7 @@ if (array_key_exists('menu', $_GET))
 	{
 		include('relationships.php');
 		relationships_view();
+		relationships_add_form();		
 	}
 	else if ('general' == $_GET['menu'])
 	{

@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.7 2003/11/09 20:21:21 andrewziem Exp $
+ * $Id: custom.php,v 1.8 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -54,7 +54,7 @@ function custom_add_field_form1()
 
 <FIELDSET>
 <CAPTION><?php echo _("Integer");?></CAPTION>
-<BR><INPUT type="radio" name="fieldtype" value="integer">Integer
+<BR><INPUT type="radio" name="fieldtype" value="integer">Integer: -1, 0, 1, 2, 3, 4...
 </FIELDSET>
 
 <FIELDSET>
@@ -64,7 +64,7 @@ function custom_add_field_form1()
 
 <FIELDSET>
 <CAPTION><?php echo _("Boolean");?></CAPTION>
-<BR><INPUT type="radio" name="fieldtype" value="boolean">Boolean: yes or no
+<BR><INPUT type="radio" name="fieldtype" value="boolean" disabled>Boolean: yes or no
 </FIELDSET>
 
 <FIELDSET>
@@ -84,7 +84,7 @@ function custom_add_field_form1()
 
 <FIELDSET>
 <CAPTION>2. Field attributes</CAPTION>
-<BR><INPUT type="text" name="label"> Label
+<BR>Label <INPUT type="text" name="label">
 
 <!--<BR><INPUT type="text" name="description">Description-->
 </FIELDSET>
@@ -272,6 +272,14 @@ function custom_add_field_form3()
 		"VALUES ('$code', '$label', 'date')";
 	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code DATE";		
 	    break;	
+	case 'integer':	    		
+	    $sql_meta = 'INSERT INTO extended_meta '.
+		'(code, label, fieldtype) '.
+		"VALUES ('$code', '$label', 'integer')";
+	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code INT";		
+	    break;	
+	    
+	    
 	default:
 	    process_system_error(_("Bad form input:" .' fieldtype'));	    
 	    assert(FALSE);    

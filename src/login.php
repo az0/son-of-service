@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: login.php,v 1.3 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -17,7 +17,7 @@ session_unset();
 session_destroy(); // must start before destroy
 session_start();
 
-// Security: Do not allow client to remember and reply successful login
+// Security: Do not allow client to remember and replay successful login
 header("Pragma: no-cache"); 
 
 define('SOS_PATH', '../');

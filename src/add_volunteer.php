@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.4 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -29,17 +29,21 @@ echo ("<H3>Add a volunteer</H3>\n");
 
 function volunteer_add()
 {
-    global  $base_url;
+    global $base_url;
+    global $db;
+    
     
     // validate form input
 
     $errors_found = 0;
 
+/*
     if (!isset($_POST['first']) or 0 == strlen(trim($_POST['first'])))
     {
        process_user_error(_("Too short:").' '._("First name"));
        $errors_found++;
     }
+*/    
 
     if (!isset($_POST['last']) or 0 == strlen(trim($_POST['last'])))
     {
@@ -54,15 +58,6 @@ function volunteer_add()
 	  die();
     }
     
-    // init database
-
-    $db = new voldbMySql();
-
-    if ($db->get_error())
-    {
-	process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
-	die();	
-    }
     
     $organization = $db->escape_string(htmlentities($_POST['organization']));
 
@@ -90,15 +85,17 @@ function volunteer_add()
 
     $result = $db->query($sql);
 
-    if (!$result) { // unsuccessful save
-	    // fixme: put mysql_Error seperatly for security
-	    process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
-            exit();
+    if (!$result) 
+    { 
+	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
+        return FALSE;
     }
     
-    $vid = mysql_insert_id();
-
-    echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"${base_url}volunteer/?vid=$vid\">" . $first . " " . $last . "</A></P>\n");
+    $vid = $db->insert_id();
+    
+    $volunteer_row = volunteer_get(intval($vid));
+    
+    echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"${base_url}volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
 
 
 } /* add_volunteer() */
@@ -176,6 +173,14 @@ function volunteer_add_form()
 
 if (array_key_exists('button_add_volunteer', $_POST)) 
 {
+    $db = new voldbMySql();
+
+    if ($db->get_error())
+    {
+	process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));
+	return FALSE;
+    }
+
     volunteer_add();
 }
 else 

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.3 2003/11/02 15:19:20 andrewziem Exp $
+ * $Id: html.php,v 1.4 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -163,6 +163,17 @@ function make_url($parameters, $exclusion)
 	}
     }	    
     return $url;
+}
+
+function nbsp_if_null($s)
+{
+    if (NULL == $s or empty($s))
+    {
+	return "&nbsp";
+    }
+    
+    return $s;
+	
 }
 
 ?>

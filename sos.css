@@ -1,5 +1,5 @@
 BODY {
- background-color: #fad9fd;
+ background-color: #FFFFFF;
  color: #00000;
 }
 
@@ -9,8 +9,8 @@ P, TD, H1, H2, H3, H4, H5 {
 }
 
 TABLE {
- border: solid #026d02;
- background: #fbd0fe;
+ border: solid #333399;
+ background: #ccccff;
  border-width: 4px;
  margin: 9pt;
  border-spacing: 0pt;
@@ -20,16 +20,21 @@ table.form {
  padding: 0px;
 }
 
+table.clear {
+ border: none;
+ background: #FFFFFF;
+}
+
 TD
 {
- border-color: #026d02;
+ border-color: #333300;
  border-style: thin;
  padding: 2pt;
 }
 
 
 th {
- background: #ceb8dc;
+ background: #9999FF;
  color: #000000;
  font-weight: bold;
  padding-left: 6pt;
@@ -41,10 +46,8 @@ th.vert {
   vertical-align: top;
 }
 
-
-
 A {
- color: #3300CC;
+ color: #000099;
  text-decoration:none;
  }
 
@@ -58,22 +61,18 @@ div.tab_area {
  font-weight: bold;
 }
 
-
-
 a.tab, a.tab:visited {
- background: #ceb8dc;
- border: 1pt solid #000000;
+ background: #9999FF;
+ border: 1pt solid #333399;
  border-bottom: 0pt;
  padding: 2pt 1em 2pt 1em;
  margin-bottom: 0pt;
 }
 
-
 a.tab:hover{
  background: #cec8dc; 
  border: 2pt;
 }
-
 
 .errortext
 {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.5 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: notes.php,v 1.6 2003/11/10 17:22:30 andrewziem Exp $
  *
  */
 
@@ -26,7 +26,7 @@ $sql = 'SELECT notes.*,u1.username as added_by, u2.username as assigned_to '.
 	'FROM notes '.
 	'LEFT JOIN users as u1 ON notes.uid_added = u1.user_id '.
 	'LEFT JOIN users as u2 ON notes.uid_assigned = u2.user_id '.
-	"WHERE notes.volunteer_id = 1 ORDER BY dt DESC";
+	"WHERE notes.volunteer_id = $vid ORDER BY dt DESC";
 
 $result = $db->query($sql);
 
@@ -43,7 +43,7 @@ echo ("<H3>"._("Notes")."</H3>\n");
 if (0 == $db->num_rows($result))
 {
 	if (!$brief)
-	process_user_notice(_("No notes for this volunteer."));
+	process_user_notice(_("None found."));
 }
 else
 { // display work history
@@ -55,7 +55,9 @@ else
 	echo ("<TABLE border=\"1\">\n");
 	echo ("<TR>\n");
 	if (!$brief)
-	echo ("<TH>"._("Select")."</TH>\n");
+	{
+	    echo ("<TH>"._("Select")."</TH>\n");
+	}
 	echo ("<TH>"._("Time")."</TH>\n");
 	echo ("<TH>"._("Reminder date")."</TH>\n");
 	echo ("<TH>"._("Added by")."</TH>\n");
@@ -70,12 +72,14 @@ else
 	{
 	echo ("<TR>\n");
 	if (!$brief)
-	echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$note['note_id']."\"></TD>\n");
+	{
+	    echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$note['note_id']."\"></TD>\n");
+	}
 	echo ("<TD>".$note['dt']."</TD>\n");
 	echo ("<TD align=\"right\">".($note['reminder_date'] == '0000-00-00' ? '&nbsp' : $note['reminder_date'])."</TD>\n");
 	echo ("<TD align=\"right\">".$note['added_by']."</TD>\n");
-	echo ("<TD align=\"right\">".$note['assigned_to']."</TD>\n");
-echo ("<TD align=\"right\">".$note['quality']."</TD>\n");
+	echo ("<TD align=\"right\">".nbsp_if_null($note['assigned_to'])."</TD>\n");
+	echo ("<TD align=\"right\">".$note['quality']."</TD>\n");
 	echo ("</TR>\n");
 	echo ("<TR>\n");
 	echo ("<TD colspan=\"6\">".$note['message']."</TD>\n");

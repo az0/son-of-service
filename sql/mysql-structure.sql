@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.8 2003/11/09 20:21:22 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.9 2003/11/10 17:22:30 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -159,7 +159,7 @@ CREATE TABLE relationships (
 	
 	relationship_type_id INT,
 	
-	UNIQUE(volunteer1_id,volunteer2_id,rtype)
+	UNIQUE(volunteer1_id,volunteer2_id,relationship_type_id)
 );
 
 CREATE TABLE relationship_types (
@@ -173,8 +173,8 @@ CREATE TABLE relationship_types (
 CREATE TABLE extended (
 	extended_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	volunteer_id INT NOT NULL,
-	INDEX(volunteer_id)
-	
+
+	INDEX(volunteer_id),	
 	UNIQUE(volunteer_id)
 );
 
@@ -196,7 +196,7 @@ CREATE TABLE extended_meta (
 	size1 MEDIUMINT UNSIGNED,
 	size2 MEDIUMINT UNSIGNED,
 	size3 MEDIUMINT UNSIGNED,
-	fieldtype ENUM ('number', 'string', 'textarea', 'date'),
+	fieldtype ENUM ('integer', 'decimal', 'string', 'textarea', 'date'),
 	displayposition MEDIUMINT NOT NULL,
 
 # to do: validation
