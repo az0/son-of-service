@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.11 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: general.php,v 1.12 2004/02/15 02:30:17 andrewziem Exp $
  *
  */
 
@@ -87,6 +87,20 @@ function volunteer_view_general()
 	while (!$result_meta->EOF)
 	{
 	    $row_meta = $result_meta->fields;
+	    switch ($row_meta['fieldtype'])
+	    {
+		case 'string':
+		    $attributes = array('length' => $row_meta['size1']);
+		    break;
+		case 'integer':
+		case 'date':
+		    $attributes = array();
+		    break;		    
+	        default:
+		    process_system_error("Unexpected type in extended_meta");
+		    break;
+	    }
+	    $value = $row_ext[$row_meta['code']];
 	    $form->addField($row_meta['label'], $row_meta['fieldtype'], 'custom_'.$row_meta['code'], $attributes, $value);
 	    $result_meta->MoveNext();
 	}

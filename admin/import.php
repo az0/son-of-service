@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved. 
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.10 2003/12/07 02:07:26 andrewziem Exp $
+ * $Id: import.php,v 1.11 2004/02/15 02:30:17 andrewziem Exp $
  *
  */
 

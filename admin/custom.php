@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2004 by Andrew Ziem and SOS Team.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.13 2004/02/15 00:09:17 andrewziem Exp $
+ * $Id: custom.php,v 1.14 2004/02/15 02:30:17 andrewziem Exp $
  *
  */
 
@@ -228,15 +228,48 @@ function custom_add_field_form3()
     
     // find a unique code
     
-    $unique = FALSE;    
+    $code_ok = FALSE;    
     
     $label = $db->qstr(strip_tags($_POST['label']), get_magic_quotes_gpc());
     $codebase = str_replace(' ','_', $_POST['label']);
     $code = $codebase;
     
-    for ($i = 0; !$unique; $i++)
+    $reserved_codes = array('ADD', 'ALL', 'ALTER', 'ANALYZE', 'AND',
+    'AS', 'ASC', 'AUTO_INCREMENT', 'BDB', 'BEFORE', 'BERKELEYDB',
+    'BETWEEN', 'BIGINT', 'BINARY', 'BLOB', 'BOTH', 'BTREE', 'BY',
+    'CASCADE', 'CASE', 'CHANGE', 'CHAR', 'CHARACTER', 'CHECK',
+    'COLLATE', 'COLUMN', 'COLUMNS', 'CONSTRAINT', 'CREATE', 'CROSS',
+    'CURRENT_DATE', 'CURRENT_TIME', 'CURRENT_TIMESTAMP', 'DATABASE',
+    'DATABASES', 'DAY_HOUR', 'DAY_MINUTE', 'DAY_SECOND', 'DEC',
+    'DECIMAL', 'DEFAULT', 'DELAYED', 'DELETE', 'DESC', 'DESCRIBE',
+    'DISTINCT', 'DISTINCTROW', 'DIV', 'DOUBLE', 'DROP', 'ELSE',
+    'ENCLOSED', 'ERRORS', 'ESCAPED', 'EXISTS', 'EXPLAIN', 'FALSE',
+    'FIELDS', 'FLOAT', 'FOR', 'FORCE', 'FOREIGN', 'FROM', 'FULLTEXT',
+    'FUNCTION', 'GRANT', 'GROUP', 'HASH', 'HAVING', 'HIGH_PRIORITY',
+    'HOUR_MINUTE', 'HOUR_SECOND', 'IF', 'IGNORE', 'IN', 'INDEX',
+    'INFILE', 'INNER', 'INNODB', 'INSERT', 'INT', 'INTEGER', 'INTERVAL',
+    'INTO', 'IS', 'JOIN', 'KEY', 'KEYS', 'KILL', 'LEADING', 'LEFT',
+    'LIKE', 'LIMIT', 'LINES', 'LOAD', 'LOCALTIME', 'LOCALTIMESTAMP',
+    'LOCK', 'LONG', 'LONGBLOB', 'LONGTEXT', 'LOW_PRIORITY',
+    'MASTER_SERVER_ID', 'MATCH', 'MEDIUMBLOB', 'MEDIUMINT',
+    'MEDIUMTEXT', 'MIDDLEINT', 'MINUTE_SECOND', 'MOD', 'MRG_MYISAM',
+    'NATURAL', 'NOT', 'NULL', 'NUMERIC', 'ON', 'OPTIMIZE', 'OPTION',
+    'OPTIONALLY', 'OR', 'ORDER', 'OUTER', 'OUTFILE', 'PRECISION',
+    'PRIMARY', 'PRIVILEGES', 'PROCEDURE', 'PURGE', 'READ', 'REAL',
+    'REFERENCES', 'REGEXP', 'RENAME', 'REPLACE', 'REQUIRE', 'RESTRICT',
+    'RETURNS', 'REVOKE', 'RIGHT', 'RLIKE', 'RTREE', 'SELECT', 'SET',
+    'SHOW', 'SMALLINT', 'SOME', 'SONAME', 'SPATIAL', 'SQL_BIG_RESULT',
+    'SQL_CALC_FOUND_ROWS', 'SQL_SMALL_RESULT', 'SSL', 'STARTING',
+    'STRAIGHT_JOIN', 'STRIPED', 'TABLE', 'TABLES', 'TERMINATED', 'THEN',
+    'TINYBLOB', 'TINYINT', 'TINYTEXT', 'TO', 'TRAILING', 'TRUE',
+    'TYPES', 'UNION', 'UNIQUE', 'UNLOCK', 'UNSIGNED', 'UPDATE', 'USAGE',
+    'USE', 'USER_RESOURCES', 'USING', 'VALUES', 'VARBINARY', 'VARCHAR',
+    'VARCHARACTER', 'VARYING', 'WARNINGS', 'WHEN', 'WHERE', 'WITH',
+    'WRITE', 'XOR', 'YEAR_MONTH', 'ZEROFILL');
+    
+    for ($i = 0; !$code_ok; $i++)
     {    
-	// if code is not unique, try finding a unique variation
+	// if code is reserved or not unique, try finding a variation
 	$sql = "SELECT code FROM extended_meta WHERE code = " . $db->qstr($code, get_magic_quotes_gpc());
 	$result = $db->Execute($sql);
 	if (!$result)
@@ -244,17 +277,17 @@ function custom_add_field_form3()
 	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	    return;
 	}	
-	if (0 == $result->RecordCount())
+	if (0 == $result->RecordCount() and !in_array(strtoupper($code), $reserved_codes))
 	{
-	    $unique = TRUE;
+	    $code_ok = TRUE;
 	}
 	else 
 	{	
-	    $code = $code.$i;
+	    $code = $codebase.$i;
 	}
-	if ($i > 20)
+	if ($i > 30)
 	{
-	    process_system_error("Unable to find unique code based on $label.");
+	    process_system_error("Unable to generate allowable code for field based on $label.");
 	    return FALSE;
 	}
     };

@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.9 2004/01/05 05:03:27 andrewziem Exp $
+ * $Id: table.php,v 1.10 2004/02/15 02:30:17 andrewziem Exp $
  *
  */
 
