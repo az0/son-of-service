@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * General information about Son of Service.
  *
- * $Id: about.php,v 1.3 2004/02/22 00:26:51 andrewziem Exp $
+ * $Id: about.php,v 1.4 2004/03/15 00:31:12 andrewziem Exp $
  *
  */
 
@@ -25,13 +25,14 @@ make_nav_begin();
 
 <H2>About Son of Service</H2>
 
-<P>Son of Service (SOS) is a multiuser volunteer management database. 
-It is free, easy to use, standards-based, and has few system
-requirements.</P>
+<P>Son of Service, Copyright &copy 2003-2004 Andrew Ziem.</P>
 
-<P>SOS is provided to you under the GNU <A href="http://www.gnu.org/licenses/gpl.html">General Public License version 2</A>.</P>
+<P>SOS comes with ABSOLUTELY NO WARRANTY.  This is free software, and
+you may redistribute it under certain conditions.  For details please
+see the GNU <A href="http://www.gnu.org/licenses/gpl.html">General
+Public License version 2</A>.</P>
 
-<P><A href="http://sos.sourceforge.net">SOS web site</A></P>
+<P>For more information see the <A href="http://sos.sourceforge.net">SOS web site</A>.</P>
 
 
 <?php

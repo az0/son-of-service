@@ -1,12 +1,12 @@
-INSERT INTO strings (s,type) VALUES ('Cooking', 'skill');
-INSERT INTO strings (s,type) VALUES ('Computers-Typing', 'skill');
-INSERT INTO strings (s,type) VALUES ('Computers-Repair', 'skill');
-INSERT INTO strings (s,type) VALUES ('Driving', 'skill');
-INSERT INTO strings (s,type) VALUES ('Electrician', 'skill');
-INSERT INTO strings (s,type) VALUES ('Graphic designer', 'skill');
-INSERT INTO strings (s,type) VALUES ('Mentoring', 'skill');
-INSERT INTO strings (s,type) VALUES ('Telephones', 'skill');
-INSERT INTO strings (s,type) VALUES ('Plumber', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Cooking', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Computers-Typing', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Computers-Repair', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Driving', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Electrician', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Graphic designer', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Mentoring', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Telephones', 'en_US', 'skill');
+INSERT INTO strings (s, lang, type) VALUES ('Plumber', 'en_US', 'skill');
 
 INSERT INTO strings (type, lang, s) VALUES ('relationship', 'en_US', 'Family');
 INSERT INTO strings (type, lang, s) VALUES ('relationship', 'en_US', 'Friend');
@@ -25,4 +25,4 @@ INSERT INTO volunteers (first, last) VALUES ('Simon', 'Peter');
 INSERT INTO work (volunteer_id, date, hours) VALUES (1, now(), 10);
 INSERT INTO work (volunteer_id, date, hours) VALUES (1, '2002-05-11', '3.2');
 INSERT INTO work (volunteer_id, date, hours) VALUES (1, '2002-05-12', '8');
-INSERT INTO notes (volunteer_id, uid_assigned, dt, reminder_date, message, acknowledged) VALUES (1, 1, now(), now(), 'Don\'t forget to change admin\'s password.\n\n  For support see http://sos.sourceforge.net', 1);
+INSERT INTO notes (volunteer_id, uid_assigned, dt, reminder_date, message, acknowledged) VALUES (1, 1, now(), now(), 'Don\'t forget to change admin\'s password.\n\n  For support see http://sos.sourceforge.net', 0);

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.18 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: notes.php,v 1.19 2004/03/15 00:31:12 andrewziem Exp $
  *
  */
 
@@ -277,14 +277,13 @@ function note_addedit()
 		    "volunteer_id = $vid, ".
 		    "quality = $quality, ".
 		    "reminder_date = '$reminder_date', ".
-		    "acknowledged = 1 ".
+		    "acknowledged = 0 ".
 		    "WHERE note_id = $note_id";
-	    // todo: check acnowlegde
 	}
 	else
 	{
 		$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) ".
-		"VALUES ($message, $nowdate, $vid, $quality,".get_user_id().", $uid_assigned, '$reminder_date', 1)";
+		"VALUES ($message, $nowdate, $vid, $quality,".get_user_id().", $uid_assigned, '$reminder_date', 0)";
 	}
 
 	$result = $db->Execute($sql);

@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.9 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: reminders.php,v 1.10 2004/03/15 00:31:12 andrewziem Exp $
  *
  */
  
@@ -43,7 +43,7 @@ function show_reminders()
     
     $sql = "SELECT note_id, dt, reminder_date, volunteer_id, message ".
 	"FROM notes ".
-	"WHERE uid_assigned = ".get_user_id()." AND acknowledged = 1 ".
+	"WHERE uid_assigned = ".get_user_id()." AND acknowledged = 0 ".
 	"ORDER BY reminder_date DESC";
     
     $result = $db->Execute($sql);
@@ -73,7 +73,9 @@ function show_reminders()
 	// todo: display message on second row	
 	$fieldnames['note_id'] = array('label' => _("Select"), 'checkbox' => TRUE);
 	$fieldnames['reminder_date']['label'] = _("Reminder date");		
+	$fieldnames['reminder_date']['type'] = TT_DATE;
 	$fieldnames['dt']['label'] = _("Creation date");	
+	$fieldnames['dt']['type'] = TT_DATETIME;
 	$fieldnames['volunteer']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";
 	$fieldnames[] = array('break_row' => TRUE);
 	$fieldnames['message'] = array('label' => _("Message"), 'colspan' =>  is_printable() ? 3 : 4, 'nl2br' => TRUE);
@@ -125,7 +127,7 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
     {
 	$c = 0;
 	
-	$sql = 'UPDATE notes SET acknowledged = 0 WHERE uid_assigned = '.get_user_id().' AND (';
+	$sql = 'UPDATE notes SET acknowledged = 1 WHERE uid_assigned = '.get_user_id().' AND (';
 	foreach ($note_ids as $nid)
 	{
 	    if ($c > 0)

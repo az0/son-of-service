@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.12 2004/03/14 18:44:20 andrewziem Exp $
+ * $Id: summary.php,v 1.13 2004/03/15 00:31:12 andrewziem Exp $
  *
  */
 
@@ -97,7 +97,7 @@ function volunteer_summary()
         die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
     }
     
-    if (1 == $result->RecordCount())
+    if (1 == $result->RecordCount() and $result->fields['hours_life'] > 0)
     {
 	echo ("<H3>Work history</H3>");
 	
@@ -106,8 +106,6 @@ function volunteer_summary()
 	$dtd->addRow($result->fields);
 	$dtd->end();
     }
-
-    //volunteer_view_work_history(TRUE);
 
     // show skills
 

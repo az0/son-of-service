@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.17 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: welcome.php,v 1.18 2004/03/15 00:31:12 andrewziem Exp $
  *
  */
 
@@ -39,7 +39,7 @@ if (isset($_SESSION['user']['personalname']) and $_SESSION['user']['personalname
     else
     $username = $_SESSION['user']['username'];
 
-$result = $db->Execute("SELECT note_id FROM notes WHERE acknowledged != 1 and reminder_date >= now() and uid_assigned = ".get_user_id());
+$result = $db->Execute("SELECT note_id FROM notes WHERE acknowledged != 1 and reminder_date <= now() and uid_assigned = ".get_user_id());
 
 $reminders = $result->RecordCount();
 
