@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.2 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: summary.php,v 1.3 2003/11/14 17:17:45 andrewziem Exp $
  *
  */
 
@@ -29,16 +29,26 @@ if ($volunteer['first'] or $volunteer['last'])
 	$contact_card .= $volunteer['prefix'].' '.$volunteer['first'].' '.$volunteer['middle'].' '.$volunteer['last'].' '.$volunteer['suffix'].' (#'.$volunteer['volunteer_id'].")\n";
 }
 if (!empty($volunteer['organization']))
+{
 	$contact_card .= $volunteer['organization']."\n";
-$address = $volunteer['street']."\n".$volunteer['city'].', '.$volunteer['state'].' '.$volunteer['zip']."\n";
+}
+$address = $volunteer['street']."\n".$volunteer['city'].', '.$volunteer['state'].' '.$volunteer['postal_code'].' '.$volunteer['country']." \n";
 if (strlen(trim($address))>2)
+{
 	$contact_card .= $address;
+}
 if (!empty($volunteer['phone_home']))
+{
 	$contact_card .= "Home: ".$volunteer['phone_home']."\n";
+}
 if (!empty($volunteer['phone_work']))
+{
 	$contact_card .= "Work: ".$volunteer['phone_work']."\n";
+}
 if (!empty($volunteer['phone_cell']))
+{
 	$contact_card .= "Cell: ".$volunteer['phone_cell']."\n";
+}
 $tab = new DataTableDisplay();
 $tab->begin();
 $tab->addRow(array(nl2br($contact_card)));

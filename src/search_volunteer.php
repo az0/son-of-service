@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.8 2003/11/12 16:12:23 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.9 2003/11/14 17:17:45 andrewziem Exp $
  *
  */
 
@@ -54,7 +54,9 @@ class columnManager
     {
 	$this->columns[$name] = array('display' => FALSE);
 	if ($display)
+	{
 	    $this->columns[$name] = array('display' => TRUE);
+	}
     }
     
     function setRadio($name)
@@ -133,19 +135,24 @@ $cm->setColumnLink('organization', "${base_url}volunteer/?vid=#volunteer_id#");
 $cm->addColumn('street');
 $cm->addColumn('city');
 $cm->addColumn('state');
-$cm->addColumn('zip');
+$cm->addColumn('postal_code');
+$cm->addColumn('country');
 $cm->addColumn('hours_life');
 
 function search_add($form_name, $column, &$where)
 {
     global $cm;
+    global $db;
+    
 
     if (array_key_exists($form_name, $_REQUEST) and trim(strlen($_REQUEST[$form_name])) > 0)
     {
-	$where .= " AND $column LIKE '%".$_REQUEST[$form_name]."%'";
+	$where .= " AND $column LIKE '%".$db->escape_string($_REQUEST[$form_name])."%'";
 
 	if ($cm->columnExists($column))		
+	{
 	    $cm->setDisplay($column, TRUE);		
+	}
     }
 }
 
@@ -196,7 +203,8 @@ function volunteer_search()
 	search_add('street', 'street', $where);			
 	search_add('city', 'city', $where);					
 	search_add('state', 'state', $where);		
-	search_add('zip', 'zip', $where);				
+	search_add('postal_code', 'postal_code', $where);				
+	search_add('country', 'country', $where);					
 	search_add('phone_home', 'phone_home', $where);		
 	search_add('phone_work', 'phone_work', $where);		
 	search_add('phone_cell', 'phone_cell', $where);		
@@ -419,7 +427,11 @@ section.</P>
  </tr>
 <tr>
  <th class="vert"><?php echo _("Zip/Postal code"); ?></th>
- <td><input type="Text" name="zip" size="8"></td>
+ <td><input type="Text" name="postal_code" size="10"></td>
+ </tr>
+<tr>
+ <th class="vert"><?php echo _("Country"); ?></th>
+ <td><input type="Text" name="country" size="30"></td>
  </tr>
 <tr>
  <th class="vert"><?php echo _("Home phone"); ?></th>
@@ -520,7 +532,7 @@ if ($db->get_error())
 }
 
 
-if (array_key_exists('button_search', $_REQUEST) or array_key_exists('zip', $_REQUEST))
+if (array_key_exists('button_search', $_REQUEST) or array_key_exists('postal_code', $_REQUEST))
 {
     volunteer_search();
 

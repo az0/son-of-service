@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.11 2003/11/14 07:10:56 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.12 2003/11/14 17:17:45 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -23,8 +23,9 @@ CREATE TABLE volunteers (
 
         street varchar(40) NOT NULL,
         city varchar(20) NOT NULL,
-        state varchar(10) NOT NULL,
-        zip varchar(10) NOT NULL,
+        state varchar(10) NOT NULL, # or provience
+        postal_code varchar(10) NOT NULL,
+	county varchar(30) NOT NULL,
 
         status varchar(20), # active, moved away, unreliable, unknown
 
@@ -53,7 +54,7 @@ CREATE TABLE volunteers (
 	INDEX(organization),
 	INDEX(street),
 	INDEX(city),
-	INDEX(zip),
+	INDEX(postal_code),
 
         );
 	

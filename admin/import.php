@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.7 2003/11/07 17:08:24 andrewziem Exp $
+ * $Id: import.php,v 1.8 2003/11/14 17:17:45 andrewziem Exp $
  *
  */
 
@@ -39,7 +39,7 @@ File name <INPUT type="file" name="userfile">
 <?php
 } /* import_legacy1() */
 
-$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'zip', 'phone_home', 'phone_work', 'phone_cell', 'email_address');
+$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'postal_code', 'country', 'phone_home', 'phone_work', 'phone_cell', 'email_address');
 
 function import_legacy2()
 {

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.13 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: index.php,v 1.14 2003/11/14 17:17:45 andrewziem Exp $
  *
  */
 
@@ -204,7 +204,7 @@ function volunteer_delete()
 	echo ("<PRE>\n");
 	echo $volunteer['first']. " " . $volunteer['middle'] . " " . $volunteer['last'] . " (".$volunteer['organization'].")\n";
 	echo $volunteer['street'] . "\n";
-	echo $volunteer['city'] . ", " . $volunteer['state']. " ". $volunteer['zip']. "\n";
+	echo $volunteer['city'] . ", " . $volunteer['state']. " ". $volunteer['postal_code']." ". $volunteer['country']."\n";
 	echo "</PRE>";
 
      ?>
@@ -212,8 +212,8 @@ function volunteer_delete()
 <FORM method="post" action=".">
 <INPUT type="hidden" name="vid" value="<?php echo $vid;?>">          
 
-<input type="Submit" name="volunteer_delete" value="Delete volunteer">
-<input type="checkbox" name="delete_confirm"> <?php echo _("Confirm"); ?>
+<input type="submit" name="volunteer_delete" value="<?php echo _("Delete volunteer"); ?>">
+<?php echo _("Confirm"); ?> <input type="checkbox" name="delete_confirm"> 
 
 
 <?php
@@ -247,7 +247,8 @@ $suffix = $db->escape_string(htmlentities($_POST['suffix']));
 $street = $db->escape_string(htmlentities($_POST['street']), TRUE);
 $city = $db->escape_string(htmlentities($_POST['city']), TRUE);
 $state = $db->escape_string(htmlentities($_POST['state']), TRUE);
-$zip = $db->escape_string(htmlentities($_POST['zip']));
+$postal_code = $db->escape_string(htmlentities($_POST['postal_code']));
+$country = $db->escape_string(htmlentities($_POST['country']));
 
 $email_address = $db->escape_string(htmlentities($_POST['email_address']));
 
@@ -272,7 +273,8 @@ $sql = "UPDATE volunteers SET " .
 	"street='$street', " .
 	"city='$city', " .
 	"state='$state', " .
-	"zip='$zip', " .
+	"postal_code='$postal_code', " .
+	"country='$country', " .	
 	"email_address='$email_address', " .
 	"phone_home='$phone_home', " .
 	"phone_cell='$phone_cell', " .
@@ -432,7 +434,8 @@ $organization = $volunteer['organization'];
 $street = $volunteer['street'];
 $city = $volunteer['city'];
 $state = $volunteer['state'];
-$zip = $volunteer['zip'];
+$postal_code = $volunteer['postal_code'];
+$country = $volunteer['country'];
 
 $email_address = $volunteer['email_address'];
 $phone_home = $volunteer['phone_home'];
@@ -484,7 +487,11 @@ $phone_cell = $volunteer['phone_cell'];
  </tr>
 <tr>
  <th class="vert"><?php echo _("Zip/Postal code");?></th>
- <td><input type="Text" name="zip"  value="<?php echo ($zip); ?>" size="5"></td>
+ <td><input type="Text" name="postal_code"  value="<?php echo ($postal_code); ?>" size="10"></td>
+ </tr>
+<tr>
+ <th class="vert"><?php echo _("Country");?></th>
+ <td><input type="Text" name="country"  value="<?php echo ($country); ?>" size="30"></td>
  </tr>
 <tr>
  <th class="vert"><?php echo _("Home phone");?></th>
@@ -559,9 +566,8 @@ $db->free_result($result_meta);
 </table>
 
 <INPUT type="hidden" name="vid" value="<?php echo $vid; ?>">
-<INPUT type="Submit" name="volunteer_save" value="Save changes">
-<INPUT type="submit" name="volunteer_delete" VALUE="Delete Volunteer">
-<!--<INPUT type="checkbox" name="delete_confirm">Confirm delete-->
+<INPUT type="submit" name="volunteer_save" value="<?php echo _("Save"); ?>">
+<INPUT type="submit" name="volunteer_delete" VALUE="<?php echo _("Delete volunteer"); ?>">
 </FORM>
 <?
 

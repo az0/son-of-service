@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.4 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.5 2003/11/14 17:17:45 andrewziem Exp $
  *
  */
 
@@ -69,7 +69,8 @@ function volunteer_add()
     $street = $db->escape_string(htmlentities($_POST['street']));         
     $city = $db->escape_string(htmlentities($_POST['city']));            
     $state = $db->escape_string(htmlentities($_POST['state']));
-    $zip = $db->escape_string(htmlentities($_POST['zip']));   
+    $postal_code = $db->escape_string(htmlentities($_POST['postal_code']));   
+    $country = $db->escape_string(htmlentities($_POST['country']));       
    
     $email_address = $db->escape_string(htmlentities($_POST['email_address']));      
    
@@ -80,8 +81,8 @@ function volunteer_add()
    //$wants_monthly_information = $_POST['wants_monthly_information'];             
 
     $sql = 'INSERT INTO volunteers '.
-	    '(prefix, first,middle,last,organization,street,city,state,zip,phone_home,phone_work,phone_cell,email_address, dt_added, uid_added) '.
-	    "VALUES ('$prefix', '$first', '$middle', '$last', '$organization', '$street', '$city', '$state', '$zip', '$phone_home', '$phone_work', '$phone_cell', '$email_address', now(), ".$_SESSION['user_id'].")";
+	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,phone_home,phone_work,phone_cell,email_address, dt_added, uid_added) '.
+	    "VALUES ('$prefix', '$first', '$middle', '$last', '$organization', '$street', '$city', '$state', '$postal_code', '$country', '$phone_home', '$phone_work', '$phone_cell', '$email_address', now(), ".$_SESSION['user_id'].")";
 
     $result = $db->query($sql);
 
@@ -142,7 +143,11 @@ function volunteer_add_form()
  </tr>
 <tr>
  <th class="vert"><?php echo _("Zip/Postal code"); ?></th>
- <td><input type="Text" name="zip"></td>
+ <td><input type="Text" name="postal_code"></td>
+ </tr>
+<tr>
+ <th class="vert"><?php echo _("Country"); ?></th>
+ <td><input type="Text" name="country"></td>
  </tr>
 <tr>
  <th class="vert"><?php echo _("Home phone"); ?></th>
