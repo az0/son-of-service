@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.8 2003/11/14 17:17:45 andrewziem Exp $
+ * $Id: index.php,v 1.9 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -106,7 +106,7 @@ function admin_menu()
 
 <UL>
  <LI><A href="./?add_user=1">Add a user account</A>
- <LI><A href="./?list_users=1">User accounts</A>
+ <LI><A href="./?users=1">User accounts</A>
  <LI><A href="./?list_strings=1">Strings: relationship types, skill types, work categories</A>
  <LI><A href="./?update_volunteer_stats=1">Update volunteer statistics</A>
  <LI><A href="./?system_check=1">System check</A>
@@ -152,10 +152,12 @@ else if (array_key_exists('button_string_delete', $_POST))
 }
 else
 // USERS
-if (array_key_exists('list_users', $_GET))
+if (array_key_exists('users', $_GET))
 {
     include('users.php');
+    display_messages();
     users_list();
+    user_addedit_form();
 }
 else
 if (array_key_exists('button_user_delete', $_POST))
@@ -173,7 +175,6 @@ if (array_key_exists('button_user_add', $_POST) or array_key_exists('button_user
 {
     include('users.php');
     user_save();
-    users_list();
 }
 else    
 // MAILING LIST

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.9 2003/11/14 07:10:56 andrewziem Exp $
+ * $Id: relationships.php,v 1.10 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -15,7 +15,7 @@ if (preg_match('/relationships.php/i', $_SERVER['PHP_SELF']))
 }
 
 
-function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
+function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $brief)
 {    
     global $db;
     
@@ -34,7 +34,10 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
         $row['volunteer2_name'] = make_volunteer_name($volunteer2_row);
 	
 	echo ("<LI>".$row['volunteer2_name']." [<A href=\"?vid=".$row['volunteer2_id']."\">account</A>, <A href=\"?vid=".$row['volunteer2_id']."&menu=relationships\">relationships</A>], ".$row['rname']."\n");
-	echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
+	if (!$brief)
+	{
+	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
+	}
 	echo ("</LI>\n");
 	
         $sql = "SELECT relationships.relationship_id AS relationship_id, ".
@@ -58,7 +61,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
     	    {
 		if (!in_array($row2['volunteer2_id'], $ignore_vids))
 		{
-		    show_relationship_leaf($row['volunteer2_id'], $row2, $remaining_depth - 1, $ignore_vids);
+		    show_relationship_leaf($row['volunteer2_id'], $row2, $remaining_depth - 1, $ignore_vids, $brief);
 		}
 	    }
 	    echo ("</UL>\n");	    
@@ -67,7 +70,10 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
     else
     {
         echo ("<LI>"._("Error")."\n");
-        echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
+	if (!$brief)
+	{
+    	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
+	}
     }
     
 } /* show_relationship_leaf() */
@@ -132,7 +138,7 @@ function relationships_view($brief = FALSE)
 	while (FALSE != ($row = $db->fetch_array($result)))
 	{
 	    $c++;
-	    show_relationship_leaf($vid, $row, $max_depth - 1, array($vid));
+	    show_relationship_leaf($vid, $row, $max_depth - 1, array($vid), $brief);
 	}
 	
 	echo ("</UL>\n");

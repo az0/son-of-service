@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.3 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: reports.php,v 1.4 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -166,7 +166,16 @@ function report_hours()
 	    
     }
     
-    $sql = "SELECT $dateselect, sum(Hours) as Hours FROM work $dategroup";
+    $sql = "SELECT $dateselect, sum(Hours) as Hours FROM work ";
+    
+    $category_id = intval($_REQUEST['category_id']);
+    if ($category_id > 0)
+    {
+	$sql .= "WHERE category_id = $category_id";
+    }
+    
+    $sql .= " $dategroup ";
+    
     $result = $db->query($sql);
     
     if (!$result)
@@ -237,12 +246,13 @@ function report_active_volunteers()
 
 function reports_menu()
 {
+    global $db;
+    
 
-    echo ("<H2>Reports</H2>\n");
+    echo ("<H2>"._("Reports")."</H2>\n");
 
     echo ("<FIELDSET>\n");
     echo ("<LEGEND>Aggregate hours</LEGEND>\n");
-//    echo ("<H3>Aggregate hours</H3>\n");
     echo ("<FORM method=\"get\" action=\"reports.php\">\n");
     echo ("<SELECT name=\"step\">\n");
     echo ("<OPTION>--Step</OPTION>\n");
@@ -251,7 +261,23 @@ function reports_menu()
     echo ("<OPTION>"._("Month")."</OPTION>\n");
     echo ("<OPTION>"._("Year")."</OPTION>\n");    
     echo ("</SELECT>\n");
-    echo ("<SELECT DISABLED><OPTION>--Project</OPTION></SELECT>\n");
+    $sql = "SELECT * FROM strings WHERE type = 'work'";
+    $result = $db->query($sql);
+    if (!$result)
+    {
+	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+    }
+    else
+    {
+	echo ("<SELECT name=\"category_id\">\n");
+	echo ("<OPTION>--Project</OPTION>\n");
+	echo ("<OPTION value=\"any\">"._("Any")."</OPTION>\n");	
+	while (FALSE != ($row = $db->fetch_array($result)))
+	{
+	    echo ("<OPTION value=\"".$row['string_id']."\">".$row['s']."</OPTION>\n");
+	}
+	echo ("</SELECT>\n");
+    }
     echo ("<BR><INPUT type=\"submit\" name=\"report_hours\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");

@@ -5,15 +5,21 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.1 2003/10/05 16:14:24 andrewziem Exp $
+ * $Id: mass.php,v 1.2 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
+//ob_start();
+session_start();
 
-ini_set('include_path','./inc');
+define('SOS_PATH', '../');
 
-include_once ('global.php');
-
+require_once(SOS_PATH . 'include/config.php');
+require_once(SOS_PATH . 'include/global.php');
+require_once(SOS_PATH . 'functions/auth.php');
+require_once(SOS_PATH . 'functions/db.php');
+require_once(SOS_PATH . 'functions/forminput.php');
+require_once(SOS_PATH . 'functions/html.php');
 
 make_html_begin('Mass volunteer action', array());
 
@@ -23,30 +29,46 @@ $db = new voldbMySql();
 
 if ($db->get_error())
 {
-    process_system_error("Unable to establish database connection: ".$db->get_error());    
+    process_system_error(_("Unable to establish database connection: "), array('debug' => $db->get_error()));    
     die();	
 }
 
-
-
 if (array_key_exists('button_email_volunteers', $_POST))
 {
-
     email_volunteers_form();
 }
+else if (array_key_exists('send_email', $_POST))
+{
+    $from = $_SESSION['user']['email'];
+    
+    if (!validate_email($from))
+    {
+	process_user_warning(_("Your e-mail address appears invalid: "). htmlentities($from));
+    }
+    
+    send_email_smtp($from, $_POST['mailto'], "", "", $_POST['mailre'], $_POST['message']);
+}
 else
-die("You have reached this page incorrectly.");
+{
+    die("You have reached this page incorrectly.");
+}
 
 
 function send_email_smtp($from, $to, $cc, $bcc, $subject, $message)
 {
-    global $cfg;
+    global $smtp_hostname;
+    
+    if (empty($smtp_hostname))
+    {
+	process_system_error("Setting smtp_hostname not configured.");
+	return FALSE;    
+    }
 
     $fp = @fsockopen($cfg['email_smtp'], 25, $errno, $errstr, 30);
     
     if (!$fp)
     {
-	process_system_error("Unable to connect to SMTP service", array('debug' => "$errstr ($errno)"));
+	process_system_error(_("Unable to connect to SMTP server."), array('debug' => "$errstr ($errno)"));
 	return FALSE;
     }
     
@@ -61,7 +83,9 @@ function send_email_smtp($from, $to, $cc, $bcc, $subject, $message)
 	    $rhostname = $matches[2];
 	}
 	else
-	    process_system_warning("Do not understand $line from STMP\n");
+	{
+	    process_system_warning("Do not understand ".htmlentities($line)." from STMP\n");
+	}
     }
 
     // send HELO request
@@ -114,7 +138,7 @@ function email_volunteers_form()
     
 	if (preg_match('/^volunteer_id_(\d+)/', $k, $matches))
 	{
-	    print_r($matches);
+	    //print_r($matches);
 	    $vids[intval($matches[1])] = intval($matches[1]);
 	}
     }    
@@ -130,27 +154,27 @@ function email_volunteers_form()
 	//print_r($volunteer);
 	if (empty($volunteer['email_address']))
 	{
-	    process_user_warning("Volunteer $name does not have an email.");
+	    process_user_warning(_("Volunteer does not have an e-mail address: ").$name);
 	    unset($vids[$k]);
 	    break;
 	}
 	elseif (validate_email($volunteer['email_address']))
 	{
-	    process_user_warning("Volunteer $name's email appears to be invalid.");
+	    process_user_warning(_("Volunteer's e-mail address appears invalid: ").$name);
 	}
 	$vids[$k] = array('name' => $name, 'email' => $volunteer['email_address']);
 	if (strlen($mailto)>0)
 	    $mailto .= ',';
-	$mailto .= '<'.$vids[$k]['name'].'> '.$vids[$k]['email'];
+	$mailto .= $vids[$k]['email'];
     }
     
     // to do: SquirrelMail, IMP, Hotmail, Yahoo e-mail
     
-    echo ("<P><A href=\"mailto:".urlencode($mailto)."\">Use my e-mail client</A></P>\n");
+    echo ("<P><A href=\"mailto:".htmlentities(urlencode($mailto))."\">Use my e-mail client</A></P>\n");
     
-    process_user_warning("Built-in e-mail is under construction.");
+    process_user_warning("Built-in e-mail is experimental.");
     
-    echo ("<FORM method=\"post\" action=\"email\">\n");
+    echo ("<FORM method=\"post\" action=\"mass.php\">\n");
     echo ("<TABLE border=\"1\" width=\"100%\">\n");
     echo ("<TR>\n");
     echo ("<TH class=\"vert\">To</TH>\n");
@@ -158,19 +182,20 @@ function email_volunteers_form()
     echo ("</TR>\n");
     echo ("<TR>\n");
     echo ("<TH class=\"vert\">From</TH>\n");
-    echo ("<TD><INPUT type=\"text\" name=\"mailfrom\" value=\"\"></TD>\n");
+    print_r($_SESSION);
+    echo ("<TD><INPUT type=\"text\" name=\"mailfrom\" value=\"".$_SESSION['user']['email']."\" DISABLED></TD>\n");
     echo ("</TR>\n");
     echo ("<TR>\n");
     echo ("<TH class=\"vert\">Subject</TH>\n");
-    echo ("<TD><INPUT type=\"text\" name=\"mailre\" value=\"Volunteering\"></TD>\n");
+    echo ("<TD><INPUT type=\"text\" name=\"mailre\" value=\"Volunteering\" size=\"80\"></TD>\n");
     echo ("</TR>\n");
     echo ("<TR>\n");
     echo ("<TH class=\"vert\">Message</TH>\n");
-    echo ("<TD><TEXTAREA name=\"mailre\" rows=\"20\" cols=\"80\"></TEXTAREA></TD>\n");
+    echo ("<TD><TEXTAREA name=\"message\" rows=\"20\" cols=\"80\"></TEXTAREA></TD>\n");
     echo ("</TR>\n");
     echo ("</TABLE>\n");
     
-    echo ("<INPUT type=\"button\" name=\"send_email\" value=\"Send\">\n");
+    echo ("<INPUT type=\"submit\" name=\"send_email\" value=\""._("Send")."\">\n");
     echo ("</FORM>\n");
     
     

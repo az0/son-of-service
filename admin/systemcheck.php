@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: systemcheck.php,v 1.1 2003/10/05 16:14:46 andrewziem Exp $
+ * $Id: systemcheck.php,v 1.2 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -148,6 +148,7 @@ function system_check()
 	echo ("</TR>\n");	
     }
     echo ("</TR>\n");
+    echo ("</TABLE>\n");
 }
 
 

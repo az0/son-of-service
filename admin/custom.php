@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.9 2003/11/12 16:12:23 andrewziem Exp $
+ * $Id: custom.php,v 1.10 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -204,6 +204,8 @@ function custom_add_field_form2()
 } /* custom_add_field_form2() */
 
 
+
+
 function custom_add_field_form3()
 {
     global $db;
@@ -220,7 +222,9 @@ function custom_add_field_form3()
     }
     
     if ($errors_found)
-	return;
+    {
+	return FALSE;
+    }
     
     // find a unique code
     
@@ -251,7 +255,7 @@ function custom_add_field_form3()
 	if ($i > 20)
 	{
 	    process_system_error("Unable to find unique code based on $label.");
-	    die();
+	    return FALSE;
 	}
     };
 

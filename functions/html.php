@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.4 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: html.php,v 1.5 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -13,6 +13,54 @@
 if (preg_match('/html.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
+}
+
+define('MSG_SYSTEM_ERROR', 1);
+define('MSG_SYSTEM_WARNING', 2);
+define('MSG_SYSTEM_NOTICE', 8);
+define('MSG_USER_ERROR', 256);
+define('MSG_USER_WARNING', 512);
+define('MSG_USER_NOTICE', 1024);
+
+function save_message($message, $type)
+{
+    assert (is_int($type));
+    $_SESSION['messages'][] = array('message' => $message, 'type' => $type);
+}
+
+function display_message($message, $type)
+{
+
+    switch ($type)
+    {
+	case MSG_SYSTEM_ERROR:
+	case MSG_SYSTEM_WARNING:
+	case MSG_USER_ERROR:
+	case MSG_USER_WARNING:
+	    $class = "CLASS=\"errortext\"";
+	    break;
+	
+	default:
+	    $class = "";
+	    break;
+    }
+    echo ("<P$class>$message</P>");
+}
+// displays given message
+
+function display_messages()
+// displays waiting messages in SESSION
+{
+    if (array_key_exists('messages', $_SESSION) and is_array($_SESSION['messages']))
+    {
+	foreach ($_SESSION['messages'] as $key => $msg)
+	{
+	    display_message($msg['message'], $msg['type']);
+	    unset($_SESSION['messages'][$key]);
+	}	
+	
+    }
+
 }
 
 function make_nav_begin()

@@ -5,10 +5,10 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.7 2003/11/14 17:38:55 andrewziem Exp $
+ * $Id: workhistory.php,v 1.8 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
-
+ 
 if (preg_match('/workhistory.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
@@ -140,12 +140,15 @@ function volunteer_view_work_history($brief = FALSE)
     global $db;
     
     $vid = intval($_REQUEST['vid']);
+    
+    // to do: pagination
 
     $sql = "SELECT work.work_id AS work_id, work.hours AS hours, work.quality AS quality, work.date AS date, work.memo AS memo, strings.s AS category ".
 	"FROM work ".
 	"LEFT JOIN strings ON work.category_id = strings.string_id ".
 	"WHERE volunteer_id = $vid ".
 	"ORDER BY date DESC";
+	
     $result = $db->query($sql);
 
     if (!$result)

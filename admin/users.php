@@ -5,27 +5,37 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.3 2003/11/07 17:08:25 andrewziem Exp $
+ * $Id: users.php,v 1.4 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
+ 
+ob_start();
 
 if (preg_match('/users.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
 }
 
+require_once (SOS_PATH . 'functions/formmaker.php');
+
 function user_save()
 {
     global $db;
+    global $base_url;
+    
     
     // add or update mode?
     
     $mode_update = array_key_exists('button_user_update', $_POST);
     
     if ($mode_update)
+    {
 	echo ("<H2>Updating user</H2>\n");
+    }
 	else
+    {
 	echo ("<H2>Adding user</H2>\n");
+    }
 
     // validate form input
     
@@ -44,7 +54,7 @@ function user_save()
 
     if (!$mode_update and (!isset($_POST['password1']) or 4 > strlen(trim($_POST['password1']))))
     {
-       process_user_error("Account password is too short.");
+	process_user_error("Account password is too short.");
 	$errors_found++;
     }
     else    
@@ -70,17 +80,24 @@ function user_save()
     
     if ($access_change_vol = array_key_exists('access_change_vol', $_POST));
     else
-    $access_change_vol = '0';
+    {
+	$access_change_vol = '0';
+    }
+    
     if ($access_admin = array_key_exists('access_admin', $_POST));
     else
-    $access_admin = '0';
+    {
+	$access_admin = '0';
+    }
     
     $username = $db->escape_string($_POST['username']);
     $personalname = $db->escape_string($_POST['personalname']);
     // do not escape password because of md5()
     $email = $db->escape_string($_POST['email']);
     if ($mode_update)
+    {
 	$user_id = intval($_POST['user_id']);
+    }
     
     if ($mode_update and 0 == $errors_found)
     {
@@ -116,9 +133,19 @@ function user_save()
             exit();
 
     }
-
-    echo "<P>You have ".($mode_update ? "updated" : "added")." the user $personalname ($username).</P>\n";
     
+    if ($mode_update)
+    {
+	save_message(_("Updated."), MSG_USER_NOTICE);
+    }
+    else
+    {
+	save_message(_("Saved."), MSG_USER_NOTICE);
+    }
+    
+    // redirect to GET to prevent POST form reposting
+    header("Location: ${base_url}admin/?users=1");
+
 
 } /* user_save() */
 
@@ -141,14 +168,17 @@ function user_addedit_form()
 	
 	if (!$result)
 	{
-	    process_system_error("Unable to lookup user in database");	    	    
-	    die();
+	    process_system_error(_("Error querying database."));	    	    
+	    return FALSE;
 	}
 	
 	if (1 != $db->num_rows($result))
 	{
-	    process_system_error("user not found.");
+	    process_system_error(_("User not found."));
+	    return FALSE;
 	}
+	
+	unset($result['password']);
 	
 	$form_values = $db->fetch_array($result);
     }	
@@ -176,28 +206,13 @@ function user_addedit_form()
     }
 
 
+$form = new formMaker;
+$form->open(FALSE, 'post', '.', FS_TABLE);
+$form->setValuesArray($form_values);
+$form->addField(_("Username"), 'text', 'username', array('length' => 20), 'username');
+$form->addField(_("Password"), 'password', 'password1', array('length' => 20), '');
+$form->addField(_("Verify password"), 'password', 'password1', array('length' => 20), '');
 ?>
-
-<form method="post" action=".">
-
-<table border="1">
-<tr>
- <th class="vert">Username</th>
- <td><input type="text" name="username"<?php dvc($form_values, 'username') ?>></td>
- </tr>
-<tr>
- <th class="vert"><?php echo ($mode_edit ? "New password" : "Password"); ?></th>
- <td><input type="password" name="password1"></td>
- </tr>
-<tr>
- <th class="vert">Verify password</th>
- <td><input type="password" name="password2"></td>
- </tr>
-<tr>
- <th colspan="2"> Access settings </th>
- </tr>
-
-
 
 <tr>
  <th class="vert">Administration privileges</th>
@@ -208,36 +223,22 @@ function user_addedit_form()
  <td>
    <INPUT type="checkbox" NAME="access_change_vol" <?php dvc_checkbox($form_values, 'access_change_vol');?>>
  </tr> 
- 
-
- <tr>
- <th colspan="2">Personal information</th>
- </tr>
- 
- <tr>
- <th class="vert">Personal name</th>
- <td><input type="text" name="personalname"<?php dvc($form_values, 'personalname') ?>></td>
- </tr>
-
- <tr>
- <th class="vert">E-mail address</th>
- <td><input type="text" name="email"<?php dvc($form_values, 'email') ?>></td>
- </tr>
-
-</table>
 <?php
+$form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), 'personalname');
+$form->addField(_("E-mail"), 'text', 'email', array('length' => 40), 'email');
+
 if ($mode_edit)
 {
-    echo ("<INPUT type=\"hidden\" name=\"user_id\" value=\"$user_id\">\n");
-    echo ("<INPUT type=\"submit\" name=\"button_user_update\" value=\""._("Save")."\">\n");
+    $form->addHiddenField('user_id', $user_id);
+    $form->addButton('button_user_update', _("Save"));
 }
 else
 {
-    echo ("<INPUT type=\"submit\" name=\"button_user_add\" value=\""._("Add")."\">\n");
-//    echo ("<INPUT type=\"reset\" value=\"Clear\">\n");
+    $form->addButton('button_user_add', _("Add"));
 }
+$form->close();
 
-echo ("</FORM>\n");    
+
 echo ("</FIELDSET>\n");
 // close conditional statement
  }
@@ -267,9 +268,9 @@ function users_list()
 	echo ("<TABLE border=\"1\">\n");
 	echo ("<THEAD>\n");
 	echo ("<TR>\n");
-	echo ("<TH>Select</TH>\n");	
-	echo ("<TH>Username</TH>\n");	
-	echo ("<TH>Personal Name</TH>\n");
+	echo ("<TH>"._("Select")."</TH>\n");	
+	echo ("<TH>"._("Username")."</TH>\n");	
+	echo ("<TH>"._("Personal Name")."</TH>\n");
 	echo ("</TR>\n");
 	echo ("</THEAD>\n");
 	

@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.12 2003/11/14 17:17:45 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.13 2003/11/22 05:16:14 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -22,12 +22,10 @@ CREATE TABLE volunteers (
 	suffix varchar(10) NOT NULL,
 
         street varchar(40) NOT NULL,
-        city varchar(20) NOT NULL,
+        city varchar(30) NOT NULL,
         state varchar(10) NOT NULL, # or provience
         postal_code varchar(10) NOT NULL,
-	county varchar(30) NOT NULL,
-
-        status varchar(20), # active, moved away, unreliable, unknown
+	country varchar(30) NOT NULL,
 
         phone_home varchar(20) NOT NULL,
         phone_work varchar(20) NOT NULL,
@@ -35,13 +33,13 @@ CREATE TABLE volunteers (
         email_address varchar(45) NOT NULL,
 
 	wants_monthly_information CHAR, # E (email), P (postal mail), N (no)
-	
-	hours_life_percenticle decimal(3,2), # not yet implemented
-	hours_ly_percenticle decimal(3,2),		
-	hours_ytd_percenticle decimal(3,2),	
+
         hours_life decimal(10,2),
         hours_ly decimal(10,2),	
-        hours_ytd decimal(10,2),
+        hours_ytd decimal(10,2),	
+	hours_life_percentile decimal(3,2), # not yet implemented
+	hours_ly_percentile decimal(3,2),		
+	hours_ytd_percentile decimal(3,2),	
         first_volunteered date,
 
         dt_added datetime,

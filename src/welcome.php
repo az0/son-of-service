@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.6 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: welcome.php,v 1.7 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -25,7 +25,7 @@ $db = new voldbMySql();
 
 if ($db->get_error())
 {
-    process_system_error(_("Unable to establish database connection.").$db->get_error());    
+    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->get_error()));    
     die();	
 }
 
@@ -51,15 +51,14 @@ echo ("<P>Welcome, $username.  You have $reminders reminders waiting.</P>\n");
 
 <P>Thank you for trying this demo of SOS.  This is not a finished
 product: the program is in an early stage of development.  The primary
-goal now is to identify and implement major features.  Also constructive
-criticism of the overall design is appropriate now.</P>
+goal now is to identify and implement major features and improve
+the program infrastructure.</P>
 
-<P>Much work is already done, as you can see in this demo.</P>
+<P>Much work is already done, and SOS is generally usable, as you can see in this demo.</P>
 
 <P>Currently implementing:<P>
 <UL>
 <LI>Easy, web method for volunteer coordinator to add custom data fields
-<LI>Categorization of work
 </UL>
 
 <P>To do soon:</P>

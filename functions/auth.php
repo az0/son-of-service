@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: auth.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: auth.php,v 1.2 2003/11/22 05:16:14 andrewziem Exp $
  *
  */
 
@@ -18,7 +18,12 @@ function is_logged_in($or_die = TRUE)
 	
     if ($or_die)
     {
-	exit(_("You must be logged in to access this page."));
+	echo(_("You must be logged in to access this page."));
+	// to do: cookie probe
+	process_user_notice("<P>You may get this error if your system is blocking cookie</A>s.  Try enabling cookies.</P>\n");
+	echo("<P><A href=\"".SOS_PATH."src/cookie_probe.php\">"._("Is my system blocking cookies?")."</A></P>\n");
+	
+	exit();
     }
 
 } /* is_logged_in() */
