@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.9 2003/12/17 17:11:03 andrewziem Exp $
+ * $Id: general.php,v 1.10 2003/12/21 23:39:06 andrewziem Exp $
  *
  */
 
@@ -190,14 +190,27 @@ function volunteer_save()
 	    $number = $db->qstr($phone['number'], get_magic_quotes_gpc());	    
 	    $memo = $db->qstr($phone['memo'], get_magic_quotes_gpc());
 	    $phone_number_id = intval($key);
-	    // todo: portable LIMIT 1
-	    $sql = "UPDATE phone_numbers ".
+	    // todo: portable LIMIT 1;	    	    	    
+	    if (strlen(trim($number.$memo, urldecode("%27 "))) < 1)
+	    {
+		$sql = "DELETE FROM phone_numbers ".
+		    "WHERE volunteer_id = $vid AND phone_number_id = $key";
+		$result = $db->Execute($sql);
+		if (!$result)
+		{
+		    die_message(MSG_SYSTEM_ERROR, _("Error deleting data from database."), __FILE__, __LINE__, $sql);
+		}		
+	    }
+	    else
+	    {
+		$sql = "UPDATE phone_numbers ".
 		"SET number = $number, memo = $memo ".
 		"WHERE volunteer_id = $vid AND phone_number_id = $key";
-	    $result = $db->Execute($sql);
-	    if (!$result)
-	    {
-		die_message(MSG_SYSTEM_ERROR, _("Error updating data in database."), __FILE__, __LINE__, $sql);
+		$result = $db->Execute($sql);
+		if (!$result)
+		{
+		    die_message(MSG_SYSTEM_ERROR, _("Error updating data in database."), __FILE__, __LINE__, $sql);
+		}
 	    }
 	}
     }
