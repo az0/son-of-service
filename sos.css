@@ -1,0 +1,99 @@
+BODY {
+ background-color: #fad9fd;
+ color: #00000;
+}
+
+P, TD, H1, H2, H3, H4, H5 {
+ color: #00000;
+ font-family: "Times New Roman", Times, serif;
+}
+
+TABLE {
+ border: solid #026d02;
+ background: #fbd0fe;
+ border-width: 4px;
+ margin: 9pt;
+ border-spacing: 0pt;
+}
+
+table.form {
+ padding: 0px;
+}
+
+TD
+{
+ border-color: #026d02;
+ border-style: thin;
+ padding: 2pt;
+}
+
+
+th {
+ background: #ceb8dc;
+ color: #000000;
+ font-weight: bold;
+ padding-left: 6pt;
+ padding-right: 6pt;
+}
+
+th.vert {
+  text-align: left;
+  vertical-align: top;
+}
+
+
+
+A {
+ color: #3300CC;
+ text-decoration:none;
+ }
+
+A: hover
+{
+  color: #CC0033;
+  text-decoration: underline;
+}
+
+div.tab_area {
+ font-weight: bold;
+}
+
+
+
+a.tab, a.tab:visited {
+ background: #ceb8dc;
+ border: 1pt solid #000000;
+ border-bottom: 0pt;
+ padding: 2pt 1em 2pt 1em;
+ margin-bottom: 0pt;
+}
+
+
+a.tab:hover{
+ background: #cec8dc; 
+ border: 2pt;
+}
+
+
+.errortext
+{
+  color: #FFaaaa;
+  color: #FF0000;
+  font-weight: bold;
+  margin: 12pt;
+}
+
+.instructionstext
+{
+  font-style: italic;
+}
+
+.anecdotetext
+{
+    font-size: 50%;
+}
+
+.indented
+{
+    margin-left: 3em;
+}

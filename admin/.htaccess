@@ -1,0 +1,8 @@
+php_flag register_globals off
+php_flag magic_quotes_gpc off
+# goal: should work with short_open_tag off
+#php_flag short_open_tag on
+php_flag allow_call_time_pass_reference off
+php_flag safe_mode on
+php_flag asp_tags off
+#php_value session.save_path ../data

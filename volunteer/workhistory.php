@@ -1,0 +1,289 @@
+<?php
+
+/*
+ * Son of Service
+ * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Licensed under the GNU General Public License.  See COPYING for details.
+ *
+ * $Id: workhistory.php,v 1.1 2003/10/05 16:14:49 andrewziem Exp $
+ *
+ */
+
+if (preg_match('/workhistory.php/i', $_SERVER['PHP_SELF']))
+{
+    die('Do not access this page directly.');
+}
+
+require_once(SOS_PATH . 'functions/stat.php');
+
+
+function volunteer_work_history_delete()
+{
+    global $db;
+    
+    $vid = intval($_POST['vid']);
+    $work_id  = intval($_POST['work_id']);
+    
+    if (!is_numeric($vid) or !is_numeric($vid))
+    {
+	process_system_error(_("Bad input."));
+	die();
+    }
+    
+    $result = $db->query("DELETE FROM work WHERE work_id = $work_id AND volunteer_id = ".intval($vid));
+
+    if (!$result)
+    {
+	process_system_error(_("Error deleting data from database."), array('debug'=>mysql_error()));
+    }
+    else
+    {
+	process_user_notice(_("Work history unit deleted."));
+    }
+
+}
+
+
+function volunteer_work_history_save($mode)
+// mode: either 'update' or 'add';
+// return: nothing
+  {
+    global $db;
+
+    // check form input        
+    $date = sanitize_date($_POST['date']);
+    $quality = intval($_POST['quality']);
+    $vid = intval($_POST['vid']);
+    
+    if ('update' == $mode)
+    {
+	$work_id = intval($_POST['work_id']);
+    }
+    elseif ('add' == $mode)
+    {
+    
+    }
+    else
+    {
+	process_system_error('volunteers_work_history_save(): '._("Unexpected parameter."));
+	return FALSE;
+    }
+  
+    $errors_found = 0;
+    
+    if (0 == strlen(trim($_POST['hours'])))
+    {
+       process_user_error("Please return to the form and add a number to the Hours Credit of Work field.");
+       $errors_found++;
+    }
+    
+    if (preg_match('/(\d{1,2}):(\d{1,2})/',$_POST['hours'], $matches))
+    {
+	$hours = $matches[1] + ($matches[2]/60);
+    }
+    else
+    if ($_POST['hours'] < 0.00 or !preg_match("/^[0-9\.]+$/",$_POST['hours']))
+    {
+       process_user_error("Please add more hours to the Hours Credit of Work field.");
+       $errors_found++;       
+    }
+    else
+	$hours = (float) $_POST['hours'];
+
+    if (!$date)
+    {
+	process_user_error(_("You must give a date."));
+	process_user_error(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."));
+	$errors_found++;       
+    }
+    
+    $memo = $db->escape_string($_POST['memo']);
+
+    // add to database
+    if ('add' == $mode)
+	$sql = "INSERT INTO work ".
+	    "(date, hours, volunteer_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
+	    "VALUES ('$date', '$hours', $vid, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, '$memo', $quality)"; 
+	else
+	$sql = "UPDATE work ".
+	    "SET date = '$date', hours = '$hours', memo = '$memo', quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
+	    "WHERE work_id = $work_id AND volunteer_id = $vid LIMIT 1";
+    
+    if (!$errors_found)
+	// to do: show form again, already filled out    
+    {
+    
+    //echo ("$sql");
+
+	$result = $db->query($sql);
+
+	if ($result)
+	{
+	    process_user_notice("Saved worked history");
+        }
+        else
+        {
+            process_system_error("Error saving work history to database:".mysql_error());
+        }
+     }
+  } /* volunteer_work_history_save() */
+
+
+
+  function volunteer_view_work_history($brief = FALSE)
+  {
+    global $db;
+    
+    $vid = intval($_REQUEST['vid']);
+
+    $sql = "SELECT * FROM work WHERE volunteer_id = $vid ORDER BY date DESC";
+    $result = $db->query($sql);
+
+    if (!$result)
+    {
+	process_system_error(_("Error while querying database."), array('debug'=> $db->get_error().' '.$sql));
+	die();
+    }
+
+
+	if (!$brief or 0 < $db->num_rows($result))
+	{
+		echo ("<H3>Work history</H3>\n");
+	}
+
+    if (0 == $db->num_rows($result))
+    {
+	if (!$brief)
+	    process_user_notice(_("No work history."));
+    }
+    else
+    { // display work history
+	if (!$brief)
+	{
+		echo ("<FORM method=\"post\" action=\".\">\n");
+		echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
+	}
+	echo ("<TABLE border=\"1\">\n");
+	echo ("<TR>\n");
+	if (!$brief)
+		echo ("<TH>Select</TH>\n");
+	echo ("<TH>Date</TH>\n");
+	echo ("<TH>Hours</TH>\n");
+	echo ("<TH>Quality</TH>\n");
+	echo ("<TH>Memo</TH>\n");
+	echo ("</TR>\n");
+
+	while (FALSE != ($work = $db->fetch_array($result)))
+	{
+		if (empty($work['quality']))
+			$work['quality'] = '&nbsp;';
+		if (empty($work['memo']))
+			$work['memo'] = '&nbsp;';
+		echo ("<TR>\n");
+		if (!$brief)
+		echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$work['work_id']."\"></TD>\n");
+	    echo ("<TD>".$work['date']."</TD>\n");
+	    echo ("<TD align=\"right\">".$work['hours']."</TD>\n");
+	    echo ("<TD align=\"right\">".$work['quality']."</TD>\n");
+	    echo ("<TD>".$work['memo']."</TD>\n");
+	}
+	echo ("</TABLE>\n");
+	if (!$brief)
+	{
+	echo ("<INPUT type=\"submit\" name=\"button_delete_work_history\" value=\"Delete\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_edit_work_history\" value=\"Edit\">\n");
+	echo ("</FORM>\n");
+	}
+    }
+
+
+    //work_history_addedit('add');
+}     /* volunteer_view_work_history() */
+
+
+
+function work_history_addedit($mode)
+{
+    global $db;
+    
+
+    if (!('add' == $mode or 'edit' == $mode))
+    {
+	process_system_error('work_history_addedit(): '._("Unexpected parameter."));
+	return FALSE;
+    }    
+
+    $vid = intval($_REQUEST['vid']);
+
+    if ('edit' == $mode)
+    {
+	$work_id = intval($_POST['work_id']);    
+	$result = $db->query("SELECT * FROM work WHERE work_id = $work_id");
+	if (!$result)
+	{
+	    process_system_error(_("Error querying database."));
+	}
+	$work = $db->fetch_array($result);
+	//print_r($work);
+	$date = $work['date'];
+	$hours = $work['hours'];	
+	$memo = $work['memo'];		
+	$quality = $work['quality'];			
+    }
+    else
+    {
+	$hours = $memo = '';
+	$quality = 0;
+	$date = date('Y-m-d');
+    }
+
+    echo ("<H4>".('add' == $mode ? _("Add work history") : _("Edit work history"))."</H4>\n");
+    echo ("<FORM method=\"post\" action=\".\">\n");
+    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
+    if ('edit' == $mode)
+    {
+
+	echo ("<INPUT type=\"hidden\" name=\"work_id\" value=\"$work_id\">\n");
+    }
+    echo ("<TABLE  border=\"1\" class=\"form\">\n");
+?>
+    <tr>
+ <TH class="vert">Date</TH>
+ <td>
+ <INPUT TYPE="text" NAME="date" SIZE="10" VALUE="<?php echo $date; ?>">
+ </td>
+ </tr>
+
+<tr>
+<?php // to do: allow subtraction and addition 
+ ?>
+ <TH class="vert">Hours</TH>
+ <td> <INPUT TYPE="text" NAME="hours" SIZE="7" value="<?php echo $hours;?>"></td>
+ </tr>
+<TR>
+ <TH class="vert">Quality</TH>
+ <TD>
+  <SELECT name="quality">
+  <OPTION <?php echo display_position_option(-1, $quality);?>>Negative</OPTION>
+  <OPTION <?php echo display_position_option(0, $quality);?>>Neutral</OPTION>
+  <OPTION <?php echo display_position_option(1, $quality);?>>Positive</OPTION>
+  </SELECT>
+<tr>
+ <TH class="vert">Memo</TH>
+ <td><TEXTAREA name="memo" cols="45" rows="2"><?php echo $memo;?></TEXTAREA></td>
+ </tr>
+ 
+
+</table>
+
+<?php
+
+  if ('add' == $mode)
+    echo ("<INPUT type=\"submit\" name=\"button_add_work_history\" value=\"Add\">\n");
+    else
+    echo ("<INPUT type=\"submit\" name=\"button_update_work_history\" value=\"Update\">\n");
+  echo ("</FORM>\n");
+  }
+
+
+?>
