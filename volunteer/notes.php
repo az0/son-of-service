@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.16 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: notes.php,v 1.17 2004/02/27 16:35:14 andrewziem Exp $
  *
  */
 
@@ -68,6 +68,7 @@ function volunteer_view_notes($brief = FALSE)
 	if ($brief)
 	{
 	    // show last ten	    
+
 	    $dtp->setPrintable(TRUE);
 	    $dtp->setPagination(10, $result->RecordCount() > 10 ? $result->RecordCount() - 10 : 0);
 	}
@@ -86,12 +87,7 @@ function volunteer_view_notes($brief = FALSE)
 	$headers['assigned_to'] =  array('label' => _("Assigned to"), 'sortable' => TRUE);		
 	$headers['quality'] =  array('label' => _("Quality"), 'sortable' => TRUE);			
 	$headers[] = array('break_row' => TRUE);			
-	$colspan = 6;
-	if (is_printable())
-	{
-	    $colspan--;
-	}
-	$headers['message'] = array('label' => _("Message"), 'colspan' => $colspan, 'nl2br' => TRUE);
+	$headers['message'] = array('label' => _("Message"), 'colspan' => is_printable() ? 5 : 6, 'nl2br' => TRUE);
 	$dtp->setHeaders($headers);
 	$dtp->setDatabase($db, $result);
 	$dtp->render();

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.29 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: index.php,v 1.30 2004/02/27 16:35:14 andrewziem Exp $
  *
  */
 
@@ -281,6 +281,7 @@ if (array_key_exists('menu', $_GET))
 	{
 		include('availability.php');
 		volunteer_view_availability();
+		volunteer_availability_add_form();
 	}
 	else if ('notes' == $_GET['menu'])
 	{

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.11 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: availability.php,v 1.12 2004/02/27 16:35:14 andrewziem Exp $
  *
  */
  
@@ -15,6 +15,8 @@ if (preg_match('/availability.php/i', $_SERVER['PHP_SELF']))
 }
 
 
+
+
 function volunteer_delete_availability()
 {
     global $db;
@@ -22,27 +24,40 @@ function volunteer_delete_availability()
     
     $errors_found = 0;
     
+    $vid = intval($_POST['vid']);
+    
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$errors_found++;
 	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
         
-    $vid = intval($_POST['vid']);
-    $availability_id  = intval($_POST['availability_id']);
+    $availability_ids  = find_values_in_request($_POST, 'availability_id');
     
-    $sql = "DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = $vid";
+    if (0 == count($availability_ids))    
+    {
+	save_message(MSG_USER_ERROR, _("You must make a selection."));    
+	$errors_found++;
+    }
     
     if (0 === $errors_found)
     {
     
-	$result = $db->Execute($sql);
-
-	if (!$result)
+	foreach ($availability_ids as $availability_id)
 	{
-	    save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
-	}
-	else
+	    // todo portable LIMIT
+	    $sql = "DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = $vid";
+    
+	    $result = $db->Execute($sql);
+
+	    if (!$result)
+	    {
+		$errors_found++;
+		save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+	    }
+	}    
+	
+	if (0 === $errors_found)
 	{
 	    save_message(MSG_USER_NOTICE, _("Deleted."));
 	}
@@ -104,9 +119,7 @@ function volunteer_view_availability($brief = FALSE)
     global $db;
     global $user;
     global $daysofweek;
-    
-    
-    $int_to_timeofday = array(1 => _("Morning"), _("Afternoon"), _("Evening"), _("Night"));    
+        
     
     $vid = intval($_REQUEST['vid']);
     
@@ -131,7 +144,7 @@ function volunteer_view_availability($brief = FALSE)
     {
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
-    
+
     if (!$brief or $result->RecordCount() > 0)
     {
 	echo ("<H3>Availability</H3>\n");
@@ -146,49 +159,62 @@ function volunteer_view_availability($brief = FALSE)
     }
     else
     {
-?>
-<TABLE border="1">
-<TR>
-<?php
-    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
-    {
-	echo ("<TH>" . _("Select") . "</TH>\n");
-    }
-?>
- <TH><?php echo _("Day of week");?></TH>
- <TH><?php echo _("Start");?></TH>
- <TH><?php echo _("End");?></TH>
-</TR>
-<?php
-
-	while (!$result->EOF)
-        {
-	    $availability = $result->fields;
-	    $availability['start_time'] = $int_to_timeofday[$availability['start_time']];
-	    $availability['end_time'] = $int_to_timeofday[$availability['end_time']];
-	    echo ("<TR>\n");
-	    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
-	    {
-		echo ("<TD><INPUT type=\"radio\" name=\"availability_id\" value=\"".$availability['availability_id']."\"></TD>\n");
-	    }
-	    echo ("<TD>".(0< $availability['day_of_week'] ? $daysofweek[$availability['day_of_week']]:"bad value")."</TD>\n");
-	    echo ("<TD>".$availability['start_time']."</TD>\n");	
-	    echo ("<TD>".$availability['end_time']."</TD>\n");		
-	    echo ("</TR>\n");	
-	    $result->MoveNext();
+    
+	require_once(SOS_PATH . 'functions/table.php');
+    
+	$dtp = new DataTablePager();
+    
+	if ($brief)
+	{
+	    // show last ten	    
+	    $dtp->setPrintable(TRUE);
+	    $dtp->setPagination(10, $result->RecordCount() > 10 ? $result->RecordCount() - 10 : 0);
+	}
+	else
+	{
+	    $dtp->setPagination(10);
+	    echo ("<FORM method=\"post\" action=\".\">\n");
+	    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	}
 
-	echo ("</TABLE>\n");
+	$headers = array();
+        if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+	{
+	    $headers['availability_id'] = array('checkbox' => TRUE, 'label' => _("Select"));
+	}
+	
+	$int_to_timeofday = array(1 => _("Morning"), _("Afternoon"), _("Evening"), _("Night"));
+	
+	$headers['day_of_week'] = array('label' => _("Day of week"), 'map' => $daysofweek);
+	$headers['start_time'] = array('label' => _("Start"), 'map' => $int_to_timeofday);
+	$headers['end_time'] = array('label' => _("End"), 'map' => $int_to_timeofday);
+	
+	$dtp->setHeaders($headers);
+	$dtp->setDatabase($db, $result);
+	$dtp->render();
+
 	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{
 	    // todo: allow multiple delete
 	    echo ("<INPUT type=\"submit\" name=\"button_delete_availability\" value=\""._("Delete")."\">\n");
+	    echo ("</FORM>\n");
 	}
     }
+} /* volunteer_view_availability() */    
 
-    if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
+
+function volunteer_availability_add_form()
+{
+    global $daysofweek;
+
+    
+    $vid = intval($_REQUEST['vid']);
+    
+    if (has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	echo ("<H4>Add new availability</H4>\n");
+	echo ("<FORM method=\"post\" action=\".\">\n");
+	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	echo ("<SELECT name=\"day_of_week\">\n");
         for ($i = 1; $i <= 7; $i++)
 	{
@@ -215,8 +241,7 @@ function volunteer_view_availability($brief = FALSE)
 
 	echo ("</FORM>\n");
     }
-
-} /* volunteer_view_availability() */
+} /* volunteer_availability_add_form() */
 
 
 ?>
