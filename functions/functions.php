@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.5 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: functions.php,v 1.6 2004/02/11 05:14:58 andrewziem Exp $
  *
  */
 
@@ -15,6 +15,7 @@ if (preg_match('/functions.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
+include_once(SOS_PATH . 'functions/html.php');
 
 /* save_message()
  * Saves a message to be displayed later (next page load).  Used with

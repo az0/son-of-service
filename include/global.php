@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: global.php,v 1.5 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: global.php,v 1.6 2004/02/11 05:14:58 andrewziem Exp $
  *
  */
 
@@ -14,8 +14,6 @@ if (preg_match('/global.php/i', $_SERVER['PHP_SELF']))
     process_system_error('Do not access this page directly.', array('fatal'=>TRUE));
 }
  
-define('SOS_PATH', '../');
-
 require_once(SOS_PATH . 'include/config.php');
 require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
