@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.13 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: welcome.php,v 1.14 2003/12/30 17:33:40 andrewziem Exp $
  *
  */
 
@@ -43,7 +43,7 @@ $result = $db->Execute("SELECT note_id FROM notes WHERE reminder_date >= now() a
 
 $reminders = $result->RecordCount();
 
-echo ("<P>Welcome, $username.  You have <A href=\"reminders.php\">$reminders reminders</A> waiting.</P>\n");
+echo ("<P>Welcome, $username.  You have <A href=\"reminders.php\">$reminders reminder". (1 == $reminders ? "" : "s") ."</A> waiting.</P>\n");
 
 
 

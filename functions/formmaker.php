@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.7 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: formmaker.php,v 1.8 2003/12/30 17:33:40 andrewziem Exp $
  *
  */
 
@@ -108,6 +108,7 @@ define('FS_PLAIN', 1);
 define('FS_TABLE', 2);
 
 class formMaker
+// todo: complex forms: multiple tables with one form
 {
     var $style;
     var $buttons;

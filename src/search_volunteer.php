@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.19 2003/12/29 01:05:33 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.20 2003/12/30 17:33:40 andrewziem Exp $
  *
  */
 
@@ -14,7 +14,6 @@
 
 // todo: add to found set (vs replace) ?
 // todo: advanced searching (e.g., not, match exact)
-// todo: search by availability
 // todo: query manager for saving queries
 
 function getmicrotime(){ 
@@ -237,6 +236,14 @@ function volunteer_search()
 	    $where .= ' AND phone_numbers.number LIKE '.$db->qstr("%".$_REQUEST['phone_number']."%", get_magic_quotes_gpc());
 	}
 	
+	if (array_key_exists('availability_day', $_REQUEST) and is_numeric($_REQUEST['availability_day']))
+	{
+	    $t = intval($_REQUEST['availability_time']);
+	    $d = intval($_REQUEST['availability_day']);
+	    $from .= ' RIGHT JOIN availability ON volunteers.volunteer_id = availability.volunteer_id ';
+	    $where .= " AND availability.start_time <= $t AND $t <= availability.end_time AND $d = availability.day_of_week";
+	}
+	
 	$orderby = "";
 	if ($cm->columnExists($_REQUEST['sortby']))
 	{ 
@@ -394,6 +401,9 @@ function volunteer_search_form()
 {
     global $db;
     global $cm;
+    global $daysofweek;
+    
+    
 ?>
 
 <P class="instructionstext">To search for a volunteer, enter the
@@ -450,6 +460,40 @@ section.</P>
  <td><input type="Text" name="email_address"></td>
  </tr>
 </table>
+
+<TABLE border="0" style="margin:6pt">
+<TR>
+<TH colspan="2"><?php echo _("Availability");?></TH>
+</TR>
+<TR>
+<TH><?php echo _("Day of week");?></TH>
+<TD>
+<SELECT name="availability_day">
+<?php
+    echo ("<OPTION value=\"\">"._("--Select")."</OPTION>\n");
+    for ($i = 1; $i <= 7; $i++)
+    {
+        echo ("<OPTION value=\"$i\">".$daysofweek[$i]."</OPTION>\n");
+    }
+?>
+</SELECT>
+</TD>
+</TR>
+<TR>
+<TH><?php echo _("Time of day");?></TH>
+<TD>
+<SELECT name="availability_time">
+<?php
+    echo ("<OPTION value=\"\">"._("--Select")."</OPTION>\n");    
+    echo ("<OPTION value=\"1\">"._("Morning")."</OPTION>\n");
+    echo ("<OPTION value=\"2\">"._("Afternoon")."</OPTION>\n");
+    echo ("<OPTION value=\"3\">"._("Evening")."</OPTION>\n");
+    echo ("<OPTION value=\"3\">"._("Night")."</OPTION>\n");
+?>  
+</SELECT>
+</TD> 
+</TR>
+</TABLE>
 
 <TABLE border="0" style="margin:6pt">
 <tr>

@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.19 2003/12/09 05:17:09 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.20 2003/12/30 17:33:40 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -64,8 +64,8 @@ CREATE TABLE availability (
     availability_id  int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     volunteer_id int NOT NULL,
     day_of_week tinyint, # 1 = Sunday, 7 = Saturday
-    start_time enum("Morning", "Afternoon", "Evening", "Night"),
-    end_time   enum("Morning", "Afternoon", "Evening", "Night"),
+    start_time tinyint, # 1 = Morning, 2= Afternoon, 3 = Evening, 4 = Night
+    end_time   tinyint, # same values as above
 
     dt_added datetime,
     uid_added int,
