@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.11 2003/12/03 04:53:18 andrewziem Exp $
+ * $Id: welcome.php,v 1.12 2003/12/07 00:40:27 netgamer7 Exp $
  *
  */
 
@@ -23,10 +23,9 @@ require_once(SOS_PATH . 'functions/db.php');
 
 $db = connect_db();
 
-if (!$db)
+if ($db->_connectionID == '')
 {
-    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->ErrorMsg()));    
-    die();	
+    die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
 }
 
 is_logged_in();

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.24 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: index.php,v 1.25 2003/12/07 00:40:27 netgamer7 Exp $
  *
  */
 
@@ -26,9 +26,9 @@ require_once (SOS_PATH . 'functions/formmaker.php');
 
 $db = connect_db();
 
-if (!$db)
+if ($db->_connectionID == '')
 {
-    die_message(_("Unable to establish database connection."), __FILE__, __LINE__);
+	die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
 }
 
 if (array_key_exists('vid', $_REQUEST))

@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.4 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: reminders.php,v 1.5 2003/12/07 00:40:27 netgamer7 Exp $
  *
  */
  
@@ -27,10 +27,9 @@ require_once(SOS_PATH . 'functions/html.php');
 
 $db = connect_db();
 
-if (!$db)
+if ($db->_connectionID == '')
 {
-    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->get_error()));    
-    die();	
+    die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
 }
 
 is_logged_in();

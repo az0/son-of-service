@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.16 2003/12/03 17:23:05 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.17 2003/12/07 00:40:27 netgamer7 Exp $
  *
  */
 
@@ -532,7 +532,7 @@ section.</P>
 
 $db = connect_db();
 
-if (!$db)
+if ($db->_connectionID == '')
 {
     die_message(MSG_SYSTEM_ERROR, _("Unable to establish database connection."), __FILE__, __LINE__);
 }
