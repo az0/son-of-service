@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.6 2003/10/31 17:10:53 andrewziem Exp $
+ * $Id: index.php,v 1.7 2003/11/01 17:24:55 andrewziem Exp $
  *
  */
 
@@ -563,6 +563,11 @@ if (array_key_exists('menu', $_GET))
 		include('notes.php');
 		volunteer_view_notes();
 		volunteer_add_note_form();
+	}
+	else if ('relationships' == $_GET['menu'])
+	{
+		include('relationships.php');
+		relationships_view();
 	}
 	else if ('general' == $_GET['menu'])
 	{

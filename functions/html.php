@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: html.php,v 1.2 2003/11/01 17:24:55 andrewziem Exp $
  *
  */
 
@@ -51,6 +51,7 @@ if (preg_match('/\/volunteer\//i', $_SERVER['PHP_SELF']) and (array_key_exists('
    echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=availability\">"._("Availability")."</A>\n");      
    echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=workhistory\">"._("Work history")."</A>\n");   
    echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=notes\">"._("Notes")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=relationships\">"._("Relationships")."</A>\n");      
    echo ("</DIV>\n");
 
 }

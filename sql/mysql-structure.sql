@@ -1,3 +1,13 @@
+#
+# Son of Service
+# Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+# Licensed under the GNU General Public License.  See COPYING for details.
+#
+# MySQL data structures
+#
+# $Id: mysql-structure.sql,v 1.4 2003/11/01 17:24:55 andrewziem Exp $
+#
+
 CREATE TABLE volunteers (
         volunteer_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
@@ -141,16 +151,6 @@ CREATE TABLE users (
 	INDEX (username(5)),
 	INDEX (password(5)));
 
-
-CREATE TABLE log (
-        log_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-
-        user_id int,
-        level int,
-        message tinytext,
-        dt datetime # YYYY-MM-DD HH:MM:SS format
-);
-
 CREATE TABLE relationships (
 	relationship_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
@@ -196,11 +196,18 @@ CREATE TABLE extended_meta (
 # to do: required, not required
 	
 	volunteer_read bool,
-	volunteer_write bool,
-	
+	volunteer_write bool,	
 	
 	UNIQUE (code)
 	
 );
 
+# log not used yet
+CREATE TABLE log (
+        log_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 
+        user_id int,
+        level int,
+        message tinytext,
+        dt datetime # YYYY-MM-DD HH:MM:SS format
+);
