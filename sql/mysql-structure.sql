@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.14 2003/11/22 17:51:03 netgamer7 Exp $
+# $Id: mysql-structure.sql,v 1.15 2003/11/23 19:49:43 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -148,7 +148,6 @@ CREATE TABLE users (
         access_admin bit, # change users, export/import files, etc.
         access_change_vol bit, # change volunteers
 
-	INDEX (user_id),
 	INDEX (username(5)),
 	INDEX (password(5))
 );

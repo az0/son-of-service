@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.7 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: welcome.php,v 1.8 2003/11/23 19:49:43 andrewziem Exp $
  *
  */
 
@@ -47,27 +47,6 @@ $reminders = $db->num_rows($result);
 echo ("<P>Welcome, $username.  You have $reminders reminders waiting.</P>\n");
 
 
-?>
-
-<P>Thank you for trying this demo of SOS.  This is not a finished
-product: the program is in an early stage of development.  The primary
-goal now is to identify and implement major features and improve
-the program infrastructure.</P>
-
-<P>Much work is already done, and SOS is generally usable, as you can see in this demo.</P>
-
-<P>Currently implementing:<P>
-<UL>
-<LI>Easy, web method for volunteer coordinator to add custom data fields
-</UL>
-
-<P>To do soon:</P>
-<UL>
-<LI>Better reminder system
-</UL>
-</P>
-
-<?php
 
 make_html_end();
 

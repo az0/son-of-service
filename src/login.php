@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.3 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: login.php,v 1.4 2003/11/23 19:49:43 andrewziem Exp $
  *
  */
 
@@ -105,7 +105,7 @@ if (isset($_POST['button_login']))
     $db->query("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
     
     header("Location: welcome.php");
-}
+	}
 else
 {
     request_login();
