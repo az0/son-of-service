@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.10 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: index.php,v 1.11 2003/11/09 05:28:24 andrewziem Exp $
  *
  */
 
@@ -286,7 +286,7 @@ if (!$success_primary)
     process_system_error(_("Error updating primary volunteer record."), array('debug'=>$db->error()));
 }
 
-// gather custom fields
+// gather custom fields from POST
 
 $custom = array();
 
@@ -294,12 +294,13 @@ foreach ($_POST as $key => $value)
 {
     if (preg_match('/^custom_(\w{1,})$/', $key, $matches))
     {
-	print_r($matches);
-	$custom[$matches[0]] = array('value' => $value, 'save' => FALSE);	
+	$custom[$matches[1]] = array('value' => $value, 'save' => FALSE);	
     }
 }
 
 // sanitize and validate custom fields
+
+// get extended fields data from database
 
 $result_meta = $db->query("SELECT * FROM extended_meta");
 
@@ -312,56 +313,48 @@ if ($result_meta)
 	    case 'string':
 		if (array_key_exists($row_meta['code'], $custom))
 		{
-		    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']['value']]))."'";
+		    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']]['value']))."'";
 		    $custom[$row_meta['code']]['save'] = TRUE;
 		}
 		break;
 	}
     }
 }
+else
+{
+    process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+}
 
 $db->free_result($result_meta);
 
 // save extended data
 
-$sql = "UPDATE extended ";
+// build SQL
+
+$sql = 'REPLACE into extended ';
+$sql_names = '(volunteer_id';
+$sql_values = "($vid";
 $extended_count = 0;
 foreach ($custom as $key => $value)
 {
     if ($value['save'])
     {
-	if ($extended_count > 0)
-	{
-	    $sql .= ",";
-	}
-	$sql .= "SET $key = ".$value['value']." ";
+	$sql_names .= ", $key";
+	$sql_values .= ", ".$value['value'];
 	$extended_count++;
     }
-
 }
 
-$sql .= "WHERE volunteer_id = $vid LIMIT 1";
+$sql_names .= ') ';
+$sql_values .= ') ';
 
-$success_extended = TRUE;
+$sql .= " $sql_names VALUES $sql_values";
+
+// save if extended fields exist
 
 if ($extended_count > 0)
 {
-    echo ("debug: $sql\n");
-
-    $success_extended = FALSE != $db->query($sql);
-
-    if (!$success_extended)
-    {
-	// Maybe the extended record hasn't been created?
-	$result_test = $db->query("SELECT volunteer_id FROM extended WHERE volunteer_id = $vid");
-	if (0 == $db->num_rows($result))
-	{
-	    // Insert a blank record
-	    $db->query("INSERT INTO extended (volunteer_id) VALUES ($vid)");
-	    // Update it
-	    $success_extended = FALSE != $db->query($sql);
-	}
-    }
+    $success_extended = (FALSE != $db->query($sql));        
     
     if (!$success_extended)
     {
@@ -370,7 +363,8 @@ if ($extended_count > 0)
 }
 else
 {
-    $extended_success = TRUE;
+    // no extended fields
+    $success_extended = TRUE;
 }
 
 // redisplay volunteer record

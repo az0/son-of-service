@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.6 2003/11/06 15:55:18 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.7 2003/11/09 05:28:24 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -174,6 +174,8 @@ CREATE TABLE extended (
 	extended_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	volunteer_id INT NOT NULL,
 	INDEX(volunteer_id)
+	
+	UNIQUE(volunteer_id)
 );
 
 CREATE TABLE extended_strings (
