@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.6 2003/11/14 07:10:56 andrewziem Exp $
+ * $Id: workhistory.php,v 1.7 2003/11/14 17:38:55 andrewziem Exp $
  *
  */
 
@@ -51,6 +51,7 @@ function volunteer_work_history_save($mode)
     global $db;
 
     // check form input        
+    $category_id = intval($_POST['category_id']);
     $date = sanitize_date($_POST['date']);
     $quality = intval($_POST['quality']);
     $vid = intval($_POST['vid']);
@@ -88,7 +89,9 @@ function volunteer_work_history_save($mode)
        $errors_found++;       
     }
     else
+    {
 	$hours = (float) $_POST['hours'];
+    }
 
     if (!$date)
     {
@@ -101,25 +104,27 @@ function volunteer_work_history_save($mode)
 
     // add to database
     if ('add' == $mode)
+    {
 	$sql = "INSERT INTO work ".
-	    "(date, hours, volunteer_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
-	    "VALUES ('$date', '$hours', $vid, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, '$memo', $quality)"; 
+	    "(date, hours, volunteer_id, category_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
+	    "VALUES ('$date', '$hours', $vid, $category_id, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, '$memo', $quality)"; 
+    }
 	else
+    {
 	$sql = "UPDATE work ".
-	    "SET date = '$date', hours = '$hours', memo = '$memo', quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
+	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = '$memo', quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
 	    "WHERE work_id = $work_id AND volunteer_id = $vid LIMIT 1";
+    }
     
     if (!$errors_found)
 	// to do: show form again, already filled out    
     {
     
-    //echo ("$sql");
-
 	$result = $db->query($sql);
 
 	if ($result)
 	{
-	    process_user_notice(_("Saved worked history."));
+	    process_user_notice(_("Saved."));
         }
         else
         {
@@ -136,7 +141,11 @@ function volunteer_view_work_history($brief = FALSE)
     
     $vid = intval($_REQUEST['vid']);
 
-    $sql = "SELECT * FROM work WHERE volunteer_id = $vid ORDER BY date DESC";
+    $sql = "SELECT work.work_id AS work_id, work.hours AS hours, work.quality AS quality, work.date AS date, work.memo AS memo, strings.s AS category ".
+	"FROM work ".
+	"LEFT JOIN strings ON work.category_id = strings.string_id ".
+	"WHERE volunteer_id = $vid ".
+	"ORDER BY date DESC";
     $result = $db->query($sql);
 
     if (!$result)
@@ -173,21 +182,25 @@ function volunteer_view_work_history($brief = FALSE)
 	}
 	echo ("<TH>"._("Date")."</TH>\n");
 	echo ("<TH>"._("Hours")."</TH>\n");
+	echo ("<TH>"._("Category")."</TH>\n");	
 	echo ("<TH>"._("Quality")."</TH>\n");
 	echo ("<TH>"._("Memo")."</TH>\n");
 	echo ("</TR>\n");
 
 	while (FALSE != ($work = $db->fetch_array($result)))
 	{
-		if (empty($work['quality']))
-			$work['quality'] = '&nbsp;';
-		if (empty($work['memo']))
-			$work['memo'] = '&nbsp;';
-		echo ("<TR>\n");
-		if (!$brief)
-		echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$work['work_id']."\"></TD>\n");
+	    if (empty($work['memo']))
+	    {
+	    	$work['memo'] = '&nbsp;';
+	    }
+	    echo ("<TR>\n");
+	    if (!$brief)
+	    {
+	        echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$work['work_id']."\"></TD>\n");
+	    }
 	    echo ("<TD>".$work['date']."</TD>\n");
 	    echo ("<TD align=\"right\">".$work['hours']."</TD>\n");
+	    echo ("<TD align=\"right\">".$work['category']."</TD>\n");	    
 	    echo ("<TD align=\"right\">".$work['quality']."</TD>\n");
 	    echo ("<TD>".$work['memo']."</TD>\n");
 	}
@@ -222,7 +235,7 @@ function work_history_addedit($mode)
     if ('edit' == $mode)
     {
 	$work_id = intval($_POST['work_id']);    
-	$result = $db->query("SELECT * FROM work WHERE work_id = $work_id");
+	$result = $db->query("SELECT * FROM work WHERE work_id = $work_id LIMIT 1");
 	if (!$result)
 	{
 	    process_system_error(_("Error querying database."));
@@ -264,6 +277,34 @@ function work_history_addedit($mode)
  <TH class="vert"><?php echo _("Hours"); ?></TH>
  <td> <INPUT TYPE="text" NAME="hours" SIZE="7" value="<?php echo $hours;?>"></td>
  </tr>
+<TR>
+ <TH class="vert"><?php echo _("Category"); ?></TH>
+ <TD> 
+ <?php
+ 
+ $sql = "SELECT string_id, s FROM strings WHERE type = 'work'";
+ 
+ $result = $db->query($sql);
+ 
+ if (!$result)
+ {
+    process_system_error(_("Error querying database."));    
+ }
+ else if (0 == $db->num_rows($result))
+ {
+    process_user_error(_("None found."));
+ }
+ else
+ {
+    echo ("<SELECT name=\"category_id\">\n");
+    while (FALSE != ($row = $db->fetch_array($result)))
+    {
+	echo ("<OPTION value=\"".$row['string_id']."\">".$row['s']."</OPTION>\n");
+    }
+    echo ("</SELECT>\n");
+ }
+ ?>
+  <TD>
 <TR>
  <TH class="vert"><?php echo _("Quality"); ?></TH>
  <TD>
