@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: config.php,v 1.4 2003/11/29 22:06:38 andrewziem Exp $
+ * $Id: config.php,v 1.5 2003/12/03 04:48:08 andrewziem Exp $
  *
  */
 
@@ -14,10 +14,14 @@ if (preg_match('/config.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
-$cfg['mysqlhost'] = 'localhost';
-$cfg['mysqlpassword'] = 'secret2';
-$cfg['mysqluser'] = 'root';
-$cfg['mysqlfile'] = 'sos';
+$cfg['ado_path'] = '/var/www/adodb';
+
+$cfg['dbtype'] = 'mysql';	//default: mysql
+$cfg['dbhost'] = 'localhost';
+$cfg['dbpass'] = 'p4ss';
+$cfg['dbuser'] = 'db';
+$cfg['dbname'] = 'sos';
+$cfg['dbpersist'] = true;	//default: persistant connections on (true)
 
 $smtp_hostname = 'localhost';
 

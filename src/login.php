@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.5 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: login.php,v 1.6 2003/12/03 04:48:08 andrewziem Exp $
  *
  */
 
@@ -73,18 +73,18 @@ if (isset($_POST['button_login']))
     // Security: Do not allow variable poisoning
     unset($uid); 
     
-    $username = $db->escape_string($_POST['u']);
-    $password = md5($_POST['p']);
+    $username = $db->qstr($_POST['u'],get_magic_quotes_gpc());
+    $password = $db->qstr(md5($_POST['p']),get_magic_quotes_gpc());
         
     $sql = "SELECT * FROM users WHERE username = '$username' and password = '$password'";
     
-    $result = $db->query($sql);
+    $result = $db->Execute($sql);
 	
     if ($result)
     {
-	if (1 == $db->num_rows($result))
+	if (1 == $result->RecordCount())
 	{
-	    $user = $db->fetch_assoc($result);
+	    $user = $result->fields;
 	    $uid = $user['user_id'];
 	}
     }    
@@ -94,7 +94,7 @@ if (isset($_POST['button_login']))
 	process_user_error(_("Invalid username or password."), "Is your caps lock key on?");
 	request_login();
     }
-    
+	
     unset($user['password']);
     
     $_SESSION['u'] = $_POST['u'];
@@ -102,7 +102,7 @@ if (isset($_POST['button_login']))
     $_SESSION['user_id'] = $user['user_id'];
     $_SESSION['user'] = $user;
     
-    $db->query("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
+    $r = $db->Execute("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
     
     header("Location: welcome.php");
 	}
