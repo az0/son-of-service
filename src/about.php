@@ -7,7 +7,7 @@
  *
  * General information about Son of Service.
  *
- * $Id: about.php,v 1.1 2003/11/22 16:53:48 andrewziem Exp $
+ * $Id: about.php,v 1.2 2003/11/23 03:26:58 andrewziem Exp $
  *
  */
 
@@ -28,7 +28,7 @@ make_nav_begin();
 It is free, easy to use, standards-based, and has few system
 requirements.</P>
 
-<P>SOS is provided to you under the GNU <A href=""http://www.gnu.org/licenses/gpl.html">General Public License version 2</A>.</P>
+<P>SOS is provided to you under the GNU <A href="http://www.gnu.org/licenses/gpl.html">General Public License version 2</A>.</P>
 
 <P><A href="http://sos.sourceforge.net">SOS web site</A></P>
 
