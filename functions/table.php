@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.8 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: table.php,v 1.9 2004/01/05 05:03:27 andrewziem Exp $
  *
  */
 
@@ -179,6 +179,11 @@ class DataTableDisplay
 		    else
 		    {
 		        $c = $row[$k];
+		    }
+		    
+		    if (array_key_exists('nl2br', $v) and $v['nl2br'])
+		    {
+    			$c = nl2br($c);
 		    }
 
 		    if (array_key_exists('link', $v) and $v['link'])

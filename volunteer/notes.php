@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.12 2003/12/29 00:44:11 andrewziem Exp $
+ * $Id: notes.php,v 1.13 2004/01/05 05:03:27 andrewziem Exp $
  *
  */
 
@@ -91,7 +91,7 @@ function volunteer_view_notes($brief = FALSE)
 	{
 	    $colspan--;
 	}
-	$headers['message'] = array('label' => _("Message"), 'colspan' => $colspan);
+	$headers['message'] = array('label' => _("Message"), 'colspan' => $colspan, 'nl2br' => TRUE);
 	$dtp->setHeaders($headers);
 	$dtp->setDatabase($db, $result);
 	$dtp->render();
@@ -193,11 +193,9 @@ function volunteer_addedit_note_form($mode)
 	while (!$result->EOF)
 	{
 	    $user = $result->fields;	
-	    print_r($user);
 	    $attr[] = array('value' => $user['user_id'], 'label' => $user['personalname']. " (".$user['username'].")");
 	    $result->MoveNext();
 	}
-	print_r($attr);
 	$form->addField(_("Assigned to"), 'select', 'uid_assigned', $attr, $uid_assigned);
     }
 
