@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.7 2003/11/23 16:48:24 andrewziem Exp $
+ * $Id: users.php,v 1.8 2003/11/27 06:08:18 andrewziem Exp $
  *
  */
  
@@ -23,37 +23,31 @@ function user_save()
     global $db;
     
     
+    
+    // todo: check permissions
+    
     // add or update mode?
     
     $mode_update = array_key_exists('button_user_update', $_POST);
     
-    if ($mode_update)
-    {
-	echo ("<H2>Updating user</H2>\n");
-    }
-	else
-    {
-	echo ("<H2>Adding user</H2>\n");
-    }
-
     // validate form input
     
     $errors_found = 0;
     
     if (!isset($_POST['personalname']) or 0 == strlen(trim($_POST['personalname'])))
     {
-       process_user_warning("Personal name is blank.");
+       save_message(_("Personal name is blank."), MSG_USER_WARNING);
     }
 
     if (!isset($_POST['username']) or 4 > strlen(trim($_POST['username'])))
     {
-       process_user_error("Username is too short - 4 or more characters reqired.");
+       save_message(_("Username is too short: 4 or more characters reqired."), MSG_USER_ERROR);
        $errors_found++;
     }
 
     if (!$mode_update and (!isset($_POST['password1']) or 4 > strlen(trim($_POST['password1']))))
     {
-	process_user_error("Account password is too short - 4 or more characters required.");
+	save_message(_("Account password is too short: 4 or more characters required."), MSG_USER_ERROR);
 	$errors_found++;
     }
     else    
@@ -61,97 +55,94 @@ function user_save()
 	{
 	   if (0 != strcmp($_POST['password1'], $_POST['password2']))
 	   {
-	          process_user_error("Passwords do not match.");
+	          save_message(_("Passwords do not match."), MSG_USER_ERROR);
 		  $errors_found++;
 	   }
     }
 
     if (isset($_POST['access_admin']) and "y" == $_POST['access_admin'])
     {
-       process_user_notice("This user has administrative privilages (full access to volunteer database).\n");
+	save_user_message(_("This user has administrative privilage."), MSG_USER_WARNING);
     }
     
-    if ($errors_found)
+    if (!$errors_found)
     {
-	user_addedit_form();
-	return;
-    }
+	if ($access_change_vol = array_key_exists('access_change_vol', $_POST));
+	else
+	{
+	    $access_change_vol = '0';
+	}
     
-    if ($access_change_vol = array_key_exists('access_change_vol', $_POST));
-    else
-    {
-	$access_change_vol = '0';
-    }
+	if ($access_admin = array_key_exists('access_admin', $_POST));
+	else
+	{
+	    $access_admin = '0';
+	}
     
-    if ($access_admin = array_key_exists('access_admin', $_POST));
-    else
-    {
-	$access_admin = '0';
-    }
+	$username = $db->escape_string($_POST['username']);
+	$personalname = $db->escape_string($_POST['personalname']);
+	// do not escape password because of md5()
+	$email = $db->escape_string($_POST['email']);
+	if ($mode_update)
+	{
+	    $user_id = intval($_POST['user_id']);
+	}
     
-    $username = $db->escape_string($_POST['username']);
-    $personalname = $db->escape_string($_POST['personalname']);
-    // do not escape password because of md5()
-    $email = $db->escape_string($_POST['email']);
-    if ($mode_update)
-    {
-	$user_id = intval($_POST['user_id']);
-    }
-    
-    if ($mode_update and 0 == $errors_found)
-    {
-	$sql = "UPDATE users SET ";
-	$sql .= " username = '$username',";
-	$sql .= " personalname = '$personalname',";
+	if ($mode_update and 0 == $errors_found)
+	{
+	    $sql = 'UPDATE users SET ';
+	    $sql .= " username = '$username',";
+	    $sql .= " personalname = '$personalname',";
 	
-	if (strlen($_POST['password1']) > 4)
-	$sql .= " password = '".md5($_POST['password1'])."',";	
+	    if (strlen($_POST['password1']) > 4)
+	    {
+		$sql .= " password = '".md5($_POST['password1'])."',";	
+	    }
 	
-	$sql .= " access_admin = $access_admin,";
-	
-	$sql .= " email =  '$email',";
-	
-	$sql .= " access_change_vol = $access_change_vol ";
-	$sql .= " WHERE user_id = $user_id LIMIT 1 ";
+	    $sql .= " access_admin = $access_admin,";
+	    $sql .= " email =  '$email',";
+	    $sql .= " access_change_vol = $access_change_vol ";
+	    $sql .= " WHERE user_id = $user_id LIMIT 1 ";
 	    
-    }
-    else if (0 == $errors_found)
-    {
-    $sql = "INSERT INTO users (personalname, username, password, access_admin, " .
+	}
+	else if (0 == $errors_found)
+	{
+	    $sql = "INSERT INTO users (personalname, username, password, access_admin, " .
 		   "access_change_vol) " .
 		   "VALUES ('$personalname'," .
 		           " '$username',".
 		    	   "'".md5($_POST['password1']) . "',".
 			"'$access_admin', '$access_change_vol')";
-    }				   
-    $result = $db->query($sql);
+	}				   
+	$result = $db->query($sql);
 
-    if (!$result) { // unsuccessful save
-            process_system_error("Error committing user to database", array('debug'=> $db->get_error()));
-//	    echo $sql; //debug
-            exit();
-
-    }
+	if (!$result) 
+	{ 
+	    // unsuccessful save
+            save_message(_("Error saving data to database."), MSG_SYSTEM_ERROR, array('debug'=> $db->get_error()));
+	}
+	else if ($mode_update)
+	{
+	    save_message(_("Updated."), MSG_USER_NOTICE);
+	}
+	else
+	{
+	    save_message(_("Saved."), MSG_USER_NOTICE);
+	}
     
-    if ($mode_update)
-    {
-	save_message(_("Updated."), MSG_USER_NOTICE);
+	// redirect to GET to prevent POST form reposting
+	header("Location: " . SOS_PATH . "admin/?users");
     }
-    else
-    {
-	save_message(_("Saved."), MSG_USER_NOTICE);
-    }
-    
-    // redirect to GET to prevent POST form reposting
-    header("Location: " . SOS_PATH . "admin/?users=1");
-
 
 } /* user_save() */
 
+
 function user_addedit_form()
 {
-    global $PHP_SELF;
     global $db;
+
+
+    // todo: check permissions
     
     $mode_edit = (array_key_exists('user_id', $_POST) and preg_match('/^[0-9]+$/', $_POST['user_id']));
     
@@ -240,12 +231,13 @@ $form->close();
 
 echo ("</FIELDSET>\n");
 // close conditional statement
- }
+}
 
 
 function users_list()
 {
     global $db;
+    
     
     echo ("<H2>List of users</H2>\n");
     
@@ -307,7 +299,7 @@ function users_delete()
 	
 	if (!$result)
 	{
-	    process_system_error(_("Error deleting data from database."), array('debug' => $db->get_error()));
+	    save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));
 	}
 	else
 	{
@@ -315,7 +307,7 @@ function users_delete()
 
 	    // redirect to non-POST page
 	    
-	    header("Location: ./?users=1");
+	    header("Location: ./?users");
 	}
     }
     else

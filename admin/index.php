@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.11 2003/11/23 21:39:48 andrewziem Exp $
+ * $Id: index.php,v 1.12 2003/11/27 06:08:18 andrewziem Exp $
  *
  */
 
@@ -105,15 +105,14 @@ function admin_menu()
 
 
 <UL>
- <LI><A href="./?add_user=1">Add a user account</A>
- <LI><A href="./?users=1">User accounts</A>
- <LI><A href="./?list_strings=1">Strings: relationship types, skill types, work categories</A>
- <LI><A href="./?update_volunteer_stats=1">Update volunteer statistics</A>
- <LI><A href="./?system_check=1">System check</A>
- <LI><A href="./?add_custom_field=1">Add custom field</A>
- <LI><A href="./?import_legacy=1">Import legacy data</A>
+ <LI><A href="./?users">User accounts</A>
+ <LI><A href="./?list_strings">Strings: relationship types, skill types, work categories</A>
+ <LI><A href="./?update_volunteer_stats">Update volunteer statistics</A>
+ <LI><A href="./?system_check">System check</A>
+ <LI><A href="./?add_custom_field">Add custom field</A>
+ <LI><A href="./?import_legacy">Import legacy data</A>
  <LI>Download database dump in SQL format
- <LI>Download mailing list [<A href="./?download_mailing_list=1&type=postal&who=all">all</A>]</LI>
+ <LI>Download mailing list [<A href="./?download_mailing_list&type=postal&who=all">all</A>]</LI>
 
  </UL>
 <?php
@@ -166,7 +165,7 @@ if (array_key_exists('button_user_delete', $_POST))
     users_delete();
 }
 else    
-if (array_key_exists('button_user_edit', $_POST) or array_key_exists('add_user', $_GET))
+if (array_key_exists('button_user_edit', $_POST))
 {
     include('users.php');
     user_addedit_form();

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.7 2003/11/24 16:09:40 andrewziem Exp $
+ * $Id: notes.php,v 1.8 2003/11/27 06:08:18 andrewziem Exp $
  *
  */
 
@@ -16,38 +16,43 @@ if (preg_match('/notes.php/i', $_SERVER['PHP_SELF']))
 
 function volunteer_view_notes($brief = FALSE)
 {
-global $db;
+    global $db;
 
 
-display_messages();
+    // todo: check permissions
 
-$vid = intval($_GET['vid']);
+    display_messages();
 
-$sql = 'SELECT notes.*,u1.username as added_by, u2.username as assigned_to '.
+    $vid = intval($_GET['vid']);
+
+    $sql = 'SELECT notes.*,u1.username as added_by, u2.username as assigned_to '.
 	'FROM notes '.
 	'LEFT JOIN users as u1 ON notes.uid_added = u1.user_id '.
 	'LEFT JOIN users as u2 ON notes.uid_assigned = u2.user_id '.
 	"WHERE notes.volunteer_id = $vid ORDER BY dt DESC";
 
-$result = $db->query($sql);
+    $result = $db->query($sql);
 
-if (!$result)
-{
+    if (!$result)
+    {	
 	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
 	die();
-}
+    }
 
-if (!$brief or 0 < $db->num_rows($result))
-echo ("<H3>"._("Notes")."</H3>\n");
+    if (!$brief or 0 < $db->num_rows($result))
+    {
+	echo ("<H3>"._("Notes")."</H3>\n");
+    }
 
 
-if (0 == $db->num_rows($result))
-{
+    if (0 == $db->num_rows($result))
+    {
 	if (!$brief)
 	process_user_notice(_("None found."));
-}
-else
-{ // display work history
+    }
+    else
+    { 
+	// display work history
 	if (!$brief)
 	{
 		echo ("<FORM method=\"post\" action=\".\">\n");
@@ -93,7 +98,7 @@ else
 		echo ("<INPUT type=\"submit\" name=\"button_delete_note\" value=\""._("Delete")."\">\n");
 		echo ("</FORM>\n");
 	}
-}
+    }
 
 } /* volunteer_view_notes() */
 
@@ -102,16 +107,17 @@ function volunteer_add_note_form()
 {
     global $db;
     
+
+    // todo: check permissions
+    // todo: make searchable
+    
     $vid = intval($_GET['vid']);
 
+    echo ("<H4>"._("Add note")."</H4>\n");
 
-echo ("<H4>"._("Add note")."</H4>\n");
+    echo ("<FORM method=\"post\" action=\".\">\n");
+    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 
-echo ("<FORM method=\"post\" action=\".\">\n");
-echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-
-// to do: add reminders, assignments to notes
-// to do: make searchable
 
 ?>
 <table border="1" width="40%">
@@ -171,6 +177,7 @@ function note_add()
     global $db;
 
 
+    // todo: check permissions
     // validate form input
     $errors_found = 0;
 

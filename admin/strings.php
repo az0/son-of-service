@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.1 2003/11/14 07:10:56 andrewziem Exp $
+ * $Id: strings.php,v 1.2 2003/11/27 06:08:18 andrewziem Exp $
  *
  */
 
@@ -22,6 +22,8 @@ function strings_add()
     global $db;
     global $category_map;
     
+    
+    // todo: check permissions
 
     $errors_found = 0;
 
@@ -99,6 +101,8 @@ function strings_list()
     global $category_map;
     
     
+    // todo: check permissions    
+    
     $sql = "SELECT strings.string_id AS string_id, strings.s AS name, strings.type AS type, count(*) AS count ".
 	"FROM strings ".
 	"LEFT JOIN work ".
@@ -156,6 +160,8 @@ function strings_delete()
 {
     global $db;
     
+    
+    // todo: check permissions
 
     if (!array_key_exists('string_id', $_POST))
     {

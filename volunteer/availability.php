@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.3 2003/11/27 03:54:28 andrewziem Exp $
+ * $Id: availability.php,v 1.4 2003/11/27 06:08:18 andrewziem Exp $
  *
  */
  
@@ -19,7 +19,10 @@ function volunteer_delete_availability()
 {
     global $db;
     
-    $vid = intval($_REQUEST['vid']);
+    
+    // todo: check permissions
+    
+    $vid = intval($_POST['vid']);
     $availability_id  = intval($_POST['availability_id']);
     
     $result = $db->query("DELETE FROM availability WHERE availability_id = $availability_id AND volunteer_id = $vid");
@@ -43,6 +46,8 @@ function volunteer_delete_availability()
   {
       global $db;
       
+      
+      // todo: check permissions      
       
       $vid = intval($_POST['vid']);
       $day_of_week = intval($_POST['day_of_week']);
@@ -82,6 +87,8 @@ function volunteer_delete_availability()
     global $user;
     global $daysofweek;
     
+    
+    //todo: check permissions
     
     display_messages();
 
