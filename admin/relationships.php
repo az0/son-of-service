@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: relationships.php,v 1.3 2003/11/12 16:12:23 andrewziem Exp $
  *
  */
 
@@ -42,7 +42,7 @@ function relationship_type_add()
     {
 	$relationship_type_name = htmlentities($db->escape_string($_POST['relationship_type_name']));
     
-	$result = $db->query("INSERT INTO relationship_types (name) VALUES ('$relationship_type_name')");
+	$result = $db->query("INSERT INTO strings (s, type) VALUES ('$relationship_type_name', 'relationship')");
 
 	if ($result)
 	{
@@ -84,11 +84,12 @@ function relationship_type_list()
     global $db;
     
 
-    $sql = "SELECT relationship_types.relationship_type_id as relationship_type_id, relationship_types.name AS name, floor(count(*)/2) AS count ".
-	"FROM relationship_types ".
+    $sql = "SELECT strings.string_id AS string_id, strings.s AS name, floor(count(*)/2) AS count ".
+	"FROM strings ".
 	"LEFT JOIN relationships ".
-	"ON relationships.relationship_type_id = relationship_types.relationship_type_id ".
-	"GROUP BY relationship_types.relationship_type_id";
+	"ON relationships.string_id = strings.string_id ".
+	"WHERE strings.type = 'relationship' ".
+	"GROUP BY strings.string_id";
 
     $result = $db->query($sql);
     
@@ -103,21 +104,21 @@ function relationship_type_list()
     }
     else
     {
-	echo ("<H2>List of relationship types</H2>\n");
+	echo ("<H2>"._("Relationship types")."</H2>\n");
 	echo ("<P style=\"instructions\">To edit or delete a relationship type, select the radio button by it.  Then click edit or delete (respectively).</P>\n");
     
 	echo ("<FORM method=\"post\" action=\".\">\n");
     
 	echo ("<TABLE border=\"1\">\n");
 	echo ("<TR>\n");
-	echo ("<TH>Select</TH>\n");
-	echo ("<TH>Relationship type</TH>\n");
-	echo ("<TH>Quantity in use</TH>\n");	
+	echo ("<TH>"._("Select")."</TH>\n");
+	echo ("<TH>"._("Relationship type")."</TH>\n");
+	echo ("<TH>"._("Quantity in use")."</TH>\n");	
 	echo ("</TR>\n");
 	while (FALSE != ($row = ($db->fetch_array($result))))
 	{
 	    echo ("<TR>\n");
-	    echo ("<TD><INPUT type=\"radio\" name=\"relationship_type_id\" value=\"".$row['relationship_type_id']."\"></TD>\n");
+	    echo ("<TD><INPUT type=\"radio\" name=\"string_id\" value=\"".$row['string_id']."\"></TD>\n");
 	    echo ("<TD>".$row['name']."</TD>\n");
 	    echo ("<TD>".$row['count']."</TD>\n");	    
 	    echo ("</TR>\n");
@@ -135,23 +136,23 @@ function relationship_type_delete()
     global $db;
     
     
-    $relationship_type_id = intval($_POST['relationship_type_id']);
+    $string_id = intval($_POST['string_id']);
     
     // currently in use?
-    $result = $db->query("SELECT relationship_id FROM relationships WHERE relationship_type_id = $relationship_type_id");
+    $result = $db->query("SELECT relationship_id FROM relationships WHERE string_id = $string_id");
     
     if ($db->num_rows($result) > 0)
     {
-	process_user_error("Relationship currently in use.");
+	process_user_error(_("Relationship currently in use."));
 	
     }
     else
     {
-	$result = $db->query("DELETE FROM relationship_types WHERE relationship_type_id = $relationship_type_id LIMIT 1");	
+	$result = $db->query("DELETE FROM strings WHERE string_id = $string_id LIMIT 1");	
 	
 	if ($result)
 	{
-	    process_user_notice(_("Succesfully removed."));
+	    process_user_notice(_("Removed."));
 	}
 	else
 	{

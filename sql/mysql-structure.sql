@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.9 2003/11/10 17:22:30 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.10 2003/11/12 16:12:23 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -75,25 +75,26 @@ CREATE TABLE availability (
     INDEX (end_time)
 );
 
-
-# describes a skill in general
-CREATE TABLE skills (
-	skill_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	name varchar(100),
-	UNIQUE(name)
+CREATE TABLE strings (
+    string_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    s varchar(255) not null,
+    lang varchar(6),
+    type enum('extended_list', 'relationship', 'skill', 'work_cat'),
+    foreign_id INT,
+    
 );
 
-# describe the each skill of each volunteer
+# describe each skill of each volunteer
 CREATE TABLE volunteer_skills (
     volunteer_skill_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     volunteer_id INT NOT NULL,
-    skill_id INT NOT NULL,
+    string_id INT NOT NULL,
     skill_level TINYINT NOT NULL,     # 1 = none, 2 = amatuer, 3 = some, 4 = pro, 5 = expert
 #    PRIMARY KEY (volunteer_skill_id), 
     INDEX (volunteer_id), 
-    INDEX (skill_id), 
+    INDEX (string_id), 
     INDEX (skill_level),
-    UNIQUE (volunteer_id, skill_id)
+    UNIQUE (volunteer_id, string_id)
 );
 
 CREATE TABLE notes (
@@ -115,13 +116,14 @@ CREATE TABLE notes (
 
 
 CREATE TABLE work (
-    work_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
+    work_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 
-    date DATE, # YYYY-MM-DD... for example, 2002-01-25
+    date DATE,
     hours DECIMAL(6,2), # for example, work of 6.25 hours
-    volunteer_id INT, # volunteer ID
+    volunteer_id INT,
     memo TEXT,
     quality TINYINT, # -1 negative, 0 neutral, 1 positive
+    category_id INT,
 
     dt_added DATETIME,
     uid_added INT,
@@ -157,19 +159,12 @@ CREATE TABLE relationships (
 	volunteer1_id INT NOT NULL,
 	volunteer2_id INT NOT NULL,	
 	
-	relationship_type_id INT,
+	string_id INT,
 	
-	UNIQUE(volunteer1_id,volunteer2_id,relationship_type_id)
+	UNIQUE(volunteer1_id, volunteer2_id, string_id)
 );
 
-CREATE TABLE relationship_types (
-	relationship_type_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	
-	name VARCHAR(40) NOT NULL,
-	
-	UNIQUE(name)
-);
-
+# SOS modifies its own extended table
 CREATE TABLE extended (
 	extended_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	volunteer_id INT NOT NULL,
@@ -178,19 +173,10 @@ CREATE TABLE extended (
 	UNIQUE(volunteer_id)
 );
 
-CREATE TABLE extended_strings (
-	extended_string_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-	extended_meta_id MEDIUMINT NOT NULL,
-	lang CHAR(6),
-	string varchar(100),
-	value MEDIUMINT,
-	
-);
-
 CREATE TABLE extended_meta (
 	extended_meta_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
-	code VARCHAR(50),
+	code VARCHAR(50) NOT NULL,
 	label VARCHAR(50),
 	description VARCHAR(100),
 	size1 MEDIUMINT UNSIGNED,
@@ -216,5 +202,5 @@ CREATE TABLE log (
         user_id int,
         level int,
         message tinytext,
-        dt datetime # YYYY-MM-DD HH:MM:SS format
+        dt datetime 
 );

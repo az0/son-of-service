@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.7 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.8 2003/11/12 16:12:23 andrewziem Exp $
  *
  */
 
@@ -209,7 +209,7 @@ function volunteer_search()
 		if ('n' != $_REQUEST[$key])
 		{
 		    
-		    $where .= " AND ( skill_id = ".$matches[1]." and skill_level >= ".$_REQUEST[$key].") ";
+		    $where .= " AND ( string_id = ".$matches[1]." and skill_level >= ".$_REQUEST[$key].") ";
 
 
 		}		
@@ -464,12 +464,12 @@ section.</P>
 
 <?php
 
-    $result = $db->query("SELECT * FROM skills ORDER BY name");
+    $result = $db->query("SELECT s AS name, string_id FROM strings WHERE type = 'skill' ORDER BY name");
 
     if (!$result)
     {
     	echo ("<TR><TD>\n");
-	process_system_error("Cannot query database for skills.");
+	process_system_error("Error querying database for skills.");
 	echo ("</TD></TR>\n");	
     }
     else
@@ -483,7 +483,7 @@ section.</P>
     {
 	echo ("<TR>\n");
 	echo ("<TH class=\"vert\">".$row['name']."</TH>\n");
-	echo ("<TD><SELECT name=\"skill_".$row['skill_id']."\">\n");
+	echo ("<TD><SELECT name=\"skill_".$row['string_id']."\">\n");
         echo ("<OPTION value=\"n\">"._("Doesn't matter")."</OPTION>\n");
         echo ("<OPTION value=\"2\">"._("Amatuer")."</OPTION>\n");
         echo ("<OPTION value=\"3\">"._("Some")."</OPTION>\n");    

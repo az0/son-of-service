@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.5 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: index.php,v 1.6 2003/11/12 16:12:23 andrewziem Exp $
  *
  */
 
@@ -19,18 +19,22 @@ require_once (SOS_PATH . 'include/global.php');
 require_once (SOS_PATH . 'functions/html.php');
 
 if (!array_key_exists('download_mailing_list',$_GET))
+{
     make_html_begin("Administrative menu", array());
+}
 
 is_logged_in();
 
 if (!array_key_exists('download_mailing_list',$_GET))
+{
     make_nav_begin();
+}    
 
 $db = new voldbMySql();
 
 if ($db->get_error())
 {
-    process_system_error(_("Unable to establish database connection.").$db->get_error());    
+    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->get_error()));    
     die();	
 }
 
@@ -40,7 +44,7 @@ function download_mailing_list()
     
     if (!array_key_exists('type', $_GET))
     {
-	process_system_error('You have reached this page incorrectly.  Type expected in GET.');
+	process_system_error('You have reached this page incorrectly.');
 	die();
     }
     
@@ -48,12 +52,12 @@ function download_mailing_list()
     
     if (!$result)
     {
-	process_system_error("Unable to query database.", array('debug'=> $db->get_error()));
+	process_system_error(_("Error querying database."), array('debug'=> $db->get_error()));
     }
     else
     if (0 == $db->num_rows($result))
     {
-	process_user_error("No data found.");
+	process_user_error(_("No data found."));
     }
     
     else
@@ -103,8 +107,7 @@ function admin_menu()
 <UL>
  <LI><A href="./?add_user=1">Add a user account</A>
  <LI><A href="./?list_users=1">User accounts</A>
- <LI><A href="./?add_skill=1">Add a volunteer skill type</A>
- <LI><A href="./?list_skills=1">Volunteer skill types</A>
+ <LI><A href="./?list_skills=1">Skill / interest types</A>
  <LI><A href="./?list_relationship_type=1">Relationship types</A> 
  <LI><A href="./?update_volunteer_stats=1">Update volunteer statistics</A>
  <LI><A href="./?system_check=1">System check</A>
@@ -156,22 +159,32 @@ if (array_key_exists('list_skills', $_GET))
 {
     include('skills.php');
     skill_list();
+    skill_add_form();    
 }
 else
 if (array_key_exists('button_skill_add', $_POST))
 {
     include('skills.php');
     skill_add();
+    skill_list();    
+    skill_add_form();
 }
+/*
 else
 if (array_key_exists('add_skill', $_GET))
 {
     include('skills.php');
     skill_add_form();
 }
+*/
 else    
 if (array_key_exists('button_skill_delete', $_POST))
-    process_system_error("To do: not yet implemented.");
+{
+    include('skills.php');
+    skill_delete();
+    skill_list();    
+    skill_add_form();
+}
 else    
 if (array_key_exists('button_skill_edit', $_POST))
     process_system_error("To do: not yet implemented.");
@@ -234,8 +247,7 @@ else
 
 if (!array_key_exists('download_mailing_list',$_GET))
 {
-    echo ("</body>\n");
-    echo ("</html>\n");
+    make_html_end();
 }
 
 ?>

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.3 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: skills.php,v 1.4 2003/11/12 16:12:24 andrewziem Exp $
  *
  */
 
@@ -25,7 +25,7 @@ function volunteer_delete_skill()
     $vid = intval($_REQUEST['vid']);
     $volunteer_skill_id  = intval($_REQUEST['volunteer_skill_id']);
     
-    $result = $db->query("DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = ".intval($vid));
+    $result = $db->query("DELETE FROM volunteer_skills WHERE volunteer_skill_id = $volunteer_skill_id AND volunteer_id = ".intval($vid)." LIMIT 1");
 
     if (!$result)
     {
@@ -54,7 +54,7 @@ echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 echo ("<INPUT type=\"hidden\" name=\"menu\" value=\"skills\">\n");
 
 
-$vskills_result = $db->query("SELECT volunteer_skills.skill_id, volunteer_skills.volunteer_skill_id, skills.name, volunteer_skills.skill_level FROM volunteer_skills LEFT JOIN skills on skills.skill_id = volunteer_skills.skill_id WHERE volunteer_id = ".intval($vid));
+$vskills_result = $db->query("SELECT volunteer_skills.string_id, volunteer_skills.volunteer_skill_id, strings.s, volunteer_skills.skill_level FROM volunteer_skills LEFT JOIN strings on strings.string_id = volunteer_skills.string_id WHERE volunteer_id = ".intval($vid)." AND strings.type = 'skill'");
 
 if (!$vskills_result)
 {
@@ -77,9 +77,8 @@ else
     while (FALSE != ($vskill = $db->fetch_array($vskills_result)))
     {
 	echo ("<TR>\n");
-//	print_r($vskill);
 	echo ("<TD><INPUT type=\"radio\" name=\"volunteer_skill_id\" value=\"".$vskill['volunteer_skill_id']."\"></TD>\n");
-	echo ("<TD>".$vskill['name']."</TD>\n");
+	echo ("<TD>".$vskill['s']."</TD>\n");
 	echo ("<TD>".$skill_levels[$vskill['skill_level']]."</TD>\n");	
 	echo ("</TR>\n");
     }
@@ -89,18 +88,24 @@ else
 }    
 
 // add skill form
-$skills_list_result = $db->query("SELECT * FROM skills");
+$skills_list_result = $db->query("SELECT * FROM strings WHERE type = 'skill'");
 
-if ($skills_list_result and 0 < $db->num_rows($skills_list_result))
+if (!$skills_list_result)
 {
-    
+    process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+}
+elseif (1 > $db->num_rows($skills_list_result))
+{
+    process_user_error(_("None found."));
+}
+else
+{
     echo ("<H4>"._("Add new skill")."</H4>\n");
 
-    //echo ("<TD colspan=\"2\">\n");
-    echo ("<SELECT name=\"skill_id\">\n");
+    echo ("<SELECT name=\"string_id\">\n");
     while ($skill = ($db->fetch_array($skills_list_result)))
     {
-	echo ("<OPTION value=\"".$skill['skill_id']."\">".$skill['name']."</OPTION>\n");
+	echo ("<OPTION value=\"".$skill['string_id']."\">".$skill['s']."</OPTION>\n");
     }
     echo ("</SELECT>\n");
     echo ("<SELECT name=\"skill_level\">\n");
@@ -123,18 +128,18 @@ function volunteer_skill_add()
       
       
     $vid = intval($_POST['vid']);
-    $skill_id = intval($_POST['skill_id']);
+    $string_id = intval($_POST['string_id']);
     $skill_level = intval($_POST['skill_level']);
       
     // always validate form input first
-    if (!(preg_match("/^[0-9]+$/", $_POST['skill_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
+    if (!(preg_match("/^[0-9]+$/", $_POST['string_id']) and preg_match("/^[0-9]+$/",$_POST['skill_level'])))
     {
-	process_system_error(_("Bad form input:").' skill_id, skill_level');
+	process_system_error(_("Bad form input:").' string_id, skill_level');
 	die();
     }
     else
     {  
-        $result = $db->query("INSERT INTO volunteer_skills (volunteer_id, skill_id, skill_level) VALUES ($vid, $skill_id, $skill_level)");	
+        $result = $db->query("INSERT INTO volunteer_skills (volunteer_id, string_id, skill_level) VALUES ($vid, $string_id, $skill_level)");	
     
         if (!$result)
         {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.7 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: relationships.php,v 1.8 2003/11/12 16:12:23 andrewziem Exp $
  *
  */
 
@@ -39,11 +39,11 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
 	
         $sql = "SELECT relationships.relationship_id AS relationship_id, ".
 	    "relationships.volunteer2_id AS volunteer2_id, ".
-	    "relationship_types.name AS rname  ".
+	    "strings.s AS rname  ".
 	    "FROM relationships ".
-	    "LEFT JOIN relationship_types ".
-	    "ON relationships.relationship_type_id = relationship_types.relationship_type_id ".
-	    "WHERE relationships.volunteer1_id = ".$row['volunteer2_id']." AND relationships.volunteer2_id != $vid";
+	    "LEFT JOIN strings ".
+	    "ON relationships.string_id = strings.string_id ".
+	    "WHERE relationships.volunteer1_id = ".$row['volunteer2_id']." AND relationships.volunteer2_id != $vid AND strings.type = 'relationship'";
     
         $result = $db->query($sql);
 	
@@ -107,11 +107,11 @@ function relationships_view($brief = FALSE)
     
     $sql = "SELECT relationships.relationship_id AS relationship_id, ".
     "relationships.volunteer2_id AS volunteer2_id, ".
-    "relationship_types.name AS rname  ".
+    "strings.s AS rname  ".
     "FROM relationships ".
-    "LEFT JOIN relationship_types ".
-    "ON relationships.relationship_type_id = relationship_types.relationship_type_id ".
-    "WHERE relationships.volunteer1_id = $vid ";
+    "LEFT JOIN strings ".
+    "ON relationships.string_id = strings.string_id ".
+    "WHERE relationships.volunteer1_id = $vid AND strings.type = 'relationship'";
     
     $result = $db->query($sql);
     
@@ -181,7 +181,7 @@ function relationships_add_form()
     echo ("<H3>"._("Add relationship")."</H3>\n");
 
     // remember relationship types for multiple uses
-    $result = $db->query("SELECT * FROM relationship_types");
+    $result = $db->query("SELECT s AS name, string_id FROM strings WHERE type = 'relationship'");
     $rtypes = array();
     while (FALSE != ($row = $db->fetch_array($result)))
     {
@@ -195,10 +195,10 @@ function relationships_add_form()
     echo ("<FORM method=\"post\" action=\".\">\n");
     echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
     echo (_("Volunteer ID")." <INPUT type=\"text\" name=\"volunteer2_id\" size=\"5\">\n");
-    echo ("<BR>"._("Relationship")." <SELECT name=\"rtype\">\n");
+    echo ("<BR>"._("Relationship")." <SELECT name=\"string_id\">\n");
     foreach ($rtypes as $rt)
     {
-	echo ("<OPTION value=\"".$rt['relationship_type_id']."\">".$rt['name']."</OPTION>\n");
+	echo ("<OPTION value=\"".$rt['string_id']."\">".$rt['name']."</OPTION>\n");
     }
     echo ("</SELECT>\n");
     echo ("<INPUT type=\"submit\" name=\"add_relationship\" value=\""._("Add")."\">\n");
@@ -235,10 +235,10 @@ function relationships_add_form()
 	    $vid2 = $row['volunteer_id'];
 	    $v2 = volunteer_get(intval($vid2));
 	    $name = make_volunteer_name($v2);
-	    echo ("<SELECT name=\"rtype_$vid2\">\n");
+	    echo ("<SELECT name=\"string_id_$vid2\">\n");
 	    foreach ($rtypes as $rt)
 	    {
-		echo ("<OPTION value=\"".$rt['relationship_type_id']."\">".$rt['name']."</OPTION>\n");
+		echo ("<OPTION value=\"".$rt['string_id']."\">".$rt['name']."</OPTION>\n");
 	    }
     	    echo ("</SELECT>\n");
 	    echo ("<INPUT type=\"submit\" name=\"add_relationship_$vid2\" value=\"Add\">\n");
@@ -261,7 +261,7 @@ function relationship_add()
     if (array_key_exists('add_relationship', $_POST))
     {
 	$vid2 = intval($_POST['volunteer2_id']);
-	$rtype = intval($_POST['rtype']);
+	$string_id = intval($_POST['string_id']);
     }    
     else
     {
@@ -270,14 +270,22 @@ function relationship_add()
 	    if (preg_match('/add_relationship_(\d+)/', $pk, $matches))
 	    {
 		$vid2 = $matches[1];
-		$rtype = intval($_POST['rtype_'.$vid2]);
+		$string_id = intval($_POST['string_id_'.$vid2]);
 	    }
 	}
+    }
+    
+    if (0 == $string_id)
+    {
+	process_system_error(_("Bad form input: ").' string_id');    
+	print_r($_POST);
+	return FALSE;
     }
     
     if (!$vid2)
     {
 	process_system_error(_("Input missing."));
+	return FALSE;
     }
     
     $vid = intval($_POST['vid']);
@@ -288,8 +296,8 @@ function relationship_add()
 	return FALSE;
     }
     
-    $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, relationship_type_id) VALUES ($vid, $vid2, $rtype)";
-    $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, relationship_type_id) VALUES ($vid2, $vid, $rtype)";
+    $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid, $vid2, $string_id)";
+    $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, string_id) VALUES ($vid2, $vid, $string_id)";
     $result1 = $db->query($sql1);    
     $result2 = $db->query($sql2);
     

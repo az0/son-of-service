@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.8 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: custom.php,v 1.9 2003/11/12 16:12:23 andrewziem Exp $
  *
  */
 
@@ -68,9 +68,10 @@ function custom_add_field_form1()
 </FIELDSET>
 
 <FIELDSET>
-<CAPTION>Check box</CAPTION>
-[not available]
-<BR><INPUT type="radio" name="fieldtype" value="checkbox" disabled>Check box: none, one, or more choices from list
+<CAPTION>Multiple choice</CAPTION>
+<BR><INPUT type="radio" name="fieldtype" value="radio">Radio: choose one, mutually exclusive option from a list
+<BR><INPUT type="radio" name="fieldtype" value="checkbox" disabled>Check box: none, one, or more choices from a list
+<BR>Number of choices <INPUT type="text" name="mc_quantity">
 </FIELDSET>
 
 
@@ -100,7 +101,7 @@ function custom_add_field_form1()
 } /* custom_add_field_form1() */
 
 
-$fieldtypes = array('integer','string','textarea','date','boolean');
+$fieldtypes = array('integer','string','textarea','date','boolean', 'radio');
 //$fieldtypes = array('integer','string','textarea','boolean','checkbox','radio','file');
 
 function custom_add_field_form2()
@@ -119,7 +120,15 @@ function custom_add_field_form2()
 	$errors_found++;
     }
 */    
-    $fieldtype = $_POST['fieldtype'];
+    if (array_key_exists('fieldtype', $_POST))
+    {
+	$fieldtype = $_POST['fieldtype'];
+    }
+    else
+    {
+	process_user_error(_("You must pick a field type."));
+    }
+
     
     $label = strip_tags($_POST['label']);
     
@@ -141,6 +150,8 @@ function custom_add_field_form2()
 	case 'date':
 	    $attributes['length'] = 12;
 	    break;	    
+	case 'radio';
+	    break;	    
 	case 'boolean':
 	case 'integer':	
 	    break;	    
@@ -156,7 +167,9 @@ function custom_add_field_form2()
     }
     
     if ($errors_found)
+    {
 	return FALSE;
+    }
     
 ?>
 <FIELDSET>
