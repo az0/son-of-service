@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.14 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.15 2003/12/03 04:53:18 andrewziem Exp $
  *
  */
 
@@ -252,7 +252,7 @@ function volunteer_search()
 	
 	echo ("<FORM method=\"post\" action=\"mass.php\">\n");	
 	
-        $result = $db->query($sql);
+        $result = $db->Execute($sql);
 
         if (!$result)
         { 
@@ -264,7 +264,7 @@ function volunteer_search()
 		// search successful
 		// todo: mass-action on found set (email)
 		
-                if (0 == ($total_results = $db->num_rows($result)))
+                if (0 == ($total_results = $result->RecordCount()))
                 {
                      process_user_error(_("Found zero volunteers matching your description."));
                 }
@@ -303,13 +303,11 @@ function volunteer_search()
 		    $tab->setHeaders($fieldnames);
 		    $tab->begin();
 		    
-		    while (FALSE != ($row = $db->fetch_array($result)))
+		    while (!$result->EOF)
 		    {
-		        $tab->addRow($row);
+		        $tab->addRow($result->fields);
 		    }
 		    
-		    $db->free_result($result);
-
 		    $tab->end();
 
                }
@@ -477,7 +475,7 @@ section.</P>
 
 <?php
 
-    $result = $db->query("SELECT s AS name, string_id FROM strings WHERE type = 'skill' ORDER BY name");
+    $result = $db->Execute("SELECT s AS name, string_id FROM strings WHERE type = 'skill' ORDER BY name");
 
     if (!$result)
     {
@@ -486,14 +484,15 @@ section.</P>
 	echo ("</TD></TR>\n");	
     }
     else
-    if (0==$db->num_rows($result))
+    if (0==$result->RecordCount())
     {
 	echo ("<TR><TD>\n");
 	process_user_error("Cannot find any qualifications or interests to list.");
 	echo ("</TD></TR>\n");
     }
-    else while (FALSE != ($row = $db->fetch_array($result)))
+    else while (!$result->EOF)
     {
+    	$row = &$result->fields;
 	echo ("<TR>\n");
 	echo ("<TH class=\"vert\">".$row['name']."</TH>\n");
 	echo ("<TD><SELECT name=\"skill_".$row['string_id']."\">\n");
@@ -504,7 +503,7 @@ section.</P>
         echo ("<OPTION value=\"5\">"._("Expert")."</OPTION>\n");            
         echo ("</SELECT>\n");
         echo ("</TR>\n");
-	
+	$result->MoveNext();	
     }
 ?>    
 
@@ -524,11 +523,11 @@ section.</P>
 } /* volunteer_search_form() */
 
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
-    process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
+    process_system_error(_("Unable to establish database connection."), array('debug' => $db->ErrMsg()));    
     die();	
 }
 

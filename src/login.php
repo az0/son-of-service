@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.6 2003/12/03 04:48:08 andrewziem Exp $
+ * $Id: login.php,v 1.7 2003/12/03 04:53:18 andrewziem Exp $
  *
  */
 
@@ -62,11 +62,12 @@ function request_login()
 
 if (isset($_POST['button_login']))
 {
-    $db = new voldbMySql();
+    global $db;
 
-    if ($db->get_error())
+    $db = connect_db();
+    if (!$db) //this needs to be researched (connection errors)
     {
-	process_system_error(_("Unable to establish database connection."), array('debug' => $db->get_error()));    
+	process_system_error(_("Unable to establish database connection."), array('debug' => $db->ErrorMsg()));    
 	die();	
     }
     
@@ -76,7 +77,7 @@ if (isset($_POST['button_login']))
     $username = $db->qstr($_POST['u'],get_magic_quotes_gpc());
     $password = $db->qstr(md5($_POST['p']),get_magic_quotes_gpc());
         
-    $sql = "SELECT * FROM users WHERE username = '$username' and password = '$password'";
+    $sql = "SELECT * FROM users WHERE username = $username and password = $password";
     
     $result = $db->Execute($sql);
 	

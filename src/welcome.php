@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.10 2003/11/28 16:25:48 andrewziem Exp $
+ * $Id: welcome.php,v 1.11 2003/12/03 04:53:18 andrewziem Exp $
  *
  */
 
@@ -21,11 +21,11 @@ require_once(SOS_PATH . 'functions/html.php');
 require_once(SOS_PATH . 'functions/access.php');
 require_once(SOS_PATH . 'functions/db.php');
 
-$db = new voldbMySql();
+$db = connect_db();
 
-if ($db->get_error())
+if (!$db)
 {
-    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->get_error()));    
+    process_system_error(_("Unable to establish database connection."), array ('debug' => $db->ErrorMsg()));    
     die();	
 }
 
@@ -40,9 +40,9 @@ if (isset($_SESSION['user']['personalname']) and $_SESSION['user']['personalname
     else
     $username = $_SESSION['user']['username'];
 
-$result = $db->query("SELECT note_id FROM notes WHERE reminder_date >= now() and uid_assigned = ".intval($_SESSION['user_id']));
+$result = $db->Execute("SELECT note_id FROM notes WHERE reminder_date >= now() and uid_assigned = ".intval($_SESSION['user_id']));
 
-$reminders = $db->num_rows($result);
+$reminders = $result->RecordCount();
 
 echo ("<P>Welcome, $username.  You have <A href=\"reminders.php\">$reminders reminders</A> waiting.</P>\n");
 
