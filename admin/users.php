@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.4 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: users.php,v 1.5 2003/11/22 16:53:48 andrewziem Exp $
  *
  */
  
@@ -21,7 +21,6 @@ require_once (SOS_PATH . 'functions/formmaker.php');
 function user_save()
 {
     global $db;
-    global $base_url;
     
     
     // add or update mode?
@@ -144,7 +143,7 @@ function user_save()
     }
     
     // redirect to GET to prevent POST form reposting
-    header("Location: ${base_url}admin/?users=1");
+    header("Location: " . SOS_PATH . "admin/?users=1");
 
 
 } /* user_save() */

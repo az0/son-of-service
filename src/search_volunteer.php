@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.9 2003/11/14 17:17:45 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.10 2003/11/22 16:53:48 andrewziem Exp $
  *
  */
 
@@ -127,11 +127,11 @@ $cm = new ColumnManager();
 $cm->addColumn('volunteer_id', TRUE);
 $cm->setRadio('volunteer_id');
 $cm->addColumn('first', TRUE);
-$cm->setColumnLink('first', "${base_url}volunteer/?vid=#volunteer_id#");
+$cm->setColumnLink('first', SOS_PATH . "volunteer/?vid=#volunteer_id#");
 $cm->addColumn('middle', TRUE);
 $cm->addColumn('last', TRUE);
 $cm->addColumn('organization', TRUE);
-$cm->setColumnLink('organization', "${base_url}volunteer/?vid=#volunteer_id#");
+$cm->setColumnLink('organization', SOS_PATH  . "volunteer/?vid=#volunteer_id#");
 $cm->addColumn('street');
 $cm->addColumn('city');
 $cm->addColumn('state');
@@ -159,7 +159,7 @@ function search_add($form_name, $column, &$where)
 
 function volunteer_search()
 {
-    global $db, $cm, $base_url;
+    global $db, $cm;
     
     $results_per_page = 25;
 
@@ -281,8 +281,8 @@ function volunteer_search()
 		    
 		    $fieldnames = $db->fieldnames($result);
 		    
-		    $fieldnames['first']['link'] = "${base_url}volunteer/?vid=#volunteer_id#";		    
-		    $fieldnames['organization']['link'] = "${base_url}volunteer/?vid=#volunteer_id#";		    		    
+		    $fieldnames['first']['link'] = SOS.PATH . "?vid=#volunteer_id#";		    
+		    $fieldnames['organization']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
 		    $fieldnames['volunteer_id']['checkbox'] = TRUE;
 			
 		    if ($offset > 0)

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.5 2003/11/14 17:17:45 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.6 2003/11/22 16:53:48 andrewziem Exp $
  *
  */
 
@@ -29,7 +29,6 @@ echo ("<H3>Add a volunteer</H3>\n");
 
 function volunteer_add()
 {
-    global $base_url;
     global $db;
     
     
@@ -96,7 +95,7 @@ function volunteer_add()
     
     $volunteer_row = volunteer_get(intval($vid));
     
-    echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"${base_url}volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
+    echo ("<P>"._("Volunteer added succesfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
 
 
 } /* add_volunteer() */

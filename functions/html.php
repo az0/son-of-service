@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: html.php,v 1.5 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: html.php,v 1.6 2003/11/22 16:53:48 andrewziem Exp $
  *
  */
 
@@ -22,11 +22,18 @@ define('MSG_USER_ERROR', 256);
 define('MSG_USER_WARNING', 512);
 define('MSG_USER_NOTICE', 1024);
 
+/* save_message()
+ * Saves a message to be displayed later (next page load).  Used with
+ * forms processing.
+ *
+ */
 function save_message($message, $type)
 {
     assert (is_int($type));
     $_SESSION['messages'][] = array('message' => $message, 'type' => $type);
 }
+
+
 
 function display_message($message, $type)
 {
@@ -46,10 +53,14 @@ function display_message($message, $type)
     }
     echo ("<P$class>$message</P>");
 }
-// displays given message
 
+
+/* display_message()
+ * Displays a message previously stored with save_message().  Then erases
+ * messages.
+ *
+ */
 function display_messages()
-// displays waiting messages in SESSION
 {
     if (array_key_exists('messages', $_SESSION) and is_array($_SESSION['messages']))
     {
@@ -67,22 +78,22 @@ function make_nav_begin()
 /* Builds a user navigation bar */
 {
 //    global $PHP_SELF;
-    global $base_url;
+
 
 echo ("<div class=\"tab_area\">\n");
-echo ("<A class=\"tab\" href=\"${base_url}src/search_volunteer.php\">"._("Search")."</A>\n");
-echo ("<A class=\"tab\" href=\"${base_url}src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
-echo ("<A class=\"tab\" href=\"${base_url}src/reports.php\">".("Reports")."</A>\n");
+echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/search_volunteer.php\">"._("Search")."</A>\n");
+echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
+echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/reports.php\">".("Reports")."</A>\n");
 
 if ('1' == $_SESSION['user']['access_admin'])
-    echo ("<A class=\"tab\" href=\"${base_url}admin/\">"._("Admin")."</A>\n");
+    echo ("<A class=\"tab\" href=\"". SOS_PATH ."admin/\">"._("Admin")."</A>\n");
     
-echo ("<A class=\"tab\" href=\"${base_url}src/login.php?logout=1\">"._("Logout")."</A>\n");
+echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/login.php?logout=1\">"._("Logout")."</A>\n");
 echo ("</DIV>\n");
 
 // to do: make quick search fit aesthetically somewhere
 /*
-echo ("<FORM method=\"post\" action=\"${base_url}search_volunteer.php\">\n");
+echo ("<FORM method=\"post\" action=\"". SOS_PATH . "search_volunteer.php\">\n");
 echo ("Quick search <INPUT type=\"text=\" name=\"fullname\" size=\"10\">\n");
 echo ("</FORM>\n");
 */
@@ -93,13 +104,13 @@ if (preg_match('/\/volunteer\//i', $_SERVER['PHP_SELF']) and (array_key_exists('
 
    echo ("<DIV class=\"tab_area\">\n");    
    echo ("This volunteer \n");
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid\">"._("Summary")."</A>\n");         
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=general\">"._("General")."</A>\n");      
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=skills\">"._("Skills")."</A>\n");
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=availability\">"._("Availability")."</A>\n");      
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=workhistory\">"._("Work history")."</A>\n");   
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=notes\">"._("Notes")."</A>\n");      
-   echo ("<A class=\"tab\" href=\"${base_url}volunteer/?vid=$vid&menu=relationships\">"._("Relationships")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid\">"._("Summary")."</A>\n");         
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=general\">"._("General")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=skills\">"._("Skills")."</A>\n");
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=availability\">"._("Availability")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=workhistory\">"._("Work history")."</A>\n");   
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=notes\">"._("Notes")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=relationships\">"._("Relationships")."</A>\n");      
    echo ("</DIV>\n");
 
 }
@@ -114,13 +125,11 @@ echo ("<HR style=\"margin-top:0pt\">\n");
 
 function make_html_begin($title, $options)
 {
-    global $base_url;
-
     echo ("<HTML>\n");
     echo ("<HEAD>\n");
     echo ("<TITLE>$title</TITLE>");
     echo ("<STYLE type=\"text/css\" media=\"screen\">\n");
-    echo ("<!--   @import url($base_url/sos.css);    --></STYLE>\n");
+    echo ("<!--   @import url(". SOS_PATH. "/sos.css);    --></STYLE>\n");
     echo ("<META name=\"robots\" content=\"noindex,nofollow\">\n");    
     echo ("</HEAD>\n");
     echo ("<BODY>\n");
@@ -129,9 +138,11 @@ function make_html_begin($title, $options)
 
 function make_html_end()
 {
+
+
 ?>
 <HR>
-<P><A href="http://sos.sourceforge.net">Son of Service</A> &copy; 2003 Andrew Ziem</P>
+<P><A href="<?php echo SOS_PATH; ?>src/about.php">Son of Service</A></P>
     
 </BODY>
 </HTML>

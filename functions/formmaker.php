@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.3 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: formmaker.php,v 1.4 2003/11/22 16:53:48 andrewziem Exp $
  *
  */
 
@@ -133,7 +133,7 @@ class formMaker
 	
 	if (array_key_exists($name, $this->values_array))
 	{
-	    $value = $this->values_array['name'];
+	    $value = $this->values_array[$name];
 	}
 	else
 	{
