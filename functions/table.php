@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.4 2003/12/17 17:11:03 andrewziem Exp $
+ * $Id: table.php,v 1.5 2003/12/20 23:48:41 andrewziem Exp $
  *
  */
 
@@ -66,26 +66,27 @@ class DataTableDisplay
 	    echo ("<TR>\n");
 	    foreach ($this->headers as $k => $v)
 	    {
-		echo ("<TH>");
 		if (array_key_exists('label', $v))
 		{
 		    // explicit column label
-		    if (array_key_exists('checkbox',$v) and $v['checkbox'] and !$this->printable)
-		    {
-		    }
-		    else
-		    {
-			echo ($v['label']);
-		    }
+		    $label = $v['label'];
 		}
 		else
 		{
-		    // implicit column label
-		    echo ucfirst($k);
+		    // implicit column label		
+		    $label = ucfirst($k);
+		}
+		
+		if (array_key_exists('checkbox', $this->headers[$k]) and $this->printable)
+		{
+		}
+		else
+		{
+		    echo ("<TH>$label</TH>\n");
 		}
 //	if (array_key_exists('sortable', $v) and $v['sortable'])
 //	    echo ("<A href=\"\">[Sort Asc]</A>\n");//remove
-		echo ("</TH>\n");
+
 	    }
 	    echo ("</TR>\n");    
 	}
@@ -216,12 +217,16 @@ class DataTablePager extends DataTableDisplay
 	$this->rows_per_page = NULL;
     }
     
-    function setPagination($rows_per_page = 10)
+    function setPagination($rows_per_page = 10, $offset = NULL)
     {
 	assert(is_numeric($rows_per_page));
-	if (array_key_exists('offset', $_GET))
+	if (NULL == $offset and array_key_exists('offset', $_GET))
 	{
 	    $this->offset = intval($_GET['offset']);
+	}
+	else if (NULL != $offset)
+	{
+	    $this->offset = $offset;
 	}
 	$this->rows_per_page = intval($rows_per_page);
     }
@@ -285,7 +290,7 @@ class DataTablePager extends DataTableDisplay
 	{
 	    $c = $this->rows_per_page;	
 	}
-	if ($this->db_result->RecordCount() > $this->rows_per_page)
+	if ($this->db_result->RecordCount() > $this->rows_per_page and !$this->printable)
 	{
 	    echo ("<TABLE border=\"1\" class=\"pagination\"><TR><TD class=\"pagination\">\n");
 	    // print navigation
@@ -301,7 +306,7 @@ class DataTablePager extends DataTableDisplay
 	    $c--;
 	}
 	$this->end();
-	if ($this->db_result->RecordCount() > $this->rows_per_page)
+	if ($this->db_result->RecordCount() > $this->rows_per_page and !$this->printable)
 	{
 	    // navigation
 	    echo ("<P>Page ".intval(1 + ($this->offset / $this->rows_per_page))." of ".ceil($this->db_result->RecordCount() / $this->rows_per_page)."</P>\n");

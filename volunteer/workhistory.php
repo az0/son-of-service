@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.14 2003/12/17 17:11:03 andrewziem Exp $
+ * $Id: workhistory.php,v 1.15 2003/12/20 23:48:41 andrewziem Exp $
  *
  */
  
@@ -217,8 +217,18 @@ function volunteer_view_work_history($brief = FALSE)
 	}
 	
 	$dtp = new DataTablePager($db, $result);
+	if ($brief)
+	{
+	    // show last ten	    
+	    $dtp->setPrintable(TRUE);
+	    $dtp->setPagination(10, $result->RecordCount() > 10 ? $result->RecordCount() - 10 : 0);
+	}
+	else
+	{
+	    $dtp->setPagination();
+	}
 	$headers = array();
-	$headers['work_id'] = array('checkbox' => TRUE);
+	$headers['work_id'] = array('checkbox' => TRUE, 'label' => _("Select"));
 	$headers['date'] =  array('label' => _("Date"), 'type' => TT_DATE);	
 	$headers['hours'] = array('label' => _("Hours"), 'type' => TT_NUMBER);
 	$headers['category'] = array('label' => _("Category"));		
@@ -231,14 +241,12 @@ function volunteer_view_work_history($brief = FALSE)
 	{
 	    $offset = intval($_GET['offset']);
 	}
-	$dtp->setPagination();
 	$dtp->render();
-	
 	if (!$brief)
 	{
-	echo ("<INPUT type=\"submit\" name=\"button_delete_work_history\" value=\""._("Delete")."\">\n");
-	echo ("<INPUT type=\"submit\" name=\"button_edit_work_history\" value=\""._("Edit")."\">\n");
-	echo ("</FORM>\n");
+	    echo ("<INPUT type=\"submit\" name=\"button_delete_work_history\" value=\""._("Delete")."\">\n");
+	    echo ("<INPUT type=\"submit\" name=\"button_edit_work_history\" value=\""._("Edit")."\">\n");
+	    echo ("</FORM>\n");
 	}
     }
 
