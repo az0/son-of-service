@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.18 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: users.php,v 1.19 2004/03/12 15:57:30 andrewziem Exp $
  *
  */
  
@@ -133,15 +133,12 @@ function user_save()
     		if (get_user_id() == $user_id)
 	    	{
 	    	    // update session info
-	    //	    echo ("<PRE>");print_r($_SESSION);echo ("</PRE>");	    
 		    $_SESSION['u'] = strip_tags($_POST['username']);
 		    $_SESSION['user']['username'] = $username;
 		    $_SESSION['user']['email'] = strip_tags($_POST['email']);
 		    $_SESSION['user']['personalname'] = strip_tags($_POST['personalname']);
 		    $_SESSION['user']['access_change_vol'] = $access_change_vol;
 		    $_SESSION['user']['access_admin'] = $access_admin;	    
-//	    echo ("<PRE>");print_r($_SESSION);echo ("</PRE>");
-//	    die;
 		    save_message(MSG_USER_NOTICE, _("The changes for your account are now in effect for this and future sessions."));
         	}
 		else
@@ -217,60 +214,33 @@ function user_addedit_form()
 	echo ("<LEGEND>Add new user</LEGEND>\n");
 	echo ("<P class=\"instructionstext\">A user administrates the volunteer database.  He may view and change volunteers' accounts.</P>\n");
 	// form defaults
-	$form_values = array('access_edit_vol' => 1, 'access_add_vol' => 1);
+	$form_values = array('access_change_vol' => 1, 'access_admin' => 0);
 	$form_values['email'] = $form_values['username'] = $form_values['personalname'] = "";
 	
     }
     
-    function dvc($array, $index)
+    $form = new formMaker;
+    $form->open(FALSE, 'post', '.', FS_TABLE);
+    $form->addField(_("User name"), 'text', 'username', array('length' => 20), $form_values['username']);
+    $form->addField(_("Password"), 'password', 'password1', array('length' => 20), '');
+    $form->addField(_("Verify password"), 'password', 'password2', array('length' => 20), '');
+    $form->addField(_("Administration privileges"), 'checkbox', 'access_admin', array(), $form_values['access_admin']);
+    $form->addField(_("Change volunteers"), 'checkbox', 'access_change_vol', array(), $form_values['access_change_vol']);
+    $form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), $form_values['personalname']);
+    $form->addField(_("E-mail"), 'text', 'email', array('length' => 40), $form_values['email']);
+
+    if ($mode_edit)
     {
-	if (array_key_exists($index, $array))
-	echo (" value=\"".$array[$index]."\" ");
+	$form->addHiddenField('user_id', $user_id);
+	$form->addButton('button_user_update', _("Save"));
     }
-    
-    function dvc_checkbox($array, $index)
+    else
     {
-	if (array_key_exists($index, $array) && 0 != $array[$index])
-	echo (" checked");
+        $form->addButton('button_user_add', _("Add"));
     }
+    $form->close();
 
-
-$form = new formMaker;
-$form->open(FALSE, 'post', '.', FS_TABLE);
-$form->addField(_("User name"), 'text', 'username', array('length' => 20), $form_values['username']);
-$form->addField(_("Password"), 'password', 'password1', array('length' => 20), '');
-$form->addField(_("Verify password"), 'password', 'password2', array('length' => 20), '');
-?>
-
-<tr>
- <th class="vert">Administration privileges</th>
- <td>
-   <INPUT type="checkbox" name="access_admin" <?php dvc_checkbox($form_values, 'access_admin');?> value="1">  
-   </td>
- </tr>
- <th class="vert">Change volunteers</th>
- <td>
-   <INPUT type="checkbox" NAME="access_change_vol" <?php dvc_checkbox($form_values, 'access_change_vol');?> value="1">
-   </td>
- </tr> 
-<?php
-$form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), $form_values['personalname']);
-$form->addField(_("E-mail"), 'text', 'email', array('length' => 40), $form_values['email']);
-
-if ($mode_edit)
-{
-    $form->addHiddenField('user_id', $user_id);
-    $form->addButton('button_user_update', _("Save"));
-}
-else
-{
-    $form->addButton('button_user_add', _("Add"));
-}
-$form->close();
-
-
-echo ("</FIELDSET>\n");
-// close conditional statement
+    echo ("</FIELDSET>\n");
 }
 
 
@@ -278,7 +248,6 @@ function users_list()
 {
     global $db;
     
-
 
     if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
     {
@@ -303,31 +272,24 @@ function users_list()
     else
     {
 	echo ("<FORM method=\"post\" action=\".\">\n");
-
-	echo ("<TABLE border=\"1\">\n");
-	echo ("<THEAD>\n");
-	echo ("<TR>\n");
-	echo ("<TH>"._("Select")."</TH>\n");	
-	echo ("<TH>"._("User name")."</TH>\n");	
-	echo ("<TH>"._("Personal Name")."</TH>\n");
-	echo ("</TR>\n");
-	echo ("</THEAD>\n");
 	
-	while (!$result->EOF)
-	{
-	    $row = $result->fields;
-	    echo ("<TR>\n");
-	    echo ("<TD><INPUT type=\"radio\" name=\"user_id\" value=\"".$row['user_id']."\"></TD>\n");
-	    echo ("<TD>".$row['username']."</TD>\n");	    
-	    echo ("<TD>".$row['personalname']."</TD>\n");
-	    echo ("</TR>\n");
-	    $result->MoveNext();
+	require_once(SOS_PATH . 'functions/table.php');
+	
+	$headers = array();
+	$headers['user_id']['label'] = _("Select");
+	$headers['user_id']['radio'] = TRUE;
+	$headers['username']['label'] = _("User name");
+	$headers['personalname']['label'] = _("Personal name");
 
-	}
-	echo ("</TABLE>\n");	
+	$dtp = new DataTablePager();	
+	$dtp->setPagination(25);
+	$dtp->setHeaders($headers);
+	$dtp->setDatabase($db, $result);
+	$dtp->render();
+
 	echo ("<INPUT type=\"submit\" name=\"button_user_delete\" value=\""._("Delete")."\">\n");
 	echo ("<INPUT type=\"submit\" name=\"button_user_edit\" value=\""._("Edit")."\">\n");
-	echo ("</FORM>\n");
+	echo ("</FORM>\n");	
     }    
 } /* users_list() */
 
@@ -383,14 +345,13 @@ function users_delete()
 	}
 	else
 	{
-    
-	    // ask for delete confirmation
+    	    // ask for delete confirmation
 	
 	    echo ("<P>"._("Are you sure you want to delete this user?")."</P>\n");
 	
 	    $row = $result->fields;
 	
-	    echo ("<P>".$row['personalname']." ($user_id)</P>\n");
+	    echo ("<P>".$row['username'] . " / " . $row['personalname'] . " (#$user_id)</P>\n");
 	
 	    $form = new formMaker();
 	    $form->open(FALSE, 'POST', '.', FS_PLAIN);

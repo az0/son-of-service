@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.9 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: formmaker.php,v 1.10 2004/03/12 15:57:32 andrewziem Exp $
  *
  */
 
@@ -15,6 +15,19 @@ if (preg_match('/formmaker.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
 }
+
+/**
+ * render_form_field($type, $name, $attributes, $value)
+ *
+ * Renders a form field via echo() given its parameters.
+ *
+ * @param string type string, text, integer, password, date, boolean, 
+ *                    textarea, select, checkbox
+ * @param string name HTML formname
+ * @param array attributes depends on type
+ * @param mixed value initial value
+ * @return void
+ */
 
 function render_form_field($type, $name, $attributes, $value)
 {
@@ -97,7 +110,16 @@ function render_form_field($type, $name, $attributes, $value)
 	    }
 	    echo ("</SELECT>\n");	    
 	    break;
-	    
+
+	case 'checkbox':
+	    echo ("<INPUT type=\"checkbox\" name=\"$name\" value=\"1\" ");
+	    if (1 == $value)
+	    {
+		echo ("checked");	
+	    }
+	    echo (">\n");
+	    break;
+
 	default:
 	    process_system_error("render_form_field(): "._("Bad parameter"));
 	    break;	    

@@ -7,7 +7,7 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.4 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: access.php,v 1.5 2004/03/12 15:57:32 andrewziem Exp $
  *
  */
 
@@ -30,9 +30,9 @@ function is_logged_in($or_die = TRUE)
     if ($or_die)
     {
 	echo(_("You must be logged in to access this page."));
+	echo("</P><A href=\"" . SOS_PATH . "\">" . _("Log in") . "</A>.</P>\n");
 	process_user_notice("<P>You may get this error if your system is blocking cookie</A>s.  Try enabling cookies.</P>\n");
-	echo("<P><A href=\"".SOS_PATH."src/cookie_probe.php\">"._("Is my system blocking cookies?")."</A></P>\n");
-	
+	echo("<P><A href=\"".SOS_PATH."src/cookie_probe.php\">"._("Is my system blocking cookies?")."</A></P>\n");	
 	exit();
     }
 
@@ -79,7 +79,7 @@ function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
 	    }
 	    break;
 	default:
-	    process_system_error(_("Unexpected parameter"));
+	    save_message(MSG_SYSTEM_ERROR, _("Unexpected parameter."), __FILE__, __LINE__);
 	    break;
     }
     return FALSE;

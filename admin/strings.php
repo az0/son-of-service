@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: strings.php,v 1.8 2004/02/21 00:59:06 andrewziem Exp $
+ * $Id: strings.php,v 1.9 2004/03/12 15:57:30 andrewziem Exp $
  *
  */
 
@@ -25,7 +25,6 @@ function strings_add()
 
     if (!has_permission(PC_ADMIN, PT_WRITE))
     {
-	// User should not be given option to get here.
 	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
 
@@ -60,7 +59,7 @@ function strings_add()
 
 	if (FALSE != $result)
 	{
-	    save_message(MSG_USER_NOTICE, _("Added successfully."));	
+	    save_message(MSG_USER_NOTICE, _("Added."));	
 	}
 	else
 	{
@@ -173,7 +172,6 @@ function strings_delete()
     
     if (!has_permission(PC_ADMIN, PT_WRITE))
     {
-	// User should not be given option to get here.
 	die_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
 
@@ -196,7 +194,6 @@ function strings_delete()
     }
     else if (0 == $result->RecordCount())
     {
-	// unusual
 	die_message(MSG_SYSTEM_ERROR, "Cannot find string.", __FILE__, __LINE__, $sql);	
     }
     
@@ -217,14 +214,13 @@ function strings_delete()
 	    break;	    
     
 	default:
-	    process_system_error(_("Unexpected type from database."));
+	    save_message(MSG_SYSTEM_ERROR, _("Unexpected type from database."), __FILE__, __LINE__);
 	    $sql = "SELECT * FROM strings WHERE 0 = 1"; // find nothing
 	    break;
     }
     
     $result = $db->Execute($sql);
-    
-    
+        
     if (!$result)
     {
 	save_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
@@ -249,7 +245,6 @@ function strings_delete()
 	}
     }
     
-    // redirect user to non-POST page
     redirect("?strings");
     
 } /* strings_delete() */

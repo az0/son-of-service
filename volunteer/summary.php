@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.10 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: summary.php,v 1.11 2004/03/12 15:57:39 andrewziem Exp $
  *
  */
 
@@ -51,7 +51,7 @@ function volunteer_summary()
     $phone_result = $db->Execute($sql);
     if (!$phone_result)
     {
-	die_message(MSG_SYSTEM_ERROR, _("Error querying data from database."), __FILE__, __LINE__, $sql);
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
     else
     while (!$phone_result->EOF)

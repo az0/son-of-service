@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.15 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: general.php,v 1.16 2004/03/12 15:57:33 andrewziem Exp $
  *
  */
 
@@ -48,7 +48,7 @@ function volunteer_view_general()
     $result_phones = $db->Execute($sql_phones);
     if (!$result_phones)
     {
-	die_message(MSG_SYSTEM_ERROR, _("Error querying data from database."), __FILE__, __LINE__, $sql_phones);
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql_phones);
     }
     
     $i = 0;

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.9 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: mass.php,v 1.10 2004/03/12 15:57:33 andrewziem Exp $
  *
  */
 
@@ -86,7 +86,7 @@ else if (array_key_exists('send_email', $_POST))
     }
     else
     {
-	save_message(MSG_USER_NOTICE, _("Message sent succesfully."));
+	save_message(MSG_USER_NOTICE, _("Message sent successfully."));
     }
     
     redirect(SOS_PATH . 'src/welcome.php');

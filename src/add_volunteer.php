@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.14 2004/03/12 15:57:32 andrewziem Exp $
  *
  */
 
@@ -93,7 +93,7 @@ function volunteer_add()
 	$template_result = $db->Execute($sql);
 	if (!$template_result)
 	{
-	    die_message(MSG_SYSTEM_ERROR, _("Error querying data to database."), __FILE__, __LINE__, $sql);
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
 	}
 	
 	$record['volunteer_id'] = $vid;
@@ -144,7 +144,7 @@ function volunteer_add()
     
     if ($volunteer_row)
     {
-        echo ("<P>"._("Volunteer added successfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
+        echo ("<P>" . _("Added:") . " <A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
     }
     else
     {

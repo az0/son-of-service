@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.21 2004/03/04 01:22:53 andrewziem Exp $
+ * $Id: index.php,v 1.22 2004/03/12 15:57:30 andrewziem Exp $
  *
  */
 
@@ -50,12 +50,12 @@ function download_mailing_list()
     
     if (!array_key_exists('type', $_GET))
     {
-	die_message(MSG_SYSTEM_ERROR, _("'You have reached this page incorrectly."), __FILE__, __LINE__);
+	die_message(MSG_SYSTEM_ERROR, _("You have reached this page incorrectly."), __FILE__, __LINE__);
     }
     
     if (!has_permission(PC_ADMIN, PT_READ, NULL, NULL))
     {
-	die_message(MSG_USER_ERROR, _("Insufficient permissions,"), __FILE__, __LINE__);
+	die_message(MSG_USER_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }
     
     // todo: portable concat    
