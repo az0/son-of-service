@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.8 2003/12/29 00:44:10 andrewziem Exp $
+ * $Id: availability.php,v 1.9 2003/12/30 17:34:20 andrewziem Exp $
  *
  */
  
@@ -95,6 +95,8 @@ function volunteer_view_availability($brief = FALSE)
     global $daysofweek;
     
     
+    $int_to_timeofday = array(1 => _("Morning"), _("Afternoon"), _("Evening"), _("Night"));    
+    
     $vid = intval($_REQUEST['vid']);
     
     if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
@@ -106,8 +108,6 @@ function volunteer_view_availability($brief = FALSE)
     {    
         display_messages();
     
-	echo ("<H3>Availability</H3>\n");
-	
 	echo ("<FORM method=\"post\" action=\".\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
     }
@@ -120,6 +120,11 @@ function volunteer_view_availability($brief = FALSE)
     {
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
+    
+    if (!$brief or $result->RecordCount() > 0)
+    {
+	echo ("<H3>Availability</H3>\n");
+    }	
     
     if (0 == $result->RecordCount())
     {
@@ -148,6 +153,8 @@ function volunteer_view_availability($brief = FALSE)
 	while (!$result->EOF)
         {
 	    $availability = $result->fields;
+	    $availability['start_time'] = $int_to_timeofday[$availability['start_time']];
+	    $availability['end_time'] = $int_to_timeofday[$availability['end_time']];
 	    echo ("<TR>\n");
 	    if (!$brief)
 	    {
@@ -178,18 +185,18 @@ function volunteer_view_availability($brief = FALSE)
 	echo ("</SELECT>\n");
 	echo (" From ");
 	echo ("<SELECT name=\"start_time\">\n");
-	echo ("<OPTION>"._("Morning")."</OPTION>\n");
-	echo ("<OPTION>"._("Afternoon")."</OPTION>\n");
-	echo ("<OPTION>"._("Evening")."</OPTION>\n");
-	echo ("<OPTION>"._("Night")."</OPTION>\n");
+	echo ("<OPTION value=\"1\">"._("Morning")."</OPTION>\n");
+	echo ("<OPTION value=\"2\">"._("Afternoon")."</OPTION>\n");
+	echo ("<OPTION value=\"3\">"._("Evening")."</OPTION>\n");
+	echo ("<OPTION value=\"4\">"._("Night")."</OPTION>\n");
 	echo ("</SELECT>\n");
 	echo (" To ");
 	
 	echo ("<SELECT name=\"end_time\">\n");
-	echo ("<OPTION>"._("Morning")."</OPTION>\n");
-	echo ("<OPTION>"._("Afternoon")."</OPTION>\n");
-	echo ("<OPTION>"._("Evening")."</OPTION>\n");
-	echo ("<OPTION>"._("Night")."</OPTION>\n");
+	echo ("<OPTION value=\"1\">"._("Morning")."</OPTION>\n");
+	echo ("<OPTION value=\"2\">"._("Afternoon")."</OPTION>\n");
+	echo ("<OPTION value=\"3\">"._("Evening")."</OPTION>\n");
+	echo ("<OPTION value=\"4\">"._("Night")."</OPTION>\n");
 	echo ("</SELECT>\n");
 
 	echo ("<INPUT type=\"submit\" name=\"availability_add\" value=\""._("Add")."\">\n");
