@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.8 2003/11/12 16:12:23 andrewziem Exp $
+ * $Id: relationships.php,v 1.9 2003/11/14 07:10:56 andrewziem Exp $
  *
  */
 
@@ -277,8 +277,7 @@ function relationship_add()
     
     if (0 == $string_id)
     {
-	process_system_error(_("Bad form input: ").' string_id');    
-	print_r($_POST);
+	process_system_error(_("Bad form input:").' string_id');    
 	return FALSE;
     }
     

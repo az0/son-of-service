@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.10 2003/11/12 16:12:23 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.11 2003/11/14 07:10:56 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -79,7 +79,7 @@ CREATE TABLE strings (
     string_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     s varchar(255) not null,
     lang varchar(6),
-    type enum('extended_list', 'relationship', 'skill', 'work_cat'),
+    type enum('extended', 'relationship', 'skill', 'work'),
     foreign_id INT,
     
 );
@@ -94,7 +94,8 @@ CREATE TABLE volunteer_skills (
     INDEX (volunteer_id), 
     INDEX (string_id), 
     INDEX (skill_level),
-    UNIQUE (volunteer_id, string_id)
+    UNIQUE (volunteer_id, string_id),
+    COMMENT = "each skill of each volunteer"
 );
 
 CREATE TABLE notes (
@@ -111,7 +112,8 @@ CREATE TABLE notes (
     dt_modified DATETIME,
 
     INDEX (reminder_date),
-    INDEX (volunteer_id)
+    INDEX (volunteer_id),
+    COMMENT = "users' reminders and notes about volunteers"
 );
 
 
@@ -130,7 +132,8 @@ CREATE TABLE work (
     dt_modified DATETIME,
     uid_modified INT,	
 
-    index (volunteer_id)
+    index (volunteer_id),
+    index (date)
 );
 
 CREATE TABLE users (
@@ -170,7 +173,8 @@ CREATE TABLE extended (
 	volunteer_id INT NOT NULL,
 
 	INDEX(volunteer_id),	
-	UNIQUE(volunteer_id)
+	UNIQUE(volunteer_id),
+	comment = "user-defined custom data fields"
 );
 
 CREATE TABLE extended_meta (

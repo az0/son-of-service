@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.5 2003/11/08 19:09:47 andrewziem Exp $
+ * $Id: workhistory.php,v 1.6 2003/11/14 07:10:56 andrewziem Exp $
  *
  */
 
@@ -24,9 +24,9 @@ function volunteer_work_history_delete()
     $vid = intval($_POST['vid']);
     $work_id  = intval($_POST['work_id']);
     
-    if (!is_numeric($vid) or !is_numeric($vid))
+    if (!is_numeric($_POST['vid']) or 0 == ($vid))
     {
-	process_system_error(_("Bad form input:").'vid');
+	process_system_error(_("Bad form input:").' vid');
 	die();
     }
     

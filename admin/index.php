@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.6 2003/11/12 16:12:23 andrewziem Exp $
+ * $Id: index.php,v 1.7 2003/11/14 07:10:55 andrewziem Exp $
  *
  */
 
@@ -107,8 +107,7 @@ function admin_menu()
 <UL>
  <LI><A href="./?add_user=1">Add a user account</A>
  <LI><A href="./?list_users=1">User accounts</A>
- <LI><A href="./?list_skills=1">Skill / interest types</A>
- <LI><A href="./?list_relationship_type=1">Relationship types</A> 
+ <LI><A href="./?list_strings=1">Strings: relationship types, skill types, work categories</A>
  <LI><A href="./?update_volunteer_stats=1">Update volunteer statistics</A>
  <LI><A href="./?system_check=1">System check</A>
  <LI><A href="./?add_custom_field=1">Add custom field</A>
@@ -130,64 +129,27 @@ if (array_key_exists('system_check', $_GET))
     system_check();
 }
 else
-// RELATIONSHIPS
-if (array_key_exists('button_relationship_type_add', $_POST))
+// STRINGS
+if (array_key_exists('button_string_add', $_POST))
 {
-    include('relationships.php');
-    relationship_type_add();
-    relationship_type_list();    
-    relationship_type_add_form();    
+    include('strings.php');
+    strings_add();
+    strings_list();    
+    strings_add_form();    
 }
-else
-if (array_key_exists('list_relationship_type', $_GET))
+else if (array_key_exists('list_strings', $_GET))
 {
-    include('relationships.php');
-    relationship_type_list();
-    relationship_type_add_form();    
+    include('strings.php');
+    strings_list();
+    strings_add_form();    
 }
-else
-if (array_key_exists('button_relationship_type_delete', $_POST))
+else if (array_key_exists('button_string_delete', $_POST))
 {
-    include('relationships.php');
-    relationship_type_delete();
-    relationship_type_list();
-    relationship_type_add_form();    
+    include('strings.php');
+    strings_delete();
+    strings_list();
+    strings_add_form();    
 }
-else
-// SKILLS
-if (array_key_exists('list_skills', $_GET))
-{
-    include('skills.php');
-    skill_list();
-    skill_add_form();    
-}
-else
-if (array_key_exists('button_skill_add', $_POST))
-{
-    include('skills.php');
-    skill_add();
-    skill_list();    
-    skill_add_form();
-}
-/*
-else
-if (array_key_exists('add_skill', $_GET))
-{
-    include('skills.php');
-    skill_add_form();
-}
-*/
-else    
-if (array_key_exists('button_skill_delete', $_POST))
-{
-    include('skills.php');
-    skill_delete();
-    skill_list();    
-    skill_add_form();
-}
-else    
-if (array_key_exists('button_skill_edit', $_POST))
-    process_system_error("To do: not yet implemented.");
 else
 // USERS
 if (array_key_exists('list_users', $_GET))
