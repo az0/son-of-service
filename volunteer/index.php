@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.15 2003/11/22 15:52:41 andrewziem Exp $
+ * $Id: index.php,v 1.16 2003/11/23 03:17:03 andrewziem Exp $
  *
  */
 
@@ -163,37 +163,9 @@ function volunteer_delete()
 
     if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
     {
-      
-	// delete related records
-
-	echo ("<P>Deleting related records...</P>\n");
-	echo ("<UL>\n");
-        echo (" <LI>Deleting notes..\n");
-        $result = $db->query("DELETE FROM notes WHERE vid=$vid");
-        echo " <LI>Deleting work history..\n";
-        $result = $db->query("DELETE FROM work WHERE vid=$vid");
-        echo " <LI>Deleting availability..\n";
-        $result = $db->query("DELETE FROM availability WHERE vid=$vid");      
-        echo (" <LI>Deleting skills..\n");
-        $result = $db->query("DELETE FROM volunteer_skills WHERE vid=$vid");            
-	echo (" <LI>Deleting relationships..\n");
-        $result = $db->query("DELETE FROM relationships WHERE volunteer1_id = $vid OR volunteer2_id = $vid");            	
-	echo " </UL>\n";
-      
-        // delete primary record
-
-	echo ("<P>Deleting primary record...</P>\n");
-
-        $result = $db->query("DELETE FROM volunteers WHERE volunteer_id=$vid LIMIT 1");
-
-        if ($result)
-	{
-	    echo ("<P>Volunteer permanently deleted.</P>\n");
-        }
-	else
-        {
-    	    process_system_error(_("Error deleting data from database."), array('debug' => $db->get_error()));
-	}
+	include(SOS_PATH . 'src/delete_volunteer.php');
+	
+        delete_volunteer($vid);
     }
     else
     {

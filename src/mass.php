@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.2 2003/11/22 05:16:14 andrewziem Exp $
+ * $Id: mass.php,v 1.3 2003/11/23 03:17:03 andrewziem Exp $
  *
  */
 
@@ -19,6 +19,7 @@ require_once(SOS_PATH . 'include/global.php');
 require_once(SOS_PATH . 'functions/auth.php');
 require_once(SOS_PATH . 'functions/db.php');
 require_once(SOS_PATH . 'functions/forminput.php');
+require_once(SOS_PATH . 'functions/formmaker.php');
 require_once(SOS_PATH . 'functions/html.php');
 
 make_html_begin('Mass volunteer action', array());
@@ -47,6 +48,63 @@ else if (array_key_exists('send_email', $_POST))
     }
     
     send_email_smtp($from, $_POST['mailto'], "", "", $_POST['mailre'], $_POST['message']);
+}
+else if (array_key_exists('button_delete_volunteers', $_POST))
+{
+
+    // collect volunteer IDs from form
+    $vids = array();
+
+    foreach ($_POST as $k => $v)
+    {
+	if (preg_match('/^volunteer_id_(\d+)/', $k, $matches))
+	{
+	    $vids[intval($matches[1])] = intval($matches[1]);
+	}
+    }    
+    
+    if (0 == count($vids))
+    {
+	process_user_error(_("Select one or more volunteers from the list."));
+    }
+    else if (array_key_exists('delete_confirm', $_POST) and 'on' == $_POST['delete_confirm'])
+    {
+	include (SOS_PATH . 'src/delete_volunteer.php');
+	foreach ($vids as $vid)
+	{
+	    delete_volunteer($vid);
+	}
+    }
+    else
+    {
+    
+        // ask for delete confirmation
+	echo ("<P>"._("Are you sure you want to permanently delete these volunteers?")."</P>\n");
+    
+
+        echo ("<UL>\n");    
+	foreach ($vids as $k => $vid)
+        {
+	    $volunteer = volunteer_get($vid);
+	    $name = make_volunteer_name($volunteer);
+	    
+	    echo ("<LI>$name ($vid)\n");
+        }
+	echo ("</UL>\n");
+	
+	
+	$form = new formMaker();
+	$form->open(FALSE, 'POST', 'mass.php', FS_PLAIN);
+	foreach ($vids as $vid)
+	{
+	    $form->addHiddenField('volunteer_id_'.$vid, 1);
+	}
+
+	$form->addButton('button_delete_volunteers', _("Delete"));
+	echo (_("Confirm")."<input type=\"checkbox\" name=\"delete_confirm\"><BR>\n"); 
+	$form->close();
+	
+    }
 }
 else
 {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.11 2003/11/22 17:55:50 netgamer7 Exp $
+ * $Id: search_volunteer.php,v 1.12 2003/11/23 03:17:03 andrewziem Exp $
  *
  */
 
@@ -281,7 +281,7 @@ function volunteer_search()
 		    
 		    $fieldnames = $db->fieldnames($result);
 		    
-		    $fieldnames['first']['link'] = SOS.PATH . "?vid=#volunteer_id#";		    
+		    $fieldnames['first']['link'] = SOS_PATH . "?vid=#volunteer_id#";		    
 		    $fieldnames['organization']['link'] = SOS_PATH . "volunteer/?vid=#volunteer_id#";		    		    
 		    $fieldnames['volunteer_id']['checkbox'] = TRUE;
 			
@@ -320,6 +320,7 @@ function volunteer_search()
 	// to do: what other mass actions?
 
 	echo ("<INPUT type=\"submit\" name=\"button_email_volunteers\" value=\""._("E-mail")."\">\n");
+	echo ("<INPUT type=\"submit\" name=\"button_delete_volunteers\" value=\""._("Delete")."\">\n");	
 	echo ("</FORM>\n");
 	
 	// results navigation
