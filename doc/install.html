@@ -1,0 +1,77 @@
+<HTML>
+<TITLE>Installation: Son of Service</TITLE>
+<BODY>
+
+
+<H2>Requirements</H2>
+<UL>
+ <LI><A href="http://www.php.net">PHP</A> (and appropriate PHP module for your RDBMS)
+ <LI>RDBMS supported by AdoDB (such a <A href="http://www.mysql.org">MySQL</A>)
+ <LI>Web server (such as <A href="http://httpd.apache.org">Apache</A>)
+ </UL>
+
+
+ 
+<H2>Quick installation procedure</H2>
+
+<P><I>The procedure varies depending on your system.</I></P>
+
+<P>Change directory to your web tree.</P>
+
+<P><CODE>cd /var/www/html</CODE> (or <CODE>/home/httpd/html/</CODE> or wherever).</P>
+
+<P>Unpack <A href="http://sos.sourceforge.net">the latest SOS</A> the
+appropriate command.  Some examples are below.</P>
+
+  <UL>
+   <LI><CODE>tar zxvf sos-0.1.0.tar.gz</CODE> (for .tar.gz)
+   <LI><CODE>tar jxvf sos-0.1.0.tar.bz2</CODE> (for .tar.bz2)
+   <LI><CODE>unzip sos-0.1.0.zip</CODE> (for .zip using Infozip)
+   </UL>
+   
+<P>Initialize the database structure and initial data.  The example
+below is for MySQL using the command line.  Use your favorite, 
+appropriate database client.</P>
+
+   <UL>
+    <LH>MySQL (command line):</LH>
+    <LI><CODE>mysql -u root -p</CODE>
+    <LI><CODE>create database sos;</CODE>
+    <LI><CODE>exit</CODE>
+    <LI><CODE>cd sql</CODE>
+    <LI><CODE>mysql -u root -p sos &lt; mysql-structure.sql</CODE>
+    <LI><CODE>mysql -u root -p sos &lt; mysql-data.sql</CODE>
+    </UL>
+    
+<P>Tip: For security reasons use a separate database account for SOS
+rather than sharing the account for all databases.</P>
+
+<P>Configure SOS settings.  Edit include/config.php with a text
+editor.</P>
+
+<P>Make the directory data writable by your web server.</P>
+
+<UL>
+ <LH>Example Linux commands:
+ <LI><CODE>chgrp apache data</CODE>
+ <LI><CODE>chmod 0770 data</CODE>
+ </UL>
+  
+<P>Test with web browser.  Login with user name admin and password
+admin.  Change the default password.</P>
+
+
+<H2>Support</H2>
+
+<P>Visit <A href="http://sos.sourceforge.net">sos.sourceforge.net</A>
+for support.</P>
+
+
+<HR>
+<P>Copyright &copy; 2004 by Andrew Ziem.  All rights reserved.  Provided
+to you under the GNU Free Documentation License.</P>
+
+<P><EM>$Id: install.html,v 1.1 2004/02/20 01:49:32 andrewziem Exp $</EM></P>
+
+</BODY>
+</HTML>
