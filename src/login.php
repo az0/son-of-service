@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: login.php,v 1.14 2004/04/09 01:36:15 andrewziem Exp $
  *
  */
 
@@ -89,6 +89,7 @@ if (isset($_POST['button_login']))
     }    
     else
     {
+	sleep(3);
 	process_user_error(_("Invalid user name or password."), "Is your caps lock key on?");
 	request_login();
 	exit();

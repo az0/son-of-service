@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.12 2004/03/11 03:10:52 andrewziem Exp $
+ * $Id: db.php,v 1.13 2004/04/09 01:36:15 andrewziem Exp $
  *
  */
 
@@ -72,6 +72,10 @@ function connect_db ()
 
 	if (isset($db)) //check for existing connection
 		return $db;
+		
+	// database configuration	
+	
+	$ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;		
 
 	//check for database type
 	if ('mysql' == $cfg['dbtype'])

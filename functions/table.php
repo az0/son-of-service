@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.14 2004/03/14 18:44:19 andrewziem Exp $
+ * $Id: table.php,v 1.15 2004/04/09 01:36:15 andrewziem Exp $
  *
  */
 
@@ -242,6 +242,8 @@ class DataTablePager extends DataTableDisplay
 	$this->db_result = NULL;
 	$this->offset = 0;
 	$this->rows_per_page = NULL;	
+	$this->printable = is_printable();
+	$this->headers = NULL;
     }
 
     function setDatabase(&$db, $db_result)
