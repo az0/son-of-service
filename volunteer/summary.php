@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.11 2004/03/12 15:57:39 andrewziem Exp $
+ * $Id: summary.php,v 1.12 2004/03/14 18:44:20 andrewziem Exp $
  *
  */
 
@@ -41,7 +41,11 @@ function volunteer_summary()
     {
 	$contact_card .= $volunteer['organization']."\n";
     }
-    $address = $volunteer['street']."\n".$volunteer['city'].', '.$volunteer['state'].' '.$volunteer['postal_code'].' '.$volunteer['country']." \n";
+    if (strlen(trim($volunteer['street'])))
+    {
+	$contact_card .= $volunteer['street'] . "\n";
+    }
+    $address = $volunteer['city'].', '.$volunteer['state'].' '.$volunteer['postal_code'].' '.$volunteer['country']." \n";
     if (strlen(trim($address))>2)
     {
 	$contact_card .= $address;
@@ -53,7 +57,7 @@ function volunteer_summary()
     {
 	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
     }
-    else
+    
     while (!$phone_result->EOF)
     {
 	$phone = $phone_result->fields;
@@ -75,8 +79,35 @@ function volunteer_summary()
     // show work history
 
     include_once('workhistory.php');
+    
+    $dtd = new DataTableDisplay();
+    
+    $fields['hours_life']['label'] = _("Hours: Lifetime");
+    $fields['hours_ytd']['label'] = _("Hours: Year to date");
+    $fields['hours_ly']['label'] = _("Hours: Last year");    
+//    $fields['last_volunteered']['label'] = _("Last volunteered");
+//    $fields['last_volunteered']['type'] = TT_DATE;
+    
+    $sql = "SELECT hours_life, hours_ytd, hours_ly FROM volunteers WHERE volunteer_id =  $vid";
+    
+    $result = $db->Execute($sql);
+    
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);	
+    }
+    
+    if (1 == $result->RecordCount())
+    {
+	echo ("<H3>Work history</H3>");
+	
+	$dtd->setHeaders($fields);
+	$dtd->begin();
+	$dtd->addRow($result->fields);
+	$dtd->end();
+    }
 
-    volunteer_view_work_history(TRUE);
+    //volunteer_view_work_history(TRUE);
 
     // show skills
 

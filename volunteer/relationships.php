@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.18 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: relationships.php,v 1.19 2004/03/14 18:44:19 andrewziem Exp $
  *
  */
 
@@ -112,8 +112,6 @@ function relationships_view($brief = FALSE)
     
     $c = 0;            
 
-
-
     // query primary relationships
     
     $sql = "SELECT relationships.relationship_id AS relationship_id, ".
@@ -157,7 +155,7 @@ function relationships_view($brief = FALSE)
     {
 	echo ("<P>"._("None found.")."</P>\n");
     }
-    
+    else
     // button for changing maximum depth
     
     if (!$brief)
@@ -244,7 +242,7 @@ function relationships_add_form()
     if (array_key_exists('volunteer2_name', $_GET))
     {
 	echo ("<FIELDSET>\n");
-	echo ("<LEGEND>Search results</LEGEND>\n");
+	echo ("<LEGEND>" . _("Search results"). "</LEGEND>\n");
 	echo ("<FORM method=\"post\" action=\".\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	$needle = $db->qstr('%'.$_GET['volunteer2_name'].'%', get_magic_quotes_gpc());
@@ -305,13 +303,13 @@ function relationship_add()
     
     if (0 == $string_id)
     {
-	process_system_error(_("Bad form input:").' string_id');    
+	save_message(MSG_SYSTEM_ERROR, _("Bad form input:").' string_id', __FILE__, __LINE__);    
 	$errors_found++;
     }
     
-    if (!$vid2)
+    if (!isset($vid2) or 0 == $vid2)
     {
-	process_system_error(_("Input missing."));
+	save_message(MSG_SYSTEM_ERROR, _("Bad form input:"). ' vid2', __FILE__, __LINE__);
 	$errors_found++;	
     }
     
@@ -329,7 +327,7 @@ function relationship_add()
 	$errors_found++;	
     }
     
-    if (!(has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid2, NULL)))
+    if (!(has_permission(PC_VOLUNTEER, PT_WRITE, $vid) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid2)))
     {
 	$errors_found++;
 	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);

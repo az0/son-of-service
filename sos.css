@@ -79,7 +79,11 @@ a.tab, a.tab:visited {
 
 a.tab:hover{
  background: #cec8dc; 
- border: 2pt;
+}
+
+.messages {
+padding: .5em 1em .5em 1em;
+border: 2pt dashed #f00;
 }
 
 .errortext

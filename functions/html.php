@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.16 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: html.php,v 1.17 2004/03/14 18:44:19 andrewziem Exp $
  *
  */
 
@@ -69,10 +69,12 @@ function display_message($type, $message, $file, $line, $sql, $sql_error)
  */
 function display_messages()
 {
-    if (array_key_exists('messages', $_SESSION) and is_array($_SESSION['messages']))
+    if (array_key_exists('messages', $_SESSION) and is_array($_SESSION['messages']) and count($_SESSION['messages']) > 0)
     {
+	echo ("<DIV class=\"messages\">\n");    
+	    
 	// reverse array so FIFO
-	
+		
 	$messages = array_reverse ($_SESSION['messages']);
 	
 	foreach ($messages as $key => $msg)
@@ -82,6 +84,7 @@ function display_messages()
 	    unset($_SESSION['messages'][$key]);
 	}	
 	
+	echo ("</DIV>\n");    
     }
 
 }

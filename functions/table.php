@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.13 2004/03/11 03:10:52 andrewziem Exp $
+ * $Id: table.php,v 1.14 2004/03/14 18:44:19 andrewziem Exp $
  *
  */
 
@@ -293,7 +293,7 @@ class DataTablePager extends DataTableDisplay
 	if ($this->offset + $this->rows_per_page < $this->db_result->RecordCount())
 	{
 	    // next
-	    echo ("<A href=\"$url&offset=".($this->offset + $this->rows_per_page)."\">&gt&gt;;</A> ");
+	    echo ("<A href=\"$url&offset=".($this->offset + $this->rows_per_page)."\">&gt&gt;</A> ");
 	    // last
 	    echo ("<A href=\"$url&offset=".($this->db_result->RecordCount() - ($this->db_result->RecordCount() % $this->rows_per_page))."\">&gt;|</A> ");	    
 	
