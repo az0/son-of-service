@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.18 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.19 2003/12/29 01:05:33 andrewziem Exp $
  *
  */
 
@@ -205,10 +205,6 @@ function volunteer_search()
 	search_add('state', 'state', $where);		
 	search_add('postal_code', 'postal_code', $where);				
 	search_add('country', 'country', $where);					
-	search_add('phone_home', 'phone_home', $where);		
-	search_add('phone_work', 'phone_work', $where);		
-	search_add('phone_cell', 'phone_cell', $where);		
-	// todo: search any phone
 	
 	foreach ($_REQUEST as $key => $p)
 	{
@@ -233,6 +229,12 @@ function volunteer_search()
 	{	
 	    $from   = ' FROM volunteers ';
     	    $groupby = ' ';
+	}
+	
+	if (array_key_exists('phone_number', $_REQUEST) and strlen($_REQUEST['phone_number'] > 0))
+	{
+	    $from .= ' RIGHT JOIN phone_numbers ON volunteers.volunteer_id = phone_numbers.volunteer_id ';
+	    $where .= ' AND phone_numbers.number LIKE '.$db->qstr("%".$_REQUEST['phone_number']."%", get_magic_quotes_gpc());
 	}
 	
 	$orderby = "";
@@ -440,18 +442,9 @@ section.</P>
  <td><input type="Text" name="country" size="30"></td>
  </tr>
 <tr>
- <th class="vert"><?php echo _("Home phone"); ?></th>
- <td><input type="Text" name="phone_home"></td>
+ <th class="vert"><?php echo _("Phone number"); ?></th>
+ <td><input type="Text" name="phone_number"></td>
  </tr>
-<tr>
- <th class="vert"><?php echo _("Work phone"); ?></th>
- <td><input type="Text" name="phone_work"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Cell phone"); ?></th>
- <td><input type="Text" name="phone_cell"></td>
- </tr>
-
 <tr>
  <th class="vert"><?php echo _("E-mail"); ?></th>
  <td><input type="Text" name="email_address"></td>
