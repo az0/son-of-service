@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.25 2004/03/11 04:31:38 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.26 2004/03/12 00:57:49 andrewziem Exp $
  *
  */
 
@@ -208,7 +208,7 @@ function volunteer_search_sql()
     	    {	
 		$sColumn = $matches[1];
 		$qsColumn = $db->qstr($matches[1], get_magic_quotes_gpc());
-		$qsCritiera = $db->qstr($p, get_magic_quotes_gpc());
+		$qsCritiera = $db->qstr('%' . $p . '%', get_magic_quotes_gpc());
 	    
 		// valid column?	    
 		if (!db_column_exists($qsColumn, 'extended'))
@@ -621,7 +621,7 @@ else
  // todo: user profile specifies default results per page
  ?>
  <tr>
- <th class="vert"><?php echo _("Results per page"); ?></th>
+ <th class="vert"><?php echo _("Per page"); ?></th>
  <td><select name="results_per_page"> 
   <option>10</option>
   <option selected>25</option>
