@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.11 2004/02/21 00:59:07 andrewziem Exp $
+ * $Id: login.php,v 1.12 2004/02/22 00:26:51 andrewziem Exp $
  *
  */
 
@@ -34,6 +34,8 @@ if (array_key_exists('logout', $_GET))
 }
 */
 
+make_html_begin(_("Login"), NULL);
+
 function request_login()
 {
         
@@ -45,11 +47,11 @@ function request_login()
     echo ("<FORM method=\"post\"  action=\"login.php\">\n");
     echo ("<TABLE border=\"0\">\n");
     echo ("<TR>\n");
-    echo ("<TD>User name</TD>\n");
+    echo ("<TD>" . _("User name") . "</TD>\n");
     echo ("<TD><INPUT name=\"u\" type=\"text\" size=\"40\"></TD>\n");
     echo ("</TR>\n");
     echo ("<TR>\n");
-    echo ("<TD>Password</TD>\n");
+    echo ("<TD>" . _("Password") . "</TD>\n");
     echo ("<TD><INPUT name=\"p\" type=\"password\" size=\"40\"></TD>\n");
     echo ("</TR>\n");
     echo ("</TABLE>\n");
@@ -107,5 +109,7 @@ else
 {
     request_login();
 }
+
+make_html_end();
 
 ?>

@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.14 2004/02/21 02:18:39 andrewziem Exp $
+ * $Id: html.php,v 1.15 2004/02/22 00:26:51 andrewziem Exp $
  *
  */
 
@@ -16,6 +16,8 @@ if (preg_match('/html.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
 }
+
+require_once(SOS_PATH . 'functions/access.php');
 
 
 function display_message($type, $message, $file, $line, $sql, $sql_error)
@@ -101,7 +103,7 @@ if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
 }
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/reports.php\">".("Reports")."</A>\n");
 
-if ('1' == $_SESSION['user']['access_admin'])
+if (has_permission(PC_ADMIN, PT_READ, NULL, NULL))
     echo ("<A class=\"tab\" href=\"". SOS_PATH ."admin/\">"._("Admin")."</A>\n");
     
 echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/login.php?logout=1\">"._("Logout")."</A>\n");
@@ -155,11 +157,14 @@ function make_html_begin($title, $options)
 function make_html_end()
 {
 
-
+if (is_logged_in(FALSE))
+{
 ?>
 <HR>
 <P><A href="<?php echo SOS_PATH; ?>src/about.php">Son of Service</A></P>
-    
+<?php
+}
+?>    
 </BODY>
 </HTML>
 <?php

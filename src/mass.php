@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.7 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: mass.php,v 1.8 2004/02/22 00:26:51 andrewziem Exp $
  *
  */
 
@@ -39,16 +39,59 @@ if (array_key_exists('button_email_volunteers', $_POST))
 }
 else if (array_key_exists('send_email', $_POST))
 {
-    $from = $_SESSION['user']['email'];
-    
-    if (!validate_email($from))
+
+    if (!validate_email($_SESSION['user']['email']))
     {
-	process_user_warning(_("Your e-mail address appears invalid: "). htmlentities($from));
+	save_message(MSG_USER_WARNING, _("Your e-mail address appears invalid: "). htmlentities($_SESSION['user']['email']));
     }
     
-    require_once(SOS_PATH . 'functions/email_smtp.php');
+    if (0 == strlen(trim($_POST['mailto'])))
+    {
+	save_message(MSG_USER_ERROR, _("At least one recipient required."));
+    }
+        
+    require(SOS_PATH . 'functions/class.phpmailer.php');
+    
+    $mail = new PHPMailer();
+    
+    $mail->IsSMTP();
+    $mail->Host = $smtp_hostname;
+    $mail->From = $_SESSION['user']['email'];
+    $mail->FromName = $_SESSION['user']['personalname'];
 
-    send_email_smtp($from, $_POST['mailto'], "", "", $_POST['mailre'], $_POST['message']);
+    if (strchr($_POST['mailto'], ','))
+    {    
+        foreach(explode($_POST['mailto'], ',') as $address)
+        {
+	    $mail->AddAddress($address);
+        }
+    }
+    else
+    {
+	$mail->AddAddress($_POST['mailto']);    
+    }
+
+    if (array_key_exists('cc_myself', $_POST) and 1 == $_POST['cc_myself'])
+    {
+	$mail->AddCC ($_SESSION['user']['email']);
+    }
+
+    
+    $mail->Subject = $_POST['mailre'];
+    $mail->Body = $_POST['message'];
+    
+    if (!$mail->Send())
+    {
+	save_message(MSG_SYSTEM_ERROR, _("Error sending e-mail message."), __FILE__, __LINE__);
+    }
+    else
+    {
+	save_message(MSG_USER_NOTICE, _("Message sent succesfully."));
+    }
+    
+    redirect(SOS_PATH . 'src/welcome.php');
+
+    //send_email_smtp($from, $_POST['mailto'], $cc, "", $_POST['mailre'], $_POST['message']);
 }
 else if (array_key_exists('button_delete_volunteers', $_POST))
 {
@@ -116,16 +159,24 @@ else
 function email_volunteers_form()
 {
 
+    if (0 == strlen($_SESSION['user']['email']))
+    {
+	process_user_warning(_("Your e-mail address must be set."));
+	return FALSE;
+    }
+
+    if (!validate_email($_SESSION['user']['email']))
+    {
+	process_user_warning(_("Your e-mail address appears invalid: "). $_SESSION['user']['email']);
+    }
+
     // collect volunteer IDs from form
     $vids = array();
 
     foreach ($_POST as $k => $v)
     {
-//	print_r($k);
-    
 	if (preg_match('/^volunteer_id_(\d+)/', $k, $matches))
 	{
-	    //print_r($matches);
 	    $vids[intval($matches[1])] = intval($matches[1]);
 	}
     }    
@@ -141,25 +192,26 @@ function email_volunteers_form()
 	//print_r($volunteer);
 	if (empty($volunteer['email_address']))
 	{
-	    process_user_warning(_("Volunteer does not have an e-mail address: ").$name);
+	    process_user_warning(_("Volunteer does not have an e-mail address: ")."<A href=\"" . SOS_PATH . "volunteer/?vid=$k\">$name</A>");
 	    unset($vids[$k]);
-	    break;
+	    continue;
 	}
-	elseif (validate_email($volunteer['email_address']))
+	elseif (!validate_email($volunteer['email_address']))
 	{
 	    process_user_warning(_("Volunteer's e-mail address appears invalid: ").$name);
 	}
-	$vids[$k] = array('name' => $name, 'email' => $volunteer['email_address']);
-	if (strlen($mailto)>0)
-	    $mailto .= ',';
-	$mailto .= $vids[$k]['email'];
+
+        $vids[$k] = array('name' => $name, 'email' => $volunteer['email_address']);
+        if (strlen($mailto)>0)
+		$mailto .= ',';
+    	$mailto .= $vids[$k]['email'];
     }
     
     // todo: SquirrelMail, IMP, Hotmail, Yahoo e-mail
     
     echo ("<P><A href=\"mailto:".htmlentities(urlencode($mailto))."\">Use my e-mail client</A></P>\n");
     
-    process_user_warning("Built-in e-mail is experimental.");
+    process_user_warning("Built-in e-mail is experimental, so you may want to use your own email client: click above.");
     
     echo ("<FORM method=\"post\" action=\"mass.php\">\n");
     echo ("<TABLE border=\"1\" width=\"100%\">\n");
@@ -167,9 +219,8 @@ function email_volunteers_form()
     echo ("<TH class=\"vert\">To</TH>\n");
     echo ("<TD width=\"100%\"><TEXTAREA name=\"mailto\" rows=\"5\" cols=\"80\">$mailto</TEXTAREA></TD>\n");
     echo ("</TR>\n");
-    echo ("<TR>\n");
+    echo ("<TR>\n");    
     echo ("<TH class=\"vert\">From</TH>\n");
-    print_r($_SESSION);
     echo ("<TD><INPUT type=\"text\" name=\"mailfrom\" value=\"".$_SESSION['user']['email']."\" DISABLED></TD>\n");
     echo ("</TR>\n");
     echo ("<TR>\n");
@@ -180,7 +231,11 @@ function email_volunteers_form()
     echo ("<TH class=\"vert\">Message</TH>\n");
     echo ("<TD><TEXTAREA name=\"message\" rows=\"20\" cols=\"80\"></TEXTAREA></TD>\n");
     echo ("</TR>\n");
-    echo ("</TABLE>\n");
+    echo ("<TR>\n");
+    echo ("<TH class=\"vert\">Options</TH>\n");
+    echo ("<TD><INPUT type=\"checkbox\" name=\"cc_myself\" value=\"1\" checked> Send myself a copy</TD>\n");
+    echo ("</TR>\n");
+    echo ("</TABLE>\n");    
     
     echo ("<INPUT type=\"submit\" name=\"send_email\" value=\""._("Send")."\">\n");
     echo ("</FORM>\n");

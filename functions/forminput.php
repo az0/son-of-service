@@ -7,7 +7,7 @@
  *
  * Functions for cleaning and validating source input.
  *
- * $Id: forminput.php,v 1.1 2003/10/06 00:33:32 andrewziem Exp $
+ * $Id: forminput.php,v 1.2 2004/02/22 00:26:51 andrewziem Exp $
  *
  */
 
@@ -56,7 +56,7 @@ function sanitize_date($date)
 
 function validate_email ($email)
 {
-    return (preg_match('/^\w+@\w+$/', $email));
+    return (preg_match('/^[\w\d.]+@[\w\d.]+$/', $email));    
 }
 
 function sos_strip_tags($s)

@@ -7,10 +7,11 @@
  *
  * General information about Son of Service.
  *
- * $Id: about.php,v 1.2 2003/11/23 03:26:58 andrewziem Exp $
+ * $Id: about.php,v 1.3 2004/02/22 00:26:51 andrewziem Exp $
  *
  */
 
+session_start();
 
 define('SOS_PATH', '../');
 

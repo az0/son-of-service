@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * Delivers an e-mail messag via SMTP.
+ * Delivers an e-mail message via SMTP.
  *
- * $Id: email_smtp.php,v 1.1 2003/11/23 17:03:30 andrewziem Exp $
+ * $Id: email_smtp.php,v 1.2 2004/02/22 00:26:50 andrewziem Exp $
  *
  */
 
@@ -21,6 +21,10 @@ if (preg_match('/email_smtp.php/i', $_SERVER['PHP_SELF']))
 function send_email_smtp($from, $to, $cc, $bcc, $subject, $message)
 {
     global $smtp_hostname;
+
+    
+    //debug
+    ob_end_flush();
     
     if (empty($smtp_hostname))
     {
@@ -28,7 +32,7 @@ function send_email_smtp($from, $to, $cc, $bcc, $subject, $message)
 	return FALSE;    
     }
 
-    $fp = @fsockopen($cfg['email_smtp'], 25, $errno, $errstr, 30);
+    $fp = @fsockopen($smtp_hostname, 25, $errno, $errstr, 45);
     
     if (!$fp)
     {
@@ -41,13 +45,13 @@ function send_email_smtp($from, $to, $cc, $bcc, $subject, $message)
     while (!feof($fp))
     {
 	$line = fgets($fp);
-	if (preg_match('/^(\d+) (\w+) ESTMP', $line, $matches))
+	if (preg_match('/^(\d+) (\w+) ESTMP/', $line, $matches))
 	{
 	    $rhostname = $matches[2];
 	}
 	else
 	{
-	    process_system_warning("Do not understand ".htmlentities($line)." from STMP\n");
+	    process_system_error("Do not understand ".htmlentities($line)." from STMP\n");
 	}
     }
 
@@ -76,6 +80,10 @@ function send_email_smtp($from, $to, $cc, $bcc, $subject, $message)
     fwrite($fp, "Date: ".date('j M Y H:i:s O')."\n");
     fwrite($fp, "From: $from\n");
     fwrite($fp, "To: $to\n");
+    if (!empty($cc))
+    {
+        fwrite($fp, "CC: $cc\n");    
+    }
     fwrite($fp, "Subject: $subject\n");
     fwrite($fp, "\n");
     fwrite($fp, "$message\n");

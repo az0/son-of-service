@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.16 2004/02/21 00:59:06 andrewziem Exp $
+ * $Id: users.php,v 1.17 2004/02/22 00:26:49 andrewziem Exp $
  *
  */
  
@@ -87,10 +87,10 @@ function user_save()
 	    $access_admin = '0';
 	}
     
-	$username = $db->qstr($_POST['username'], get_magic_quotes_gpc());
-	$personalname = $db->qstr($_POST['personalname'], get_magic_quotes_gpc());
+	$username = $db->qstr(strip_tags($_POST['username']), get_magic_quotes_gpc());
+	$personalname = $db->qstr(strip_tags($_POST['personalname']), get_magic_quotes_gpc());
 	$password = $db->qstr(md5($_POST['password1']), FALSE);
-	$email = $db->qstr($_POST['email'], get_magic_quotes_gpc());
+	$email = $db->qstr(strip_tags($_POST['email']), get_magic_quotes_gpc());
     
 	if ($mode_update and 0 == $errors_found)
 	{
@@ -128,9 +128,33 @@ function user_save()
 	}
 	else
 	{
-	    save_message(MSG_USER_NOTICE, $mode_update ? _("Updated.") : _("Saved."));
+	    if ($mode_update)
+	    {
+    		if ($_SESSION['user_id'] == $user_id)
+	    	{
+	    	    // update session info
+	    //	    echo ("<PRE>");print_r($_SESSION);echo ("</PRE>");	    
+		    $_SESSION['u'] = strip_tags($_POST['username']);
+		    $_SESSION['user']['username'] = $username;
+		    $_SESSION['user']['email'] = strip_tags($_POST['email']);
+		    $_SESSION['user']['personalname'] = strip_tags($_POST['personalname']);
+		    $_SESSION['user']['access_change_vol'] = $access_change_vol;
+		    $_SESSION['user']['access_admin'] = $access_admin;	    
+//	    echo ("<PRE>");print_r($_SESSION);echo ("</PRE>");
+//	    die;
+		    save_message(MSG_USER_NOTICE, _("The changes for your account are now in effect for this and future sessions."));
+        	}
+		else
+    		{
+		    save_message(MSG_USER_NOTICE, _("The changes will take affect after the next login."));
+		}    
+	    }
+	    else
+	    {
+		save_message(MSG_USER_NOTICE,  _("Saved."));
+	    }
 	}
-    
+	
 	// redirect to GET to prevent POST form reposting
 
     }
