@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.12 2004/02/21 00:59:07 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -51,7 +51,7 @@ function volunteer_add()
     if ($errors_found)
     {    
 	  echo ("<P>Try <A href=\"add_volunteer.php\">again</A>.</P>\n");
-	  // todo: redisplay form here with valus in place
+	  // todo: redisplay form here with values in place
 	  die();
     }
         
@@ -72,7 +72,7 @@ function volunteer_add()
    
     $sql = 'INSERT INTO volunteers '.
 	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,email_address, dt_added, uid_added) '.
-	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $email_address, now(), ".$_SESSION['user_id'].")";
+	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $email_address, now(), ".get_user_id().")";
 
     $result = $db->Execute($sql);
 
@@ -140,9 +140,16 @@ function volunteer_add()
      
     // display success message
     
-    $volunteer_row = volunteer_get($vid);
+    $volunteer_row = volunteer_get($vid, $errstr);
     
-    echo ("<P>"._("Volunteer added successfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
+    if ($volunteer_row)
+    {
+        echo ("<P>"._("Volunteer added successfully: "). "<A href=\"". SOS_PATH . "volunteer/?vid=$vid\">" . make_volunteer_name($volunteer_row) . ' (#'.$vid.")</A>.</P>\n");
+    }
+    else
+    {
+	echo ("<P>volunteer_get() error:  $errstr</P>\n");
+    }
 
 
 } /* add_volunteer() */

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.12 2004/02/27 16:35:14 andrewziem Exp $
+ * $Id: availability.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
  
@@ -107,7 +107,7 @@ function volunteer_availability_add()
         }      
     }
     
-    header ("Location: ./?vid=$vid&menu=availability");
+    redirect("./?vid=$vid&menu=availability");
     
 } /* volunteer_availability_add() */
 

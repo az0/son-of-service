@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.12 2004/02/21 00:59:06 andrewziem Exp $
+ * $Id: import.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -17,6 +17,7 @@ if (preg_match('/import.php/i', $_SERVER['PHP_SELF']))
 }
 
 // todo
+// - fix phone numbers (go into separate table)
 // - progress indicator
 // - multiple instances
 // - automatically separate suffixes from last name field
@@ -39,7 +40,8 @@ File name <INPUT type="file" name="userfile">
 <?php
 } /* import_legacy1() */
 
-$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'postal_code', 'country', 'phone_home', 'phone_work', 'phone_cell', 'email_address');
+// 'phone_home', 'phone_work', 'phone_cell'
+$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'postal_code', 'country', 'email_address');
 
 function import_legacy2()
 {

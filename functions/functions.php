@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.7 2004/02/15 02:30:17 andrewziem Exp $
+ * $Id: functions.php,v 1.8 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -17,9 +17,18 @@ if (preg_match('/functions.php/i', $_SERVER['PHP_SELF']))
 
 include_once(SOS_PATH . 'functions/html.php');
 
-/* save_message()
+/**
+ * save_message($type, $message, [$file, $line, $sql])
+ *
  * Saves a message to be displayed later (next page load).  Used with
- * forms processing.
+ * form processing.
+ * 
+ * @param int type type of message
+ * @param string message message
+ * @param string file file in which the error occured
+ * @param string line line number at which the error occured
+ * @param sql SQL code that trigged the error
+ * @return void
  *
  */
 function save_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
@@ -34,8 +43,10 @@ function save_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
     // todo: log error message here if applicable (refer to configurable log level)
 }
 
-/* die_message()
- * Displays a message then dies.
+/**
+ * die_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
+ *
+ * Displays a message then dies.  Same parameters as save_message().
  *
  */
 function die_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
@@ -49,10 +60,15 @@ function die_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
     // todo: log error message here if applicable (refer to configurable log level)
 }
 
-
+/**
+ * make_volunteer_name($row)
+ * 
+ * name, e.g. John Smith (Smith Inc.)
+ *
+ * @param string row an array containing first, middle, last, organization
+ * @return string name of t 
+ */ 
 function make_volunteer_name($row)
-// $row: an array containing first, middle, last, organization
-// return: name, e.g. John Smith (Smith Inc.)
 {
     if (!is_array($row))
 	return FALSE;
@@ -62,8 +78,13 @@ function make_volunteer_name($row)
     return $name;	
 }
 
+/**
+ * get_user_id()
+ * 
+ * @return int user ID of current user
+ */
+
 function get_user_id()
-// returns an integer of the current user_id
 {
     if (!array_key_exists('user_id', $_SESSION))
     {
@@ -72,11 +93,25 @@ function get_user_id()
     return (intval($_SESSION['user_id']));
 }
 
+/**
+ * redirect($url)
+ * 
+ * @param string url url
+ * @return void
+ */
+
 function redirect($url)
 {
     header("Location: $url");
 }
 
+
+/**
+ * sqldate_to_local($sql_date)
+ *
+ * @param string sql_date date in the format YYYY-MM-DD
+ * @return string date as given by strftime("%D")
+ */
 function sqldate_to_local($sql_date)
 {
     global $db;
@@ -92,6 +127,12 @@ function sqldate_to_local($sql_date)
     return (strftime("%D", $unixdate));    
 }
 
+/**
+ * sqldatetime_to_local($sql_datetime)
+ *
+ * @param string sql_datetime datetime in SQL format
+ * @return string date as given by strftime("%c")
+ */
 function sqldatetime_to_local($sql_datetime)
 {
     global $db;

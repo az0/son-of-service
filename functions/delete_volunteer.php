@@ -7,7 +7,7 @@
  *
  * Delete a volunteer.
  *
- * $Id: delete_volunteer.php,v 1.4 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: delete_volunteer.php,v 1.5 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -27,11 +27,13 @@ function delete_volunteer($vid)
     echo ("<P>"._("Deleting volunteer...")."</P>\n");
 	
     // delete related records
-    $result = $db->Execute("DELETE FROM notes WHERE vid=$vid");
-    $result = $db->Execute("DELETE FROM work WHERE vid=$vid");
-    $result = $db->Execute("DELETE FROM availability WHERE vid=$vid");      
-    $result = $db->Execute("DELETE FROM volunteer_skills WHERE vid=$vid");            
-    $result = $db->Execute("DELETE FROM relationships WHERE volunteer1_id = $vid OR volunteer2_id = $vid");            	
+    $result = $db->Execute("DELETE FROM availability WHERE volunteer_id=$vid");          
+    $result = $db->Execute("DELETE FROM extended WHERE volunteer_id=$vid");              
+    $result = $db->Execute("DELETE FROM notes WHERE volunteer_id=$vid");
+    $result = $db->Execute("DELETE FROM phone_numbers WHERE volunteer_id=$vid");        
+    $result = $db->Execute("DELETE FROM relationships WHERE volunteer1_id = $vid OR volunteer2_id = $vid");            	    
+    $result = $db->Execute("DELETE FROM volunteer_skills WHERE volunteer_id=$vid");            
+    $result = $db->Execute("DELETE FROM work WHERE volunteer_id=$vid");    
       
     // delete primary record
     // todo: portable LIMIT 1

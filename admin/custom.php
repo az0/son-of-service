@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.16 2004/02/21 02:18:39 andrewziem Exp $
+ * $Id: custom.php,v 1.17 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -231,7 +231,8 @@ function custom_add_field_form3()
     $code_ok = FALSE;    
     
     $label = $db->qstr(strip_tags($_POST['label']), get_magic_quotes_gpc());
-    $codebase = str_replace(' ','_', $_POST['label']);
+    // allow only alphanumeric characters in codes
+    $codebase = preg_replace('/[^\d\w]/', '_', $_POST['label']);
     $code = $codebase;
     
     $reserved_codes = array('ADD', 'ALL', 'ALTER', 'ANALYZE', 'AND',

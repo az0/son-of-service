@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.30 2004/02/27 16:35:14 andrewziem Exp $
+ * $Id: index.php,v 1.31 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -36,7 +36,12 @@ if (!array_key_exists('vid', $_REQUEST) or !is_numeric($_REQUEST['vid']))
     die_message(MSG_SYSTEM_ERROR, "vid must be numeric.  System error.", __FILE__, __LINE__);
 }
 
-$volunteer_name = make_volunteer_name(volunteer_get(intval($_REQUEST['vid'])));
+$volunteer = volunteer_get($_REQUEST['vid'], $errstr);
+if (!$volunteer)
+{
+    die_message(MSG_SYSTEM_ERROR, "volunteer_get(): $errstr");
+}
+$volunteer_name = make_volunteer_name($volunteer);
 
 make_html_begin(_("Volunteer account: ").$volunteer_name, array());
 
@@ -165,7 +170,10 @@ make_nav_begin();
 function volunteer_delete()
 {
     global $db;
+    global $volunteer;
     
+    
+    $errors_found = 0;
     
     // validate form input
     
@@ -198,8 +206,6 @@ function volunteer_delete()
     else
     {
 	echo ("<P class=\"instructionstext\">Are you sure you want to permanently delete this volunteer and all his related records (work history, notes, reminders, etc.)?  If not, simply click a menu option: General, Skills, etc.</P>\n");
-
-	$volunteer = volunteer_get($vid);
      
 	echo ("<PRE>\n");
 	echo $volunteer['first']. " " . $volunteer['middle'] . " " . $volunteer['last'] . " (".$volunteer['organization'].")\n";
@@ -228,8 +234,6 @@ function volunteer_view()
 {
 
 global $db;
-global $volunteer;
-global $vid;
 
 if (!array_key_exists('vid', $_REQUEST))
 {
@@ -239,7 +243,12 @@ if (!array_key_exists('vid', $_REQUEST))
 
 $vid = intval($_REQUEST['vid']);
 
-$volunteer = volunteer_get($vid);
+$volunteer = volunteer_get($vid, $errstr);
+
+if (!$volunteer)
+{
+    die_message(MSG_SYSTEM_ERROR, "volunteer_get(): $errstr");
+}
 
 // keep an array of recently opened volunteers
 if (!array_key_exists('recent_vid', $_SESSION))

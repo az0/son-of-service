@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.8 2003/12/30 17:33:40 andrewziem Exp $
+ * $Id: formmaker.php,v 1.9 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 

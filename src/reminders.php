@@ -7,7 +7,7 @@
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.8 2004/02/27 15:09:47 andrewziem Exp $
+ * $Id: reminders.php,v 1.9 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
  
@@ -43,7 +43,7 @@ function show_reminders()
     
     $sql = "SELECT note_id, dt, reminder_date, volunteer_id, message ".
 	"FROM notes ".
-	"WHERE uid_assigned = ".intval($_SESSION['user_id'])." AND acknowledged = 1 ".
+	"WHERE uid_assigned = ".get_user_id()." AND acknowledged = 1 ".
 	"ORDER BY reminder_date DESC";
     
     $result = $db->Execute($sql);
@@ -83,8 +83,15 @@ function show_reminders()
 	while (!$result->EOF)
 	{
 	    $row = $result->fields;
-	    $v = volunteer_get($row['volunteer_id']);
-	    $row['volunteer'] = make_volunteer_name($v);
+	    $v = volunteer_get($row['volunteer_id'], $errstr);
+	    if ($v)
+	    {
+		$row['volunteer'] = make_volunteer_name($v);
+	    }
+	    else
+	    {
+		$row['volunteer'] = $errstr;
+	    }
 	    $table->addRow($row);
 	    $result->MoveNext();
 	}
@@ -118,7 +125,7 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
     {
 	$c = 0;
 	
-	$sql = 'UPDATE notes SET acknowledged = 0 WHERE uid_assigned = '.intval($_SESSION['user_id']).' AND (';
+	$sql = 'UPDATE notes SET acknowledged = 0 WHERE uid_assigned = '.get_user_id().' AND (';
 	foreach ($note_ids as $nid)
 	{
 	    if ($c > 0)
@@ -139,7 +146,7 @@ if (array_key_exists('button_acknowledge_reminder', $_POST))
     }
         
     // todo: relative path violates HTTP standards?
-    header("Location: reminders.php");
+    redirect('reminders.php');
 
 }
 else

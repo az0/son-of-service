@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.9 2004/02/21 01:03:15 andrewziem Exp $
+ * $Id: summary.php,v 1.10 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -19,8 +19,10 @@ if (preg_match('/summary.php/i', $_SERVER['PHP_SELF']))
 
 function volunteer_summary()
 {
-    global $volunteer, $db, $vid;
+    global $volunteer, $db;
     
+    
+    $vid = intval($_GET['vid']);   
     
     if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
     {

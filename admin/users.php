@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.17 2004/02/22 00:26:49 andrewziem Exp $
+ * $Id: users.php,v 1.18 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
  
@@ -130,7 +130,7 @@ function user_save()
 	{
 	    if ($mode_update)
 	    {
-    		if ($_SESSION['user_id'] == $user_id)
+    		if (get_user_id() == $user_id)
 	    	{
 	    	    // update session info
 	    //	    echo ("<PRE>");print_r($_SESSION);echo ("</PRE>");	    
@@ -246,10 +246,12 @@ $form->addField(_("Verify password"), 'password', 'password2', array('length' =>
  <th class="vert">Administration privileges</th>
  <td>
    <INPUT type="checkbox" name="access_admin" <?php dvc_checkbox($form_values, 'access_admin');?> value="1">  
+   </td>
  </tr>
  <th class="vert">Change volunteers</th>
  <td>
    <INPUT type="checkbox" NAME="access_change_vol" <?php dvc_checkbox($form_values, 'access_change_vol');?> value="1">
+   </td>
  </tr> 
 <?php
 $form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), $form_values['personalname']);

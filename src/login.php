@@ -2,11 +2,11 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.12 2004/02/22 00:26:51 andrewziem Exp $
+ * $Id: login.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -103,7 +103,7 @@ if (isset($_POST['button_login']))
     
     $r = $db->Execute("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
     
-    header("Location: welcome.php");
+    redirect('welcome.php');
 	}
 else
 {

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.20 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: workhistory.php,v 1.21 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
  
@@ -144,12 +144,12 @@ function volunteer_work_history_save($mode)
     {
 	$sql = "INSERT INTO work ".
 	    "(date, hours, volunteer_id, category_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
-	    "VALUES ('$date', '$hours', $vid, $category_id, ".intval($_SESSION['user_id']).", now(), uid_added, dt_modified, $memo, $quality)"; 
+	    "VALUES ('$date', '$hours', $vid, $category_id, ".get_user_id().", now(), uid_added, dt_modified, $memo, $quality)"; 
     }
     else
     {
 	$sql = "UPDATE work ".
-	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = $memo, quality = '$quality', uid_modified = ".intval($_SESSION['user_id']).", dt_modified = now() ".
+	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = $memo, quality = '$quality', uid_modified = ".get_user_id().", dt_modified = now() ".
 	    "WHERE work_id = $work_id AND volunteer_id = $vid LIMIT 1";
     }
     

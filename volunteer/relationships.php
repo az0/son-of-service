@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.17 2004/02/21 02:18:40 andrewziem Exp $
+ * $Id: relationships.php,v 1.18 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -27,7 +27,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
         
     $ignore_vids[] = $vid;
     	
-    $volunteer2_row = volunteer_get($row['volunteer2_id']);
+    $volunteer2_row = volunteer_get($row['volunteer2_id'], $errstr);
     
     if ($volunteer2_row)
     {
@@ -71,7 +71,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
     }	
     else
     {
-        echo ("<LI>"._("Error")."\n");
+        echo ("<LI>volunteer_get(): $errstr\n");
 	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $row['volunteer2_id'], NULL))
 	{
     	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
@@ -138,7 +138,8 @@ function relationships_view($brief = FALSE)
 	echo ("<FORM action=\".\" method=\"post\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	echo ("<UL>\n");
-	echo ("<LH>".make_volunteer_name(volunteer_get($vid))."</LH>\n");
+	$volunteer = volunteer_get($vid, $errstr);
+	echo ("<LH>".make_volunteer_name($volunteer)."</LH>\n");
 		
 	while (!$result->EOF)
 	{
@@ -256,7 +257,7 @@ function relationships_add_form()
 	    $row = $result->fields;
 	    $c++;
 	    $vid2 = $row['volunteer_id'];
-	    $v2 = volunteer_get(intval($vid2));
+	    $v2 = volunteer_get(intval($vid2), $errstr);
 	    $name = make_volunteer_name($v2);
 	    echo ("<SELECT name=\"string_id_$vid2\">\n");
 	    foreach ($rtypes as $rt)
@@ -316,9 +317,15 @@ function relationship_add()
     
     $vid = intval($_POST['vid']);
     
-    if (!volunteer_get($vid) or !volunteer_get($vid2))
+    if (!volunteer_get($vid, $errstr))
     {
-	save_message(MSG_USER_ERROR, _("Volunteer not found."));
+	save_message(MSG_USER_ERROR, _("volunteer_get(): ") . $errstr);
+	$errors_found++;	
+    }
+    
+    if (!volunteer_get($vid2, $errstr))
+    {
+	save_message(MSG_USER_ERROR, _("volunteer_get(): ") . $errstr);
 	$errors_found++;	
     }
     

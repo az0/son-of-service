@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.15 2004/02/22 00:26:51 andrewziem Exp $
+ * $Id: html.php,v 1.16 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -182,38 +182,6 @@ function display_position_option($arg_1, $arg_2)
   else
   {
     return "value=\"$arg_1\" ";
-  }
-}
-
-
-function display_position($arg_1, $arg_2)
-// deprecated
-{
-  if ($arg_1 == $arg_2)
-  {
-    return "value=\"$arg_1\" CHECKED";
-  } 
-  else
-  {
-    return "value=\"$arg_1\" ";
-  }
-}
-
-function display_position_maybeused($arg_1)
-// to o: is this used?
-// deprecated
-{
-  if ("y" == $arg_1)
-  {
-    return "<B>yes</B>";
-  } 
-  elseif ('n' == $arg_1)
-  {
-    return "no";
-  }
-  else
-  {
-    return "not defined";
   }
 }
 

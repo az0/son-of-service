@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.10 2003/12/22 00:19:08 andrewziem Exp $
+ * $Id: db.php,v 1.11 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -18,7 +18,7 @@ if (preg_match('/db.php/i', $_SERVER['PHP_SELF']))
 }
 
 
-function volunteer_get($vid)
+function volunteer_get($vid, &$errstr)
  // get from database
  {
     //assuming $db is a fully connected ADOdb connection
@@ -27,25 +27,23 @@ function volunteer_get($vid)
 
     if (!is_numeric($vid))
     {
-	process_system_error("volunteer_get(): Expected integer.");
+	$errstr = "volunteer_get(): Expected integer.";
 	return FALSE;
     }
     
     $vid = intval($vid);
     
-    $result = $db->Execute("SELECT * " .
-                         "FROM volunteers " .
-                         "WHERE volunteer_id=$vid");
+    $result = $db->Execute("SELECT * FROM volunteers WHERE volunteer_id=$vid LIMIT 1");
 
     if (!$result)
     {
-	process_system_error("Error fetching volunteer details from database.");
+	$errstr = "Error fetching volunteer details from database.";
 	return FALSE;
     }
 
     if (1 != $result->RecordCount())
     {
-	process_system_error(_("Volunteer not found."));
+	$errstr = _("Volunteer not found.");
 	return FALSE;
     }
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.17 2004/02/27 16:35:14 andrewziem Exp $
+ * $Id: notes.php,v 1.18 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -284,7 +284,7 @@ function note_addedit()
 	else
 	{
 		$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) ".
-		"VALUES ($message, $nowdate, $vid, $quality,".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date', 1)";
+		"VALUES ($message, $nowdate, $vid, $quality,".get_user_id().", $uid_assigned, '$reminder_date', 1)";
 	}
 
 	$result = $db->Execute($sql);

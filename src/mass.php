@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.8 2004/02/22 00:26:51 andrewziem Exp $
+ * $Id: mass.php,v 1.9 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
@@ -129,7 +129,7 @@ else if (array_key_exists('button_delete_volunteers', $_POST))
         echo ("<UL>\n");    
 	foreach ($vids as $k => $vid)
         {
-	    $volunteer = volunteer_get($vid);
+	    $volunteer = volunteer_get($vid, $errstr);
 	    $name = make_volunteer_name($volunteer);
 	    
 	    echo ("<LI>$name ($vid)\n");
@@ -161,7 +161,7 @@ function email_volunteers_form()
 
     if (0 == strlen($_SESSION['user']['email']))
     {
-	process_user_warning(_("Your e-mail address must be set."));
+	process_user_error(_("Your e-mail address must be set in  user settings."));
 	return FALSE;
     }
 
@@ -187,9 +187,13 @@ function email_volunteers_form()
     
     foreach ($vids as $k => $vid)
     {
-	$volunteer = volunteer_get($vid);
+	$volunteer = volunteer_get($vid, $errstr);
 	$name = make_volunteer_name($volunteer);
-	//print_r($volunteer);
+	if (!$volunteer)
+	{
+	    process_user_warning(_("Error in volunteer_get: ") . $errstr);
+	    continue;
+	} else
 	if (empty($volunteer['email_address']))
 	{
 	    process_user_warning(_("Volunteer does not have an e-mail address: ")."<A href=\"" . SOS_PATH . "volunteer/?vid=$k\">$name</A>");

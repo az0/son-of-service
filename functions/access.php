@@ -7,10 +7,20 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.3 2004/02/21 00:59:07 andrewziem Exp $
+ * $Id: access.php,v 1.4 2004/03/03 02:42:51 andrewziem Exp $
  *
  */
 
+
+/**
+ * is_logged_in($or_die = TRUE)
+ *
+ * Deterine whether the user has logged in correctly.  Optionally die
+ * if he hasn't.
+ *
+ * @param bool or_die If set to true, the function dies on failure.
+ * @return void
+ */
 
 function is_logged_in($or_die = TRUE)
 {
@@ -36,12 +46,20 @@ define('PT_READ', 1);
 define('PT_WRITE', 2);
 
 
+/** 
+ * has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
+ *
+ * Determine whether the user has permission to access a feature.
+ * Note: Not all combinations are in use now.
+ * 
+ * @param category int PC_ADMIN or PC_VOLUNTEER
+ * @param type int PT_READ or PT_WRITE
+ * @param volunteer_id int integer or NULL
+ * @param user_id int user_id or NULL
+ * @return bool
+ */
+
 function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
-// category = PC_ADMIN, PC_VOLUNTEER
-// type = READ, MODIFY
-// volunteer_id = volunteer on which operation requested
-// user_id = user on which operation requested
-// not all combinations used now
 {
     if (!is_logged_in(FALSE))
     {
