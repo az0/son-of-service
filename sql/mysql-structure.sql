@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.13 2003/11/22 05:16:14 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.14 2003/11/22 17:51:03 netgamer7 Exp $
 #
 
 CREATE TABLE volunteers (
@@ -93,9 +93,8 @@ CREATE TABLE volunteer_skills (
     INDEX (volunteer_id), 
     INDEX (string_id), 
     INDEX (skill_level),
-    UNIQUE (volunteer_id, string_id),
-    COMMENT = "each skill of each volunteer"
-);
+    UNIQUE (volunteer_id, string_id)
+) COMMENT = "each skill of each volunteer";
 
 CREATE TABLE notes (
     note_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
@@ -111,9 +110,8 @@ CREATE TABLE notes (
     dt_modified DATETIME,
 
     INDEX (reminder_date),
-    INDEX (volunteer_id),
-    COMMENT = "users' reminders and notes about volunteers"
-);
+    INDEX (volunteer_id)
+) COMMENT = "users' reminders and notes about volunteers";
 
 
 CREATE TABLE work (
@@ -172,9 +170,8 @@ CREATE TABLE extended (
 	volunteer_id INT NOT NULL,
 
 	INDEX(volunteer_id),	
-	UNIQUE(volunteer_id),
-	comment = "user-defined custom data fields"
-);
+	UNIQUE(volunteer_id)
+) COMMENT = "user-defined custom data fields";
 
 CREATE TABLE extended_meta (
 	extended_meta_id MEDIUMINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
