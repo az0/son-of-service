@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.26 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: index.php,v 1.27 2003/12/09 05:17:09 andrewziem Exp $
  *
  */
 
@@ -98,6 +98,14 @@ make_nav_begin();
   if (array_key_exists('volunteer_delete', $_POST))
   {
     volunteer_delete();
+  }
+  else
+  if (array_key_exists('volunteer_add_phone', $_POST))
+  {
+    $vid = intval($_POST['vid']);
+    $result = $db->Execute("INSERT INTO phone_numbers (volunteer_id) VALUES ($vid)");
+    save_message(MSG_USER_NOTICE, _("Added."));
+    redirect("./?vid=$vid&menu=general");
   }
   else
   if (array_key_exists('button_add_note', $_POST))

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.11 2003/12/06 19:39:49 andrewziem Exp $
+ * $Id: users.php,v 1.12 2003/12/09 05:17:08 andrewziem Exp $
  *
  */
  
@@ -211,8 +211,7 @@ function user_addedit_form()
 
 $form = new formMaker;
 $form->open(FALSE, 'post', '.', FS_TABLE);
-$form->setValuesArray($form_values);
-$form->addField(_("Username"), 'text', 'username', array('length' => 20), 'username');
+$form->addField(_("Username"), 'text', 'username', array('length' => 20), $form_values['username']);
 $form->addField(_("Password"), 'password', 'password1', array('length' => 20), '');
 $form->addField(_("Verify password"), 'password', 'password1', array('length' => 20), '');
 ?>
@@ -227,8 +226,8 @@ $form->addField(_("Verify password"), 'password', 'password1', array('length' =>
    <INPUT type="checkbox" NAME="access_change_vol" <?php dvc_checkbox($form_values, 'access_change_vol');?>>
  </tr> 
 <?php
-$form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), 'personalname');
-$form->addField(_("E-mail"), 'text', 'email', array('length' => 40), 'email');
+$form->addField(_("Personal name"), 'text', 'personalname', array('length' => 40), $form_values['personalname']);
+$form->addField(_("E-mail"), 'text', 'email', array('length' => 40), $form_values['email']);
 
 if ($mode_edit)
 {

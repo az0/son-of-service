@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.7 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: general.php,v 1.8 2003/12/09 05:17:09 andrewziem Exp $
  *
  */
 
@@ -32,45 +32,42 @@ function volunteer_view_general()
 
     $form = new FormMaker();
     $form->open(FALSE, 'post', '.', FS_TABLE);
-    $form->setValuesArray($volunteer);
-    $form->addField(_("Prefix"), 'text', 'prefix', array('length' => 20), 'prefix');
-    $form->addField(_("First name"), 'text', 'first', array('length' => 20), 'first');
-    $form->addField(_("Middle name"), 'text', 'middle', array('length' => 20), 'middle');
-    $form->addField(_("Last name"), 'text', 'last', array('length' => 40), 'last');
-    $form->addField(_("Suffix"), 'text', 'suffix', array('length' => 10), 'suffix');
-    $form->addField(_("Organization"), 'text', 'organization', array('length' => 40), 'organization');    
-    $form->addField(_("Street"), 'text', 'street', array('length' => 40), 'street');
-    $form->addField(_("City"), 'text', 'city', array('length' => 30), 'city');    
-    $form->addField(_("State/Province"), 'text', 'state', array('length' => 40), 'state');    
-    $form->addField(_("Zip/Postal code"), 'text', 'postal_code', array('length' => 10), 'postal_code');        
-    $form->addField(_("Country"), 'text', 'country', array('length' => 30), 'country');            
+    $form->addField(_("Prefix"), 'text', 'prefix', array('length' => 20), $volunteer['prefix']);
+    $form->addField(_("First name"), 'text', 'first', array('length' => 20), $volunteer['first']);
+    $form->addField(_("Middle name"), 'text', 'middle', array('length' => 20), $volunteer['middle']);
+    $form->addField(_("Last name"), 'text', 'last', array('length' => 40), $volunteer['last']);
+    $form->addField(_("Suffix"), 'text', 'suffix', array('length' => 10), $volunteer['suffix']);
+    $form->addField(_("Organization"), 'text', 'organization', array('length' => 40), $volunteer['organization']);    
+    $form->addField(_("Street"), 'text', 'street', array('length' => 40), $volunteer['street']);
+    $form->addField(_("City"), 'text', 'city', array('length' => 30), $volunteer['city']);    
+    $form->addField(_("State/Province"), 'text', 'state', array('length' => 40), $volunteer['state']);    
+    $form->addField(_("Zip/Postal code"), 'text', 'postal_code', array('length' => 10), $volunteer['postal_code']);        
+    $form->addField(_("Country"), 'text', 'country', array('length' => 30), $volunteer['country']);            
     
-    // fixme: put phone numbers into separate table
+    $sql_phones = "SELECT * FROM phone_numbers WHERE volunteer_id = $vid";
+    $result_phones = $db->Execute($sql_phones);
+    if (!$result_phones)
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Error querying data from database."), __FILE__, __LINE__, $sql_phones);
+    }
     
-?>
-<tr>
- <th class="vert"><?php echo _("Home phone");?></th>
- <td><input type="Text" name="phone_home" value="<?php echo ($volunteer["phone_home"]); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Work phone");?></th>
- <td><input type="Text" name="phone_work" value="<?php echo ($volunteer["phone_work"]); ?>" size="20"></td>
- </tr>
-<tr>
- <th class="vert"><?php echo _("Cell phone");?></th>
- <td><input type="Text" name="phone_cell" value="<?php echo ($volunteer["phone_cell"]); ?>" size="20"></td>
- </tr>
-<?php
+    $i = 0;
+    while (!$result_phones->EOF)
+    {
+	$i++;
+	$phone_row = $result_phones->fields;
+	$form->addField(_("Phone #") . $i, 'text', 'phone_number_'.$phone_row['phone_number_id'], array('length' => 20), $phone_row['number']);            	
+	$form->addField(_("Memo: Phone #") . $i, 'text', 'phone_memo_'.$phone_row['phone_number_id'], array('length' => 20), $phone_row['memo']);            		
+	$result_phones->MoveNext();
+    }
 
-    $form->addField(_("E-mail"), 'text', 'email_address', array('length' => 40), 'email_address');            
-
-
-// show custom fields
-// todo: SQL_CACHE
+    $form->addField(_("E-mail"), 'text', 'email_address', array('length' => 40), $volunteer['email_address']);            
+    
+    // show custom data fields
 
     $sql = "SELECT * FROM extended WHERE volunteer_id = $vid";
 
-    $result_ext = $db->CacheExecute($db_cache_timeout, $sql);
+    $result_ext = $db->Execute($sql);
     
     if ($result_ext)
     {
@@ -99,7 +96,8 @@ function volunteer_view_general()
 
     $form->addHiddenField('vid', $vid);
     $form->addButton('volunteer_save', _("Save"));
-    $form->addButton('volunteer_delete', _("Delete"));
+    $form->addButton('volunteer_add_phone', _("Add phone number"));    
+    $form->addButton('volunteer_delete', _("Delete volunteer"));
 
     $form->close();
 
@@ -136,10 +134,6 @@ function volunteer_save()
 
     $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());
     
-    $phone_home = $db->qstr(htmlentities($_POST['phone_home']), get_magic_quotes_gpc());
-    $phone_work = $db->qstr(htmlentities($_POST['phone_work']), get_magic_quotes_gpc());
-    $phone_cell = $db->qstr(htmlentities($_POST['phone_cell']), get_magic_quotes_gpc());
-
     $vid = intval($_POST['vid']);
     
     // todo: portable LIMIT for UPDATE
@@ -156,10 +150,7 @@ function volunteer_save()
 	"state=$state, " .
 	"postal_code=$postal_code, " .
 	"country=$country, " .	
-	"email_address=$email_address, " .
-	"phone_home=$phone_home, " .
-	"phone_cell=$phone_cell, " .
-	"phone_work=$phone_work " .
+	"email_address=$email_address " .
 	"WHERE volunteer_id = $vid";
 
     // update primary volunteer record
@@ -170,7 +161,47 @@ function volunteer_save()
     {
 	save_message(MSG_SYSTEM_ERROR, _("Error updating primary volunteer record."), __FILE__, __LINE__, $sql);
     }
+    
+    // gather phone numbers
 
+    $phone_numbers = array();
+
+    foreach ($_POST as $key => $value)
+    {
+	if (preg_match('/^phone_number_(\d{1,})$/', $key, $matches))
+        {
+	    // $matches[1] corresponds to database field phone_number_id (int)
+	    $phone_numbers[$matches[1]]['number'] = $value;	
+	}
+	if (preg_match('/^phone_memo_(\d{1,})$/', $key, $matches))
+        {
+	    // $matches[1] corresponds to database field phone_number_id (int)	    
+	    $phone_numbers[$matches[1]]['memo'] = $value;	
+	}	
+    }
+    
+    // update phone numbers
+    
+    foreach ($phone_numbers as $key => $phone)
+    {
+	if (array_key_exists('memo', $phone) and array_key_exists('number', $phone))
+	{
+	    // todo: validate these fields
+	    $number = $db->qstr($phone['number'], get_magic_quotes_gpc());	    
+	    $memo = $db->qstr($phone['memo'], get_magic_quotes_gpc());
+	    $phone_number_id = intval($key);
+	    // todo: portable LIMIT 1
+	    $sql = "UPDATE phone_numbers ".
+		"SET number = $number, memo = $memo ".
+		"WHERE volunteer_id = $vid AND phone_number_id = $key";
+	    $result = $db->Execute($sql);
+	    if (!$result)
+	    {
+		die_message(MSG_SYSTEM_ERROR, _("Error updating data in database."), __FILE__, __LINE__, $sql);
+	    }
+	}
+    }
+    
     // gather custom fields from POST
 
     $custom = array();
@@ -184,6 +215,8 @@ function volunteer_save()
     }
 
     // sanitize and validate custom fields
+    
+    // todo: validate custom data fields
 
     // get extended fields data from database
     

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.9 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.10 2003/12/09 05:17:09 andrewziem Exp $
  *
  */
 
@@ -64,13 +64,9 @@ function volunteer_add()
    
     $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());      
    
-    $phone_home = $db->qstr(htmlentities($_POST['phone_home']), get_magic_quotes_gpc());
-    $phone_work = $db->qstr(htmlentities($_POST['phone_work']), get_magic_quotes_gpc());   
-    $phone_cell = $db->qstr(htmlentities($_POST['phone_cell']), get_magic_quotes_gpc());      
-
     $sql = 'INSERT INTO volunteers '.
-	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,phone_home,phone_work,phone_cell,email_address, dt_added, uid_added) '.
-	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $phone_home, $phone_work, $phone_cell, $email_address, now(), ".$_SESSION['user_id'].")";
+	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,email_address, dt_added, uid_added) '.
+	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $email_address, now(), ".$_SESSION['user_id'].")";
 
     $result = $db->Execute($sql);
 
@@ -80,6 +76,55 @@ function volunteer_add()
     }
     
     $vid = $db->Insert_ID();
+    
+    // insert phone number records
+    
+    if (!empty($_POST['phone_home']) or !empty($_POST['phone_work']) or !empty($_POST['phone_cell']))
+    {	
+	// select an empty record
+
+	$sql = "SELECT * FROM phone_numbers WHERE 0 = 1";
+	$template_result = $db->Execute($sql);
+	if (!$template_result)
+	{
+	    die_message(MSG_SYSTEM_ERROR, _("Error querying data to database."), __FILE__, __LINE__, $sql);
+	}
+	
+	$record['volunteer_id'] = $vid;
+
+	$record['number'] =  htmlentities($_POST['phone_home']);
+	$record['memo'] = _("Home");
+	$sql = $db->GetInsertSql($template_result, $record);
+	$result = $db->Execute($sql);
+	if (!$result)
+	{
+	    // todo: roll back
+	    die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
+	}
+	
+	$record['number'] =  htmlentities($_POST['phone_work']);
+	$record['memo'] = _("Work");
+	$sql = $db->GetInsertSql($template_result, $record);
+	$result = $db->Execute($sql);
+	if (!$result)
+	{
+	    // todo: roll back	
+	    die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
+	}
+	
+	$record['number'] =  htmlentities($_POST['phone_cell']);
+	$record['memo'] = _("Cell");
+	$sql = $db->GetInsertSql($template_result, $record);
+	$result = $db->Execute($sql);
+	if (!$result)
+	{
+	    // todo: roll back	
+	    die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
+	}	
+	
+    }
+     
+    // display success message
     
     $volunteer_row = volunteer_get($vid);
     

@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.5 2003/11/27 16:34:18 andrewziem Exp $
+ * $Id: formmaker.php,v 1.6 2003/12/09 05:17:09 andrewziem Exp $
  *
  */
 
@@ -95,13 +95,12 @@ class formMaker
     var $style;
     var $buttons;
     var $hidden_fields;
-    var $values_array;
     
     
     function formMaker()
     // constructor
     {
-	$this->values_array = array();
+
     }
 
     function open($title = FALSE, $method, $action, $style)
@@ -115,11 +114,6 @@ class formMaker
 	}
     }
     
-    function setValuesArray($va)
-    {
-	$this->values_array = $va;
-    }
-
     function addField($label, $type, $name, $attributes, $value)
     {
 	// todo: blind user support for fields
@@ -131,15 +125,6 @@ class formMaker
 	    echo ("<TD>\n");
 	}
 	
-	if (array_key_exists($name, $this->values_array))
-	{
-	    $value = $this->values_array[$name];
-	}
-	else
-	{
-	    $value = NULL;
-	}
-
 	render_form_field($type, $name, $attributes, $value);
 	
 	if (FS_TABLE == $this->style)

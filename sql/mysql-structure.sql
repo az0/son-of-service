@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.18 2003/11/29 22:59:54 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.19 2003/12/09 05:17:09 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -23,13 +23,10 @@ CREATE TABLE volunteers (
 
         street varchar(40) NOT NULL,
         city varchar(30) NOT NULL,
-        state varchar(10) NOT NULL, # or provience
+        state varchar(10) NOT NULL, # or province
         postal_code varchar(10) NOT NULL,
 	country varchar(30) NOT NULL,
 
-        phone_home varchar(20) NOT NULL,
-        phone_work varchar(20) NOT NULL,
-        phone_cell varchar(20) NOT NULL,
         email_address varchar(45) NOT NULL,
 
         hours_life decimal(10,2),
@@ -54,6 +51,15 @@ CREATE TABLE volunteers (
 
         );
 	
+CREATE TABLE phone_numbers (
+    phone_number_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    volunteer_id int NOT NULL,
+    number varchar(20) NOT NULL,
+    memo varchar(20) NOT NULL,
+    
+    index(number)
+);
+	
 CREATE TABLE availability (
     availability_id  int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     volunteer_id int NOT NULL,
@@ -76,7 +82,7 @@ CREATE TABLE strings (
     string_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     s varchar(255) not null,
     lang varchar(6),
-    type enum('extended', 'relationship', 'skill', 'work'),
+    type enum('extended', 'relationship', 'skill', 'work', 'phone_number'),
     foreign_id INT,
     
     UNIQUE(s, lang, type)
