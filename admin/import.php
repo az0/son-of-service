@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.4 2003/10/31 06:16:18 andrewziem Exp $
+ * $Id: import.php,v 1.5 2003/11/01 05:01:26 andrewziem Exp $
  *
  */
 
@@ -17,9 +17,9 @@ if (preg_match('/import.php/i', $_SERVER['PHP_SELF']))
 }
 
 // to do
-// - could use a lot of improvements
 // - progress indicator
 // - multiple instances
+// - automatically separate suffixes from last name field
 
 function import_legacy1()
 {
@@ -39,7 +39,7 @@ File name <INPUT type="file" name="userfile">
 <?php
 } /* import_legacy1() */
 
-$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organziation', 'street', 'city', 'state', 'zip', 'phone_home', 'phone_work', 'phone_cell', 'email_address');
+$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'zip', 'phone_home', 'phone_work', 'phone_cell', 'email_address');
 
 function import_legacy2()
 {
@@ -74,6 +74,20 @@ function import_legacy2()
 	return;
     }
     
+    // CSV?
+    
+    $line = fgets($f);
+    
+    if (0 == substr_count($line, ',') or preg_match('/.(xls|sxc)/i', $dname))
+    {
+	process_user_error(_("The file you uploaded is not a CSV file."));
+	return;
+    }
+    
+    // get header
+    
+    rewind($f);
+    
     $header = fgetcsv($f, 1000, ",");
     
     if (!$header)
@@ -82,10 +96,6 @@ function import_legacy2()
 	return;
     }
     
-    // really a compatible format?
-    
-    // to do: add CSV check
-
 ?>
 <FORM method="post" action=".">
 <TABLE>
@@ -140,7 +150,7 @@ function import_legacy3()
     
     $import_map = array();
     
-//    print_r($_POST);
+    //    print_r($_POST);
     
     foreach ($_POST as $pk=>$pv)
     {
@@ -224,7 +234,6 @@ function import_legacy3()
 	    foreach ($sql_names as $n)
 	    {
 		// sanitize file input
-//		echo (" $n --> ". $import_map[$n] . "\n");
 		$sql_values[] = $db->escape_string(htmlentities($row[$import_map[$n] - 1]));
 	    }
 	    
@@ -268,9 +277,21 @@ function import_legacy3()
 	    
 	    $sql .= ')';
 
-	    echo $sql;
+	    $result = $db->query($sql);
+	    
+	    if (!$result)
+	    {
+		process_system_error("Unable to add volunteer: line $lc", array('debug' => mysql_error()));
+	    }
+	    else
+	    {
+		$ic++;
+	    }
 	}
     }
+
+    echo ("<P>Imported $ic volunteers.</P>");
+    
 } /* import_legacy3() */
 
 
