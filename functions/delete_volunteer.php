@@ -7,9 +7,14 @@
  *
  * Delete a volunteer.
  *
- * $Id: delete_volunteer.php,v 1.1 2003/11/23 03:25:42 andrewziem Exp $
+ * $Id: delete_volunteer.php,v 1.2 2003/11/23 17:03:30 andrewziem Exp $
  *
  */
+
+if (preg_match('/delete_volunteer.php/i', $_SERVER['PHP_SELF']))
+{
+    die('Do not access this page directly.');
+}
 
 
 function delete_volunteer($vid)
