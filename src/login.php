@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.9 2003/12/07 02:07:27 andrewziem Exp $
+ * $Id: login.php,v 1.10 2004/02/17 01:50:33 andrewziem Exp $
  *
  */
 
@@ -80,19 +80,16 @@ if (isset($_POST['button_login']))
     
     $result = $db->Execute($sql);
 	
-    if ($result)
+    if ($result and 1 == $result->RecordCount())
     {
-	if (1 == $result->RecordCount())
-	{
-	    $user = $result->fields;
-	    $uid = $user['user_id'];
-	}
+	$user = $result->fields;
+	$uid = $user['user_id'];
     }    
-
-    if (!$uid)
+    else
     {
 	process_user_error(_("Invalid username or password."), "Is your caps lock key on?");
 	request_login();
+	exit();
     }
 	
     unset($user['password']);
