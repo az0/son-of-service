@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.16 2003/11/23 21:39:48 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.17 2003/11/24 16:09:40 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -98,7 +98,8 @@ CREATE TABLE notes (
     note_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY UNIQUE,
 
     dt DATETIME,
-    reminder_date DATE,
+    reminder_date DATE, # NULL if not a reminder
+    acknowledged BOOL, # refers to reminders
     uid_assigned INT, # user_id, if assigned to someone
     volunteer_id INT, # volunteer ID
     message TEXT NOT NULL,

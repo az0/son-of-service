@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.8 2003/11/23 19:49:43 andrewziem Exp $
+ * $Id: welcome.php,v 1.9 2003/11/24 16:09:40 andrewziem Exp $
  *
  */
 
@@ -44,7 +44,7 @@ $result = $db->query("SELECT note_id FROM notes WHERE reminder_date >= now() and
 
 $reminders = $db->num_rows($result);
 
-echo ("<P>Welcome, $username.  You have $reminders reminders waiting.</P>\n");
+echo ("<P>Welcome, $username.  You have <A href=\"reminders.php\">$reminders reminders</A> waiting.</P>\n");
 
 
 

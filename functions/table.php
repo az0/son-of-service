@@ -7,13 +7,13 @@
  *
  * Makes comma-delimited data files for downloading.
  *
- * $Id: table.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: table.php,v 1.2 2003/11/24 16:09:40 andrewziem Exp $
  *
  */
 
 if (preg_match('/table.php/i', $_SERVER['PHP_SELF']))
 {
-die('Do not access this page directly.');
+    die('Do not access this page directly.');
 }
 
 class DataTableDisplay
@@ -21,8 +21,9 @@ class DataTableDisplay
 var $headers;
 
 function setHeaders($headers)
+// $headers: an array
 {
-	$this->headers = $headers;
+    $this->headers = $headers;
 }
 
 function begin()
@@ -34,10 +35,18 @@ function begin()
 	    foreach ($this->headers as $k => $v)
 	    {
 		echo ("<TH>");
-		if (array_key_exists('checkbox',$v) and $v['checkbox'])
-		echo ("Select");
+		if (array_key_exists('label', $v))
+		{
+		    echo ($v['label']);
+		}
+		elseif (array_key_exists('checkbox',$v) and $v['checkbox'])
+		{
+		    echo (_("Select"));
+		}
 		else
-		echo ucfirst($k);
+		{
+		    echo ucfirst($k);
+		}
 //	if (array_key_exists('sortable', $v) and $v['sortable'])
 //	    echo ("<A href=\"\">[Sort Asc]</A>\n");//remove
 		echo ("</TH>\n");
@@ -60,10 +69,15 @@ function addRow($row)
 	foreach ($this->headers as $k => $v)
 	{
 		if (array_key_exists('radio',$v) and $v['radio'])
-		echo ("<TD><INPUT type=\"radio\" name=\"$k\" value=\"".$row[$k]."\"></TD>\n");
-		else
-		if (array_key_exists('checkbox',$v) and $v['checkbox'])
-		echo ("<TD><INPUT type=\"checkbox\" name=\"${k}_".$row[$k]."\" value=\"1\"></TD>\n");
+		{
+		    // to do: revisit value=
+		    echo ("<TD><INPUT type=\"radio\" name=\"$k\" value=\"".$row[$k]."\"></TD>\n");
+		}
+		else if (array_key_exists('checkbox',$v) and $v['checkbox'])
+		{
+		    // to do: revisit value=
+		    echo ("<TD><INPUT type=\"checkbox\" name=\"${k}_".$row[$k]."\" value=\"".$row[$k]."\"></TD>\n");
+		}
 		else
 		{
 		echo ("<TD>");

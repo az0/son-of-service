@@ -5,13 +5,13 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.6 2003/11/10 17:22:30 andrewziem Exp $
+ * $Id: notes.php,v 1.7 2003/11/24 16:09:40 andrewziem Exp $
  *
  */
 
 if (preg_match('/notes.php/i', $_SERVER['PHP_SELF']))
 {
-die('Do not access this page directly.');
+    die('Do not access this page directly.');
 }
 
 function volunteer_view_notes($brief = FALSE)
@@ -19,8 +19,9 @@ function volunteer_view_notes($brief = FALSE)
 global $db;
 
 
-$vid = intval($_REQUEST['vid']);
+display_messages();
 
+$vid = intval($_GET['vid']);
 
 $sql = 'SELECT notes.*,u1.username as added_by, u2.username as assigned_to '.
 	'FROM notes '.
@@ -73,7 +74,7 @@ else
 	echo ("<TR>\n");
 	if (!$brief)
 	{
-	    echo ("<TD><INPUT type=\"radio\" name=\"work_id\" value=\"".$note['note_id']."\"></TD>\n");
+	    echo ("<TD><INPUT type=\"checkbox\" name=\"note_id_".$note['note_id']."\" value=\"0\"></TD>\n");
 	}
 	echo ("<TD>".$note['dt']."</TD>\n");
 	echo ("<TD align=\"right\">".($note['reminder_date'] == '0000-00-00' ? '&nbsp' : $note['reminder_date'])."</TD>\n");
@@ -88,7 +89,8 @@ else
 	echo ("</TABLE>\n");
 	if (!$brief)
 	{
-		echo ("<INPUT type=\"submit\" name=\"delete_note\" value=\""._("Delete")."\">\n");
+		// to do: edit
+		echo ("<INPUT type=\"submit\" name=\"button_delete_note\" value=\""._("Delete")."\">\n");
 		echo ("</FORM>\n");
 	}
 }
@@ -98,7 +100,9 @@ else
 
 function volunteer_add_note_form()
 {
-global $db,  $vid;
+    global $db;
+    
+    $vid = intval($_GET['vid']);
 
 
 echo ("<H4>"._("Add note")."</H4>\n");
@@ -162,9 +166,6 @@ echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
   }
 
 
-
-
-
 function note_add()
 {
     global $db;
@@ -175,65 +176,110 @@ function note_add()
 
     $reminder_date = sanitize_date($_POST['reminder_date']);
 
-//
     if (!preg_match("/^[0-9]+$/", $_POST['vid']) or (!empty($_POST['uid_assigned']) and !preg_match("/^[0-9]+$/", $_POST['uid_assigned'])))
     {
 	$errors_found++;
-	process_system_error(_("Bad form input:".' POST: vid or uid_assigned'));    
+	save_message(_("Bad form input:".' POST: vid or uid_assigned'), MSG_SYSTEM_ERROR);    
     }
 
     if (!$reminder_date and !empty($_POST['reminder_date']))
     {
-	process_user_error(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."));
+	save_message(_("Use the date format YYYY-MM-DD or MM/DD/YYYY."), MSG_USER_ERROR);
 	$errors_found++;
     }
         
-    if (!array_key_exists('message', $_POST))
+    if (!array_key_exists('message', $_POST) or strlen($_POST['message']) < 2)
     {
-       process_system_error(_("Too short:").' '._("Message"));
-       $errors_found++;
+	save_message(_("Too short:").' '._("Message"), MSG_USER_ERROR);
+	$errors_found++;
     }        
-
-    if ($errors_found)
-    {
-	echo ("<A href=\"javascript:history.back(1)\">Return to the form</A>.</P>\n");
-	// to do: redisplay form
-	volunteer_view_notes();
-	die();
-
-    }
     
-    //to do: more validation
-    
-    $message = $db->escape_string(sos_strip_tags($_POST['message']));
     $vid = intval($_POST['vid']);    
-    $uid_assigned = intval($_POST['uid_assigned']);        
-    if (empty($uid_assigned))
-    {
-	$uid_assigned = 'NULL';
-    }
 
-    $nowdate = date("Y-m-d H:i:s");
+    if (!$errors_found)
+    {
+	$message = $db->escape_string(sos_strip_tags($_POST['message']));
+
+	$uid_assigned = intval($_POST['uid_assigned']);        
+	
+	$quality = intval($_POST['quality']);
+
+	if (empty($uid_assigned))
+	{
+	    $uid_assigned = 'NULL';
+	}
+
+	$nowdate = date("Y-m-d H:i:s");
  
-    $sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date) VALUES ('$message', '$nowdate', $vid, ".intval($_POST['quality']).",".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date')";
+	$sql = "INSERT INTO notes (message, dt, volunteer_id, quality, uid_added, uid_assigned, reminder_date, acknowledged) VALUES ('$message', '$nowdate', $vid, $quality,".intval($_SESSION['user_id']).", $uid_assigned, '$reminder_date', 1)";
 
-    //echo ("$sql\n");
+	$result = $db->query($sql);
 
-    $result = $db->query($sql);
+	if ($result)
+	{
+	    save_message(_("Recorded."), MSG_USER_NOTICE);
+	}
+	else
+	{
+	    save_message(_("Error adding data to database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));
+	}
 
-    if ($result)
+    }
+    
+    header("Location: ./?vid=$vid&menu=notes");
+} /* note_add() */
+
+
+function note_delete()
+// delete one or more notes
+{
+    global $db;
+    
+    
+    $vid = intval($_POST['vid']);
+    
+    $note_ids = array();
+
+    foreach ($_POST as $k => $v)
     {
-	echo ("<P>"._("Recorded.")."<P>\n");
+	if (preg_match('/^note_id_(\d+)/', $k, $matches))
+	{
+	    $note_ids[intval($matches[1])] = intval($matches[1]);
+	}
+    }    
+    
+    if (0 == count($note_ids))
+    {
+	save_message(_("Select one or more options."), MSG_USER_ERROR);
     }
     else
-    {
-	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
+    {    
+	$sql = "DELETE FROM notes WHERE volunteer_id = $vid AND (";
+	foreach ($note_ids as $nid)
+	{
+	    if ($c > 0)
+	    {
+		$sql .= ' OR ';
+	    }
+	    $sql .= ' note_id = '.$nid;
+	    $c++;
+	}
+	$sql .= ')';
+	
+	$result = $db->query($sql);
+	
+	if (!$result)
+	{
+	    save_message(_("Error deleting data from database."), MSG_SYSTEM_ERROR, array('debug' => $db->get_error()));	
+	}
     }
+        
+    // to do: relative path violates HTTP standards?
+    header("Location: ./?vid=$vid&menu=notes");
 
-    volunteer_view_notes();
-    volunteer_add_note_form();
-
-} /* note_add() */
+    
+    
+}
 
 
 ?>

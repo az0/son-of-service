@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.19 2003/11/23 21:39:48 andrewziem Exp $
+ * $Id: index.php,v 1.20 2003/11/24 16:09:40 andrewziem Exp $
  *
  */
 
@@ -116,7 +116,14 @@ make_nav_begin();
     include('notes.php');
     note_add();
   }
+  else if (array_key_exists('button_delete_note', $_POST))
+  {
+    include('notes.php');
+    note_delete();
+  }
   else 
+  
+
   {
     $found = FALSE;
     foreach ($_POST as $pk => $pv)
