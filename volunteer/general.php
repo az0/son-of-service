@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.1 2003/11/22 15:52:41 andrewziem Exp $
+ * $Id: general.php,v 1.2 2003/11/23 17:14:55 andrewziem Exp $
  *
  */
 
@@ -16,6 +16,7 @@ if (preg_match('/notes.php/i', $_SERVER['PHP_SELF']))
 
 
 function volunteer_view_general()
+// Displays editable general volunteer fields
 {
     global $db;
     global $volunteer;
@@ -94,6 +95,198 @@ function volunteer_view_general()
     $form->close();
 
 } /* volunteer_view_general() */
+
+
+function volunteer_save()
+// Saves general volunteer form data.
+{
+
+    global $db;
+    global $volunteer;
+
+    // to do: validate
+
+    // sanitize input
+
+    $organization = $db->escape_string(htmlentities($_POST['organization']));
+
+    $prefix = $db->escape_string(htmlentities($_POST['prefix']));
+    $first = $db->escape_string(htmlentities($_POST['first']));
+    $middle = $db->escape_string(htmlentities($_POST['middle']));
+    $last = $db->escape_string(htmlentities($_POST['last']));
+    $suffix = $db->escape_string(htmlentities($_POST['suffix']));
+
+    $street = $db->escape_string(htmlentities($_POST['street']), TRUE);
+    $city = $db->escape_string(htmlentities($_POST['city']), TRUE);
+    $state = $db->escape_string(htmlentities($_POST['state']), TRUE);
+    $postal_code = $db->escape_string(htmlentities($_POST['postal_code']));
+    $country = $db->escape_string(htmlentities($_POST['country']));
+
+    $email_address = $db->escape_string(htmlentities($_POST['email_address']));
+    
+    $phone_home = $db->escape_string(htmlentities($_POST['phone_home']));
+    $phone_work = $db->escape_string(htmlentities($_POST['phone_work']));
+    $phone_cell = $db->escape_string(htmlentities($_POST['phone_cell']));
+
+    if (array_key_exists('wants_monthly_information', $_POST))
+    {
+	$wants_monthly_information = $db->escape_string($_POST['wants_monthly_information']);
+    }
+    else
+    {
+	$wants_monthly_information = 'N';
+    }
+
+    $vid = intval($_POST['vid']);
+
+    $sql = "UPDATE volunteers SET " .
+	"organization='$organization', ".
+	"prefix='$prefix', " .
+	"first='$first', " .
+	"middle='$middle', " .
+	"last='$last', " .
+	"suffix='$suffix', " .
+	"street='$street', " .
+	"city='$city', " .
+	"state='$state', " .
+	"postal_code='$postal_code', " .
+	"country='$country', " .	
+	"email_address='$email_address', " .
+	"phone_home='$phone_home', " .
+	"phone_cell='$phone_cell', " .
+	"phone_work='$phone_work', " .
+	"wants_monthly_information='$wants_monthly_information' ".
+	"WHERE volunteer_id=$vid LIMIT 1";
+
+    // update primary volunteer record
+
+    $success_primary = FALSE != $db->query($sql);
+
+    if (!$success_primary)
+    {
+	process_system_error(_("Error updating primary volunteer record."), array('debug'=>$db->error()));
+    }
+
+    // gather custom fields from POST
+
+    $custom = array();
+
+    foreach ($_POST as $key => $value)
+    {
+	if (preg_match('/^custom_(\w{1,})$/', $key, $matches))
+        {
+		$custom[$matches[1]] = array('value' => $value, 'save' => FALSE);	
+	}
+    }
+
+    // sanitize and validate custom fields
+
+    // get extended fields data from database
+
+    $result_meta = $db->query("SELECT * FROM extended_meta");
+
+    if ($result_meta)
+    {
+	while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
+	{
+    	    if (array_key_exists($row_meta['code'], $custom))
+	    {
+		switch ($row_meta['fieldtype'])
+		{
+		    case 'date':			
+			$new_value = sanitize_date($custom[$row_meta['code']]['value']);		  
+
+			if ($new_value)
+			{
+		    	    $custom[$row_meta['code']]['save'] = TRUE;
+				$custom[$row_meta['code']]['value'] = "'$new_value'";
+			}
+		        elseif (empty($custom[$row_meta['code']]['value']))
+			{
+			    $custom[$row_meta['code']]['value'] = "NULL";
+			}
+			else
+			{
+			    process_user_error("Bad date format.");
+			    $custom[$row_meta['code']]['value'] = "NULL";
+			}
+
+		    break;
+		    
+		    case 'string':		
+		    case 'textarea':		
+	    		$custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']]['value']))."'";
+	    		$custom[$row_meta['code']]['save'] = TRUE;
+		    break;
+
+		    case 'integer':		
+	    		$custom[$row_meta['code']]['value'] = intval($custom[$row_meta['code']]['value']);
+	    		$custom[$row_meta['code']]['save'] = TRUE;
+		    break;
+	    
+		}    
+	    }
+	}
+    }
+    else
+    {    	
+	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
+    }
+
+    $db->free_result($result_meta);
+
+    // save extended data
+
+    // build SQL
+
+    $sql = 'REPLACE into extended ';
+    $sql_names = '(volunteer_id';
+    $sql_values = "($vid";
+    $extended_count = 0;
+    foreach ($custom as $key => $value)
+    {
+	if ($value['save'])
+	{
+	    $sql_names .= ", $key";
+	    $sql_values .= ", ".$value['value'];
+	    $extended_count++;
+	}
+    }
+
+    $sql_names .= ') ';
+    $sql_values .= ') ';
+
+    $sql .= " $sql_names VALUES $sql_values";
+
+    // save if extended fields exist
+
+    if ($extended_count > 0)
+    {
+	$success_extended = (FALSE != $db->query($sql));        
+    
+	if (!$success_extended)
+	{
+    	    process_system_error(_("Error updating extended volunteer record."), array('debug' => $db->error()));    
+	}	
+    }
+    else
+    {
+	// no extended fields
+	$success_extended = TRUE;
+    }
+
+    // redisplay volunteer record
+
+    if ($success_primary and $success_extended)
+    {
+	echo("<P>"._("Updated.")."</P>\n");
+	$volunteer = volunteer_get($vid);
+	include('general.php');
+	volunteer_view_general();
+    }
+
+
+} /* volunteer_save() */
 
 
 ?>
