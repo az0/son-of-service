@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.8 2004/02/10 02:17:50 andrewziem Exp $
+ * $Id: summary.php,v 1.9 2004/02/21 01:03:15 andrewziem Exp $
  *
  */
 
@@ -20,6 +20,13 @@ if (preg_match('/summary.php/i', $_SERVER['PHP_SELF']))
 function volunteer_summary()
 {
     global $volunteer, $db, $vid;
+    
+    
+    if (!has_permission(PC_VOLUNTEER, PT_READ, $vid, NULL))
+    {
+	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+	return FALSE;
+    }    
 
     // show contact card
 

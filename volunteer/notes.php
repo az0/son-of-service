@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.14 2004/02/15 15:20:06 andrewziem Exp $
+ * $Id: notes.php,v 1.15 2004/02/21 01:03:15 andrewziem Exp $
  *
  */
 
@@ -121,7 +121,7 @@ function volunteer_addedit_note_form($mode)
     
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
-	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
+//	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
 	return FALSE;
     }    
 

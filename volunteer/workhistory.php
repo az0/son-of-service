@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.18 2003/12/29 00:44:11 andrewziem Exp $
+ * $Id: workhistory.php,v 1.19 2004/02/21 01:03:15 andrewziem Exp $
  *
  */
  
@@ -270,7 +270,7 @@ function work_history_addedit($mode)
 
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
-	process_system_error(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
+//	process_system_error(_("Insufficient permissions."), MSG_SYSTEM_ERROR);
 	return FALSE;
     }    
     
