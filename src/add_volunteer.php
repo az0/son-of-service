@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.10 2003/12/09 05:17:09 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.11 2004/02/15 00:09:18 andrewziem Exp $
  *
  */
 
@@ -35,10 +35,10 @@ function volunteer_add()
     // validate form input
 
     $errors_found = 0;
-
-    if (!isset($_POST['last']) or 0 == strlen(trim($_POST['last'])))
+    
+    if (2 > (strlen(trim($_POST['last'])) + strlen(trim($_POST['organization']))))
     {
-       process_user_error(_("Too short:").' '._("Last name"));       
+       process_user_error(_("Please enter a longer last name or organization."));
        $errors_found++;
     }
 
@@ -91,7 +91,10 @@ function volunteer_add()
 	}
 	
 	$record['volunteer_id'] = $vid;
+    }
 
+    if (!empty($_POST['phone_home']))
+    {	
 	$record['number'] =  htmlentities($_POST['phone_home']);
 	$record['memo'] = _("Home");
 	$sql = $db->GetInsertSql($template_result, $record);
@@ -101,7 +104,10 @@ function volunteer_add()
 	    // todo: roll back
 	    die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
 	}
-	
+    }
+
+    if (!empty($_POST['phone_work']))
+    {	    	
 	$record['number'] =  htmlentities($_POST['phone_work']);
 	$record['memo'] = _("Work");
 	$sql = $db->GetInsertSql($template_result, $record);
@@ -111,7 +117,10 @@ function volunteer_add()
 	    // todo: roll back	
 	    die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
 	}
-	
+    }	
+
+    if (!empty($_POST['phone_cell']))
+    {	    	    
 	$record['number'] =  htmlentities($_POST['phone_cell']);
 	$record['memo'] = _("Cell");
 	$sql = $db->GetInsertSql($template_result, $record);
@@ -121,7 +130,6 @@ function volunteer_add()
 	    // todo: roll back	
 	    die_message(MSG_SYSTEM_ERROR, _("Error adding data to database."), __FILE__, __LINE__, $sql);
 	}	
-	
     }
      
     // display success message

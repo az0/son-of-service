@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2004 by Andrew Ziem and SOS Team.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.12 2003/12/07 02:07:26 andrewziem Exp $
+ * $Id: custom.php,v 1.13 2004/02/15 00:09:17 andrewziem Exp $
  *
  */
 
@@ -112,7 +112,7 @@ function custom_add_field_form2()
 
     $errors_found = 0;
     
-    print_r($_POST);
+//    print_r($_POST);
 /*
     if (!array_search($_POST['fieldtype'], $fieldtypes))
     {
@@ -291,7 +291,7 @@ function custom_add_field_form3()
 	    $sql_meta = 'INSERT INTO extended_meta '.
 		'(code, label, fieldtype) '.
 		"VALUES ($code_escaped, $label, 'integer')";
-	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code INT";		
+	    $sql_ext = "ALTER TABLE extended ADD COLUMN $code int";		
 	    break;	
 	    
 	    
