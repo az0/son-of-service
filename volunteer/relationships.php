@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.3 2003/11/02 15:19:20 andrewziem Exp $
+ * $Id: relationships.php,v 1.4 2003/11/06 15:55:18 andrewziem Exp $
  *
  */
 
@@ -24,17 +24,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
     {
         return FALSE;
     }
-    
-//    echo ("comparing $vid to "); print_r($ignore_vids); echo (in_array($vid, $ignore_vids)); echo ("<br>\n");
-    
-    if (in_array($vid, $ignore_vids))
-    {
-//	return FALSE;
-//	echo ("debug: Would ignore");
-    }
-	    
-    //echo ("ignoring"); print_r($ignore_relationships);
-    
+        
     $ignore_vids[] = $vid;
     	
     $volunteer2_row = volunteer_get($row['volunteer2_id']);
@@ -52,30 +42,20 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids)
 	    "relationship_types.name AS rname  ".
 	    "FROM relationships ".
 	    "LEFT JOIN relationship_types ".
-	    "ON relationships.rtype = relationship_types.relationship_type_id ".
+	    "ON relationships.relationship_type_id = relationship_types.relationship_type_id ".
 	    "WHERE relationships.volunteer1_id = ".$row['volunteer2_id']." AND relationships.volunteer2_id != $vid";
     
         $result = $db->query($sql);
 	
-        if ($result and $db->num_rows($result) > 0)
+	if (!$result)
+	{
+	    process_system_error(_("Database error."), 	array('debug' => $db->get_error()));
+	}
+	else if ($db->num_rows($result) > 0)
         {
 	    echo ("<UL>\n");
             while (FALSE != ($row2 = $db->fetch_array($result)))
     	    {
-//		echo ("new ignore: \n"); print_r($ignore_vids); echo ("<br>\n");
-		// find and ignore converse relationship
-/*		$sql3 = "SELECT relationship_id FROM relationships WHERE volunteer1_id = ".$row['volunteer2_id']." AND volunteer1_id = $vid";
-		$result3 = $db->query($sql3);
-		if ($result3)
-		{
-		    $row3 = $db->fetch_array($result3);
-		    $ignore_relationships[] = $row3['relationship_id'];
-		}
-		else
-		{
-		    process_system_error(_("Erroring querying database."), array('debug' => mysql_error()));
-		}
-*/		
 		if (!in_array($row2['volunteer2_id'], $ignore_vids))
 		{
 		    show_relationship_leaf($row['volunteer2_id'], $row2, $remaining_depth - 1, $ignore_vids);
@@ -94,31 +74,46 @@ function relationships_view()
 
     $vid = intval($_REQUEST['vid']);
     
-    $max_depth = 5;
+    if (array_key_exists('max_depth', $_GET) and is_numeric($_GET['max_depth']))
+    {	
+	// set new value via GET
+	$max_depth = intval($_GET['max_depth']);
+	$_SESSION['relationships']['max_depth'] = $max_depth;
+    }
+    elseif (array_key_exists('relationships', $_SESSION) and array_key_exists('max_depth', $_SESSION['relationships']))
+    {
+	// remember previous value from session
+	$max_depth = intval($_SESSION['relationships']['max_depth']);
+    }
+    else
+    {
+	// use default value
+        $max_depth = 5;
+    }
+    
+    $ignore_vids = array($vid);
+    
+    $c = 0;            
 
-    echo ("<H2>Relationships</H2>\n");
+    echo ("<H2>"._("Relationships")."</H2>\n");
 
     // query primary relationships
     
-    $sql = "SELECT relationships.relationship_id as relationship_id, ".
-    "relationships.volunteer2_id as volunteer2_id, ".
-    "relationship_types.name as rname  ".
+    $sql = "SELECT relationships.relationship_id AS relationship_id, ".
+    "relationships.volunteer2_id AS volunteer2_id, ".
+    "relationship_types.name AS rname  ".
     "FROM relationships ".
     "LEFT JOIN relationship_types ".
-    "ON relationships.rtype = relationship_types.relationship_type_id ".
+    "ON relationships.relationship_type_id = relationship_types.relationship_type_id ".
     "WHERE relationships.volunteer1_id = $vid ";
     
     $result = $db->query($sql);
     
-    $depth = 1;
-    
-//    $ignore_relationships = array (); // could this be improved?
-
-    $ignore_vids = array($vid);
-    
-    $c = 0;            
-    
-    if ($result and $db->num_rows($result) > 0)
+    if (!$result)
+    {
+	process_system_error(_("Database error."), array('debug' => $db->get_error()));
+    }
+    else if ($db->num_rows($result) > 0)
     {
 
 	echo ("<FORM action=\".\" method=\"post\">\n");
@@ -130,15 +125,6 @@ function relationships_view()
 	{
 	    $c++;
 	    show_relationship_leaf($vid, $row, $max_depth - 1, array($vid));
-//	    $ignore_relationships[] = $row['relationship_id'];
-//	    $ignore_vids = array($vid);
-	    // find and ignore converse relationship
-/*	    $sql2 = "SELECT FROM relationships WHERE volunteer1_id = ".$row['volunteer2_id']." AND volunteer1_id = $vid";
-	    $result2 = $db->query($sql2);
-	    if ($result2 and $db->num_rows($result2))
-	    {
-		$ignore_relationships[] = $row2['relationship_id'];
-	    }*/
 	}
 	
 	echo ("</UL>\n");
@@ -148,43 +134,48 @@ function relationships_view()
 
     if (0 == $c)
     {
-	echo ("<P>No relationships found.</P>\n");
+	echo ("<P>"._("No relationships found.")."</P>\n");
     }
     
     // button for changing maximum depth
     
     echo ("<FORM method=\"\" action=\".\">\n");    
-    echo ("<INPUT type=\"hidden\" name=\"menu\" value=\"relationships\">\n");
+    echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
+    echo ("<INPUT type=\"hidden\" name=\"menu\" value=\"relationships\">\n");    
+    echo (_("Maximum depth")."\n");    
     echo ("<SELECT name=\"max_depth\">\n");
     // to do: remember, default=3
     for ($i = 1; $i < 10; $i++)
     {
-	echo ("<OPTION>$i</OPTION>\n");
+	$selected = "";
+	if ($i == $max_depth)
+	{
+	    $selected = " SELECTED";
+	}
+	echo ("<OPTION".$selected.">$i</OPTION>\n");
     }
     echo ("</SELECT>\n");
-    echo ("Maximum depth\n");
     echo ("<INPUT type=\"submit\" value=\""._("Go")."\">\n");
     echo ("</FORM>\n");
     
-    echo ("<H3>Add relationship</H3>\n");
+    echo ("<H3>"._("Add relationship")."</H3>\n");
 
     // remember relationship types for multiple uses
     $result = $db->query("SELECT * FROM relationship_types");
     $rtypes = array();
     while (FALSE != ($row = $db->fetch_array($result)))
     {
-//	echo ("<OPTION value=\"".$row['relationship_type_id']."\">".$row['name']."</OPTION>\n");
 	$rtypes[] = $row;
     }
     
     // quickly add a relationship if volunteer ID is known
 
     echo ("<FIELDSET>\n");
-    echo ("<LEGEND>Quick add</LEGEND>\n");
+    echo ("<LEGEND>"._("Quick add")."</LEGEND>\n");
     echo ("<FORM method=\"post\" action=\".\">\n");
     echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-    echo ("Volunteer ID <INPUT type=\"text\" name=\"volunteer2_id\" size=\"5\">\n");
-    echo ("<BR>Relationship <SELECT name=\"rtype\">\n");
+    echo (_("Volunteer ID")." <INPUT type=\"text\" name=\"volunteer2_id\" size=\"5\">\n");
+    echo ("<BR>"._("Relationship")." <SELECT name=\"rtype\">\n");
     foreach ($rtypes as $rt)
     {
 	echo ("<OPTION value=\"".$rt['relationship_type_id']."\">".$rt['name']."</OPTION>\n");
@@ -201,7 +192,7 @@ function relationships_view()
     echo ("<FORM method=\"get\" action=\".\">\n");
     echo ("<INPUT type=\"hidden\" name=\"menu\" value=\"relationships\">\n");
     echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
-    echo ("Name <INPUT type=\"text\" name=\"volunteer2_name\">\n");
+    echo (_("Name")." <INPUT type=\"text\" name=\"volunteer2_name\">\n");
     echo ("<INPUT type=\"submit\" value=\""._("Search")."\">\n");
     echo ("</SELECT>\n");
     echo ("</FORM>\n");
@@ -266,23 +257,23 @@ function relationship_add()
     
     if (!$vid2)
     {
-	process_system_error("Input missing.");
+	process_system_error(_("Input missing."));
     }
     
     $vid = intval($_POST['vid']);
     
-    $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, rtype) VALUES ($vid, $vid2, $rtype)";
-    $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, rtype) VALUES ($vid2, $vid, $rtype)";
+    $sql1 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, relationship_type_id) VALUES ($vid, $vid2, $rtype)";
+    $sql2 = "INSERT INTO relationships (volunteer1_id, volunteer2_id, relationship_type_id) VALUES ($vid2, $vid, $rtype)";
     $result1 = $db->query($sql1);    
     $result2 = $db->query($sql2);
     
     if (!$result1 or !$result2)
     {
-	process_system_error("Error adding data to database.");
+	process_system_error(_("Error adding data to database."), array('debug' => mysql_error()));
     }
     else
     {
-	process_user_notice("Added relationship.");
+	process_user_notice(_("Added relationship."));
     }
     
     relationships_view();
@@ -308,7 +299,7 @@ function relationship_delete()
     
     if (!$vid1 or !$vid2)
     {
-	process_system_error("Input missing.");
+	process_system_error(_("Input missing."));
     }
     
     $sql1 = "DELETE FROM relationships WHERE volunteer1_id = $vid1 and volunteer2_id = $vid2";
@@ -318,11 +309,11 @@ function relationship_delete()
     
     if (!$result1 or !$result2)
     {
-	process_system_error("Error deleting data from database.");
+	process_system_error(_("Error deleting data from database."));
     }
     else
     {
-	process_user_notice("Relationship deleted.");
+	process_user_notice(_("Relationship deleted."));
     }
     
     relationships_view();

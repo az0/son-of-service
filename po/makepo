@@ -1,11 +1,11 @@
 #
 #
-# $Id: makepo,v 1.1 2003/10/05 16:14:53 andrewziem Exp $
+# $Id: makepo,v 1.2 2003/11/06 15:55:18 andrewziem Exp $
 #
 
-xgettext -C --keyword=_ --default-domain=sonofservice ../*.php 
-xgettext -C --keyword=_ --default-domain=sonofservice -j ../admin/*.php 
+xgettext -C --keyword=_ --default-domain=sonofservice ../admin/*.php 
 xgettext -C --keyword=_ --default-domain=sonofservice -j ../functons/*.php 
 xgettext -C --keyword=_ --default-domain=sonofservice -j ../include/*.php 
 xgettext -C --keyword=_ --default-domain=sonofservice -j ../src/*.php 
 xgettext -C --keyword=_ --default-domain=sonofservice -j ../volunteer/*.php 
+xgettext -C --keyword=_ --default-domain=sonofservice -j ../*.php 

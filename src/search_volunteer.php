@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.2 2003/10/05 19:51:29 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.3 2003/11/06 15:55:18 andrewziem Exp $
  *
  */
 
@@ -331,42 +331,28 @@ function volunteer_search()
 	{
 	    // not first result
 	    
-	/*
-	    echo ("<FORM method=\"get\" action=\"search_volunteer.php\">\n");
-	    echo ("<INPUT type=\"hidden\" name=\"offset\" value=\"".($offset-$results_per_page)."\">\n");
-	    foreach ($_REQUEST as $k => $v)
-	    {
-		if ($k != 'offset' and !preg_match('/^button_/', $k))
-		    echo ("<INPUT type=\"hidden\" name=\"$k\" value=\"$v\">\n");
-	    }
-	    
-	    echo ("<INPUT type=\"submit\" name=\"button_search\" value=\""._("Previous")."\">\n");	
-	    echo ("</FORM>\n");    		*/
-	    
 	    $url = make_url($_REQUEST, array('offset', 'button_search'));	    
 	    
 	    echo ("<A href=\"search_volunteer.php$url&offset=0\">"._("First")."</A>\n");
-	    echo ("<A href=\"search_volunteer.php$url&offset=".($offset-$results_per_page)."\">"._("Previous")."</A>\n");
-	    
-
+	    echo ("<A href=\"search_volunteer.php$url&offset=".($offset-$results_per_page)."\">"._("Previous")."</A>\n");	    
+	}
+	else
+	{
+	    echo (_("First")."\n");
+	    echo (_("Previous")."\n");
 	}
 
 	if ($offset + $results_per_page < $total_results)
 	{
-	/*
-	    echo ("<FORM method=\"get\" action=\"search_volunteer.php\">\n");
-	    foreach ($_REQUEST as $k => $v)
-	    {
-		if ($k != 'offset' and !preg_match('/^button_/', $k))
-		    echo ("<INPUT type=\"hidden\" name=\"$k\" value=\"$v\">\n");
-	    }	    
-	    echo ("<INPUT type=\"hidden\" name=\"offset\" value=\"".($offset+$results_per_page)."\">\n");
-	    echo ("<INPUT type=\"submit\" name=\"button_search\" value=\""._("Next")."\">\n");	
-	    echo ("</FORM>\n");    
-	*/
 	    $url = make_url($_REQUEST, array('offset', 'button_search'));
 	    echo ("<A href=\"search_volunteer.php$url&offset=".($offset+$results_per_page)."\">Next</A>\n");
 	    echo ("<A href=\"search_volunteer.php$url&offset=".($total_results - ($total_results % $results_per_page))."\">".gettext("Last")."</A>\n");	    
+	}
+	else
+	{
+	    echo (_("Next")."\n");
+	    echo (_("Last")."\n");
+	
 	}
 
 	// sorting

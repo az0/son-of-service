@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.5 2003/11/02 15:19:20 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.6 2003/11/06 15:55:18 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -157,7 +157,7 @@ CREATE TABLE relationships (
 	volunteer1_id INT NOT NULL,
 	volunteer2_id INT NOT NULL,	
 	
-	rtype int,
+	relationship_type_id INT,
 	
 	UNIQUE(volunteer1_id,volunteer2_id,rtype)
 );
@@ -165,7 +165,9 @@ CREATE TABLE relationships (
 CREATE TABLE relationship_types (
 	relationship_type_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
-	name VARCHAR(40)
+	name VARCHAR(40) NOT NULL,
+	
+	UNIQUE(name)
 );
 
 CREATE TABLE extended (
