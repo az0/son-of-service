@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.4 2003/10/24 15:44:12 andrewziem Exp $
+ * $Id: index.php,v 1.5 2003/10/31 06:23:02 andrewziem Exp $
  *
  */
 
@@ -282,7 +282,7 @@ if ($result_meta)
 	    case 'string':
 		if (array_key_exists($row_meta['code'], $custom))
 		{
-		    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']['value']))."'";
+		    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']['value']]))."'";
 		    $custom[$row_meta['code']]['save'] = TRUE;
 		}
 		break;
@@ -318,7 +318,7 @@ if ($extended_count > 0)
     if (!$success_extended)
     {
 	// Maybe the extended record hasn't been created?
-	$result_test = $db->query("SELECT volunteer_id FROM extended WHERE volunteer_id = $vid);
+	$result_test = $db->query("SELECT volunteer_id FROM extended WHERE volunteer_id = $vid");
 	if (0 == $db->num_rows($result))
 	{
 	    // Insert a blank record

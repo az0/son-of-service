@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.1 2003/10/05 16:14:35 andrewziem Exp $
+ * $Id: reports.php,v 1.2 2003/10/31 06:23:02 andrewziem Exp $
  *
  */
 
@@ -16,6 +16,7 @@ define(SOS_PATH, '../');
 
 require_once(SOS_PATH.'include/global.php');
 require_once(SOS_PATH.'functions/html.php');
+require_once(SOS_PATH.'functions/forminput.php');
 require_once(SOS_PATH.'functions/textwriter.php');
 
 is_logged_in();
