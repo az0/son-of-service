@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.11 2004/02/27 15:09:47 andrewziem Exp $
+ * $Id: table.php,v 1.12 2004/03/10 14:44:16 andrewziem Exp $
  *
  */
 
@@ -16,7 +16,6 @@ if (preg_match('/table.php/i', $_SERVER['PHP_SELF']))
     die('Do not access this page directly.');
 }
 
-// todo: break row [test]
 // todo: htmlspecialchars 
 // todo: same function names as for tab, csv class
 // todo: localize date, datetime per user
