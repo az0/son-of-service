@@ -7,7 +7,7 @@
  *
  * Database abstraction to MySQL and related.
  *
- * $Id: db.php,v 1.4 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: db.php,v 1.5 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -170,7 +170,6 @@ class voldbMySql extends voldbDatabase
 	{
 	    $this->is_error = TRUE;
 	    $this->error_message = mysql_error();
-	    //process_system_error("Could not execute query.<BR>Explication ".mysql_errno().": ".mysql_error());
 	    return FALSE;
 	}
 	

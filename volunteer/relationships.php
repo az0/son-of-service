@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.5 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: relationships.php,v 1.6 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -111,11 +111,10 @@ function relationships_view()
     
     if (!$result)
     {
-	process_system_error(_("Database error."), array('debug' => $db->get_error()));
+	process_system_error(_("Error querying database."), array('debug' => $db->get_error()));
     }
     else if ($db->num_rows($result) > 0)
     {
-
 	echo ("<FORM action=\".\" method=\"post\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	echo ("<UL>\n");
@@ -129,7 +128,6 @@ function relationships_view()
 	
 	echo ("</UL>\n");
 	echo ("</FORM>\n");
-
     }
 
     if (0 == $c)

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.9 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: index.php,v 1.10 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -22,6 +22,7 @@ define('SOS_PATH', '../');
 require_once (SOS_PATH . 'include/global.php');
 require_once (SOS_PATH . 'functions/html.php');
 require_once (SOS_PATH . 'functions/forminput.php');
+require_once (SOS_PATH . 'functions/formmaker.php');
 
 $db = new voldbMySql();
 
@@ -306,7 +307,7 @@ if ($result_meta)
 {
     while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
     {
-	switch ($row_meta['type'])
+	switch ($row_meta['fieldtype'])
 	{
 	    case 'string':
 		if (array_key_exists($row_meta['code'], $custom))
@@ -345,6 +346,8 @@ $success_extended = TRUE;
 
 if ($extended_count > 0)
 {
+    echo ("debug: $sql\n");
+
     $success_extended = FALSE != $db->query($sql);
 
     if (!$success_extended)
@@ -477,7 +480,7 @@ $phone_cell = $volunteer['phone_cell'];
  <th class="vert">Monthly mail</th>
  <td>
    <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("p", $volunteer["wants_monthly_information"])); ?>> Postal mail
-   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("e", $volunteer["wants_monthly_information"])); ?>><?php echo_("E-mail");?>
+   <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("e", $volunteer["wants_monthly_information"])); ?>><?php echo _("E-mail");?>
    <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("n", $volunteer["wants_monthly_information"])); ?>>None
    </TD>
  </tr>
@@ -501,9 +504,9 @@ if ($result_meta)
     while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
     {
 	echo ("<TR>\n");
-	echo ("<TH>".$row_meta['label']."</TH>\n");		
+	echo ("<TH class=\"vert\">".$row_meta['label']."</TH>\n");		
 	echo ("<TD>");
-	switch ($row_meta['type'])
+	switch ($row_meta['fieldtype'])
 	{
 	    case 'string':
 		$attributes = array('length' => $row_meta['databasecolumnsize']);
@@ -513,7 +516,7 @@ if ($result_meta)
 		break;
 	}
 	$value = $row_ext[$row_meta['code']];
-	render_form_field($row_meta['type'], 'custom_'.$row_meta['code'], $attributes, $value);
+	render_form_field($row_meta['fieldtype'], 'custom_'.$row_meta['code'], $attributes, $value);
 	echo ("<TD>\n");
 	echo ("</TR>\n");	
     }

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.4 2003/11/07 17:08:25 andrewziem Exp $
+ * $Id: notes.php,v 1.5 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -97,7 +97,7 @@ function volunteer_add_note_form()
 global $db,  $vid;
 
 
-echo ("<H4>Add note</H4>\n");
+echo ("<H4>"._("Add note")."</H4>\n");
 
 echo ("<FORM method=\"post\" action=\".\">\n");
 echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
@@ -108,26 +108,26 @@ echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 ?>
 <table border="1" width="40%">
 <tr>
- <TH class="vert">Message</TH>
+ <TH class="vert"><?php echo _("Message"); ?></TH>
  <td>
  <TEXTAREA name="message" rows="6" cols="64"></TEXTAREA>
  </td>
  </tr>
 <TR>
- <TH class="vert">Quality</TH>
+ <TH class="vert"><?php echo _("Quality"); ?></TH>
  <TD>
   <SELECT name="quality">
-  <OPTION value="-1">Negative</OPTION>
-  <OPTION value="0" SELECTED>Neutral</OPTION>
-  <OPTION value="1">Positive</OPTION>
+  <OPTION value="-1"><?php echo _("Negative"); ?></OPTION>
+  <OPTION value="0" SELECTED><?php echo _("Neutral"); ?></OPTION>
+  <OPTION value="1"><?php echo _("Positive"); ?></OPTION>
   </SELECT>
  </TR>
 <TR>
- <TH class="vert">Reminder date</TH>
+ <TH class="vert"><?php echo _("Reminder date"); ?></TH>
  <TD><INPUT type="text" name="reminder_date"></TD>
  </TR>
 <TR>
- <TH class="vert">Assigned to</TH>
+ <TH class="vert"><?php echo _("Assigned to"); ?></TH>
  <TD>
 <?php
     $result = $db->query('SELECT user_id, personalname, username FROM users');
@@ -139,7 +139,7 @@ echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
     else
     {
 	echo ("<SELECT name=\"uid_assigned\">\n");
-	echo ("<OPTION value=\"\">Nobody</OPTION>\n");
+	echo ("<OPTION value=\"\">"._("Nobody")."</OPTION>\n");
 	while (FALSE != ($user = $db->fetch_array($result)))
 	{
 	    echo ('<OPTION value="'.$user['user_id'].'">'.$user['personalname'].' ('.$user['username'].")</OPTION>\n");
@@ -175,7 +175,7 @@ function note_add()
     if (!preg_match("/^[0-9]+$/", $_POST['vid']) or (!empty($_POST['uid_assigned']) and !preg_match("/^[0-9]+$/", $_POST['uid_assigned'])))
     {
 	$errors_found++;
-	process_system_error("Bad POST form input");    
+	process_system_error(_("Bad form input:".' POST: vid or uid_assigned'));    
     }
 
     if (!$reminder_date and !empty($_POST['reminder_date']))
@@ -186,13 +186,13 @@ function note_add()
         
     if (!array_key_exists('message', $_POST))
     {
-       process_system_error("Please return to the form and add text to the note field.");
+       process_system_error(_("Too short:").' '._("Message"));
        $errors_found++;
     }        
 
     if ($errors_found)
     {
-	echo ("Please <A href=\"javascript:history.back(1)\">return to the form</A> and supply a longer username.</P>\n");
+	echo ("<A href=\"javascript:history.back(1)\">Return to the form</A>.</P>\n");
 	// to do: redisplay form
 	volunteer_view_notes();
 	die();
@@ -205,7 +205,9 @@ function note_add()
     $vid = intval($_POST['vid']);    
     $uid_assigned = intval($_POST['uid_assigned']);        
     if (empty($uid_assigned))
+    {
 	$uid_assigned = 'NULL';
+    }
 
     $nowdate = date("Y-m-d H:i:s");
  
@@ -217,15 +219,15 @@ function note_add()
 
     if ($result)
     {
-            echo ("<P>Note recorded.<P>\n");
-     }
-     else
-     {
-            process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
-     }
+	echo ("<P>"._("Recorded.")."<P>\n");
+    }
+    else
+    {
+	process_system_error(_("Error adding data to database."), array('debug' => $db->get_error()));
+    }
 
-	volunteer_view_notes();
-	volunteer_add_note_form();
+    volunteer_view_notes();
+    volunteer_add_note_form();
 
 } /* note_add() */
 

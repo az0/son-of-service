@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.4 2003/11/07 17:08:25 andrewziem Exp $
+ * $Id: workhistory.php,v 1.5 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -47,7 +47,7 @@ function volunteer_work_history_delete()
 function volunteer_work_history_save($mode)
 // mode: either 'update' or 'add';
 // return: nothing
-  {
+{
     global $db;
 
     // check form input        
@@ -148,7 +148,7 @@ function volunteer_view_work_history($brief = FALSE)
 
     if (!$brief or 0 < $db->num_rows($result))
     {
-	echo ("<H3>Work history</H3>\n");
+	echo ("<H3>"._("Work history")."</H3>\n");
     }
 
     if (0 == $db->num_rows($result))
@@ -168,11 +168,13 @@ function volunteer_view_work_history($brief = FALSE)
 	echo ("<TABLE border=\"1\">\n");
 	echo ("<TR>\n");
 	if (!$brief)
-		echo ("<TH>Select</TH>\n");
-	echo ("<TH>Date</TH>\n");
-	echo ("<TH>Hours</TH>\n");
-	echo ("<TH>Quality</TH>\n");
-	echo ("<TH>Memo</TH>\n");
+	{
+		echo ("<TH>"._("Select")."</TH>\n");
+	}
+	echo ("<TH>"._("Date")."</TH>\n");
+	echo ("<TH>"._("Hours")."</TH>\n");
+	echo ("<TH>"._("Quality")."</TH>\n");
+	echo ("<TH>"._("Memo")."</TH>\n");
 	echo ("</TR>\n");
 
 	while (FALSE != ($work = $db->fetch_array($result)))
@@ -247,10 +249,10 @@ function work_history_addedit($mode)
 
 	echo ("<INPUT type=\"hidden\" name=\"work_id\" value=\"$work_id\">\n");
     }
-    echo ("<TABLE  border=\"1\" class=\"form\">\n");
+    echo ("<TABLE border=\"1\" class=\"form\">\n");
 ?>
     <tr>
- <TH class="vert">Date</TH>
+ <TH class="vert"><?php echo _("Date"); ?></TH>
  <td>
  <INPUT TYPE="text" NAME="date" SIZE="10" VALUE="<?php echo $date; ?>">
  </td>
@@ -259,19 +261,19 @@ function work_history_addedit($mode)
 <tr>
 <?php // to do: allow subtraction and addition 
  ?>
- <TH class="vert">Hours</TH>
+ <TH class="vert"><?php echo _("Hours"); ?></TH>
  <td> <INPUT TYPE="text" NAME="hours" SIZE="7" value="<?php echo $hours;?>"></td>
  </tr>
 <TR>
- <TH class="vert">Quality</TH>
+ <TH class="vert"><?php echo _("Quality"); ?></TH>
  <TD>
   <SELECT name="quality">
-  <OPTION <?php echo display_position_option(-1, $quality);?>>Negative</OPTION>
-  <OPTION <?php echo display_position_option(0, $quality);?>>Neutral</OPTION>
-  <OPTION <?php echo display_position_option(1, $quality);?>>Positive</OPTION>
+  <OPTION <?php echo display_position_option(-1, $quality);?>><?php echo _("Negative"); ?></OPTION>
+  <OPTION <?php echo display_position_option(0, $quality);?>><?php echo _("Neutral"); ?></OPTION>
+  <OPTION <?php echo display_position_option(1, $quality);?>><?php echo _("Positive"); ?></OPTION>
   </SELECT>
 <tr>
- <TH class="vert">Memo</TH>
+ <TH class="vert"><?php echo ("Memo"); ?></TH>
  <td><TEXTAREA name="memo" cols="45" rows="2"><?php echo $memo;?></TEXTAREA></td>
  </tr>
  
@@ -290,5 +292,6 @@ else
     echo ("</FORM>\n");
 }
 
+}
 
 ?>

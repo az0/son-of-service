@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.5 2003/11/07 17:08:25 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.6 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -15,6 +15,7 @@
 // to do: add to found set (vs replace) ?
 // to do: advanced searching (e.g., not, match exact)
 // to do: search by availability
+// to do: query manager for saving queries
 
 function getmicrotime(){ 
 // this function from PHP documentation
@@ -38,7 +39,6 @@ make_html_begin('Search for volunteers', array());
 is_logged_in();
 
 make_nav_begin();
-
 
 class columnManager
 {
@@ -129,27 +129,25 @@ $cm->setColumnLink('first', "${base_url}volunteer/?vid=#volunteer_id#");
 $cm->addColumn('middle', TRUE);
 $cm->addColumn('last', TRUE);
 $cm->addColumn('organization', TRUE);
+$cm->setColumnLink('organization', "${base_url}volunteer/?vid=#volunteer_id#");
 $cm->addColumn('street');
 $cm->addColumn('city');
 $cm->addColumn('state');
 $cm->addColumn('zip');
 $cm->addColumn('hours_life');
 
-//print_r( $volunteer_sortable_columns);
+function search_add($form_name, $column, &$where)
+{
+    global $cm;
 
-	function search_add($form_name, $column, &$where)
-	{
-	    global $cm;
+    if (array_key_exists($form_name, $_REQUEST) and trim(strlen($_REQUEST[$form_name])) > 0)
+    {
+	$where .= " AND $column LIKE '%".$_REQUEST[$form_name]."%'";
 
-//		echo ("add $column");	
-	    if (array_key_exists($form_name, $_REQUEST) and trim(strlen($_REQUEST[$form_name])) > 0)
-	    {
-		$where .= " AND $column LIKE '%".$_REQUEST[$form_name]."%'";
-
-		if ($cm->columnExists($column))		
-		    $cm->setDisplay($column, TRUE);		
-	    }
-	}
+	if ($cm->columnExists($column))		
+	    $cm->setDisplay($column, TRUE);		
+    }
+}
 
 
 function volunteer_search()
@@ -160,36 +158,37 @@ function volunteer_search()
 
     $offset = 0;
     if (array_key_exists('offset', $_REQUEST))
+    {
         $offset = intval($_REQUEST['offset']);
+    }
 
     // is offset too small?    
     if ($offset < 0)
+    {
 	$offset = 0;
-// concat(ifnull(first, ''), ' ', ifnull(middle, ''), ' ', ifnull(last, '')) as personal_name
-//        $select = "SELECT volunteers.volunteer_id, , organization, zip";
+    }
 
-	$skills_active = FALSE;
+    $skills_active = FALSE;
 	
-	foreach ($_REQUEST as $key => $p)
-	{
-	    if (FALSE != preg_match('/^skill_(\d+)/', $key, $matches))
+    foreach ($_REQUEST as $key => $p)
+    {
+        if (FALSE != preg_match('/^skill_(\d+)/', $key, $matches))
+        {
+    	    if ('n' != $_REQUEST[$key])
 	    {
-		if ('n' != $_REQUEST[$key])
-		{
-		    $skills_active = TRUE;
-		}
+	        $skills_active = TRUE;
 	    }
 	}
+    }
 	
-	if ($skills_active)
-	{	
-            $where  = " WHERE volunteers.volunteer_id > 0";
-	}
-	else
-	{	
-            $where  = " WHERE volunteers.volunteer_id > 0";
-	}
-
+    if ($skills_active)
+    {	
+	$where  = " WHERE volunteers.volunteer_id > 0";
+    }
+    else
+    {	
+        $where  = " WHERE volunteers.volunteer_id > 0";
+    }
 
 	search_add('first', 'first', $where);		
 	search_add('last', 'last', $where);		
@@ -203,8 +202,6 @@ function volunteer_search()
 	search_add('phone_cell', 'phone_cell', $where);		
 	// to do: search any phone
 	
-
-	
 	foreach ($_REQUEST as $key => $p)
 	{
 	    if (FALSE != preg_match('/^skill_(\d+)/', $key, $matches))
@@ -217,10 +214,8 @@ function volunteer_search()
 
 		}		
 	    }	    
-	}
-	
+	}	
 
-	
 	if ($skills_active)
 	{	
     	    $groupby = ' GROUP BY volunteer_skills.volunteer_id ';
@@ -234,16 +229,14 @@ function volunteer_search()
 	
 	$orderby = "";
 	if ($cm->columnExists($_REQUEST['sortby']))
-	{ // is orderby valid?
-	    
+	{ 
+	    // is orderby valid?
 	    $orderby = " ORDER BY ".$_REQUEST['sortby'].' ';
 	    if ($cm->columnExists($_REQUEST['sortby']))		
+	    {
 		    $cm->setDisplay($_REQUEST['sortby'], TRUE);		
-
+	    }
 	}
-	
-		
-	//$limit = "LIMIT $offset,  $results_per_page ";
 
 	$total_results = -1;
 		
@@ -254,13 +247,13 @@ function volunteer_search()
         $result = $db->query($sql);
 
         if (!$result)
-        { // search failed
-	    process_system_error(_("Error querying database."), array('debug'=> $db->get_error()." ".$sql));
-
+        { 
+	    // search failed
+	    process_system_error(_("Error querying database."), array('debug' => $db->get_error()." ".$sql));
         }
         else
-        { // search successful
-		// to do: show fields that were searched
+        { 
+		// search successful
 		// to do: mass-action on found set (email)
 		
                 if (0 == ($total_results = $db->num_rows($result)))
@@ -270,11 +263,11 @@ function volunteer_search()
                 else
 		{
 		
-//		    echo _("Volunteers found:").' '. $total_results;
-		    
 		    // is offset too large?
 		    if ($offset > $total_results)
+		    {
 			$offset = $total_results - $results_per_page;
+		    }
 
 		    $tab = new DataTableDisplay();
 		    
@@ -284,25 +277,26 @@ function volunteer_search()
 		    $fieldnames['organization']['link'] = "${base_url}volunteer/?vid=#volunteer_id#";		    		    
 		    $fieldnames['volunteer_id']['checkbox'] = TRUE;
 			
-	    	    //$db->data_seek($result, $offset);
 		    if ($offset > 0)
-			mysql_data_seek($result, $offset);	    
+		    {
+			$db->data_seek($result, $offset);	    
+		    }
 		    
 		    $max = $results_per_page;
 		    if ($offset + $results_per_page > $total_results)
+		    {
 			$max = $offset + $results_per_page;
+		    }
+		    if ($max > $total_results)
+		    {
+			$max = $total_results - 1;
+		    }
 
 		    $tab->setHeaders($fieldnames);
 		    $tab->begin();
 		    
-		    //while ($row = $db->fetch_array($result))		    
-		    for ($i = 0; $i <= $max; $i++)
+		    while (FALSE != ($row = $db->fetch_array($result)))
 		    {
-			$row = $db->fetch_array($result);
-			if (!$row)
-			{
-			    process_system_error(_("Database error."), array('debug' => $db->get_error()));
-			}
 		        $tab->addRow($row);
 		    }
 		    
@@ -326,7 +320,6 @@ function volunteer_search()
 	$pages = ceil($total_results / $results_per_page);
 	$last_this_page = ($offset + $results_per_page) > $total_results ?   $total_results: ($offset + $results_per_page);
 
-	
 	echo ("<P>Page $page of $pages showing records $offset through ".($last_this_page)." of $total_results.</P>\n");
 
 	if ($offset > 0)
@@ -377,7 +370,6 @@ function volunteer_search()
 	echo ("<INPUT type=\"submit\" name=\"button_search\" value=\""._("Sort")."\">\n");
 
 	echo ("</FIELDSET>\n");
-//        echo ("<P><A HREF=\"search_volunteer.php\">Search</A> again.</P>");
 	echo ("</FORM>\n");    
 } /* volunteer_search () */
 
@@ -422,7 +414,7 @@ section.</P>
  <td><input type="text" name="street"></td>
  </tr>
 <tr>
- <th class="vert"><?php echo _("City");?>/th>
+ <th class="vert"><?php echo _("City"); ?></th>
  <td><input type="text" name="city"></td>
  </tr>
 <tr>
@@ -477,14 +469,14 @@ section.</P>
     if (!$result)
     {
     	echo ("<TR><TD>\n");
-	process_system_error("Cannot query database for skills");
+	process_system_error("Cannot query database for skills.");
 	echo ("</TD></TR>\n");	
     }
     else
     if (0==$db->num_rows($result))
     {
 	echo ("<TR><TD>\n");
-	process_user_error("Cannot find any qualifications or interests to list");
+	process_user_error("Cannot find any qualifications or interests to list.");
 	echo ("</TD></TR>\n");
     }
     else while (FALSE != ($row = $db->fetch_array($result)))
@@ -536,7 +528,9 @@ if (array_key_exists('button_search', $_REQUEST) or array_key_exists('zip', $_RE
 
 }    
 else
-volunteer_search_form();
+{
+    volunteer_search_form();
+}   
 
 
 make_html_end();

@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: skills.php,v 1.2 2003/11/07 16:59:19 andrewziem Exp $
+ * $Id: skills.php,v 1.3 2003/11/08 19:09:47 andrewziem Exp $
  *
  */
 
@@ -85,7 +85,7 @@ else
     }
     echo ("</TABLE>\n");
     
-    echo ("<INPUT type=\"submit\" name=\"button_delete_volunteer_skill\" value=\"Delete\">\n");
+    echo ("<INPUT type=\"submit\" name=\"button_delete_volunteer_skill\" value=\""._("Delete")."\">\n");
 }    
 
 // add skill form
