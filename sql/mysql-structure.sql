@@ -1,5 +1,3 @@
-USE sos;
-
 CREATE TABLE volunteers (
         volunteer_id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
@@ -27,7 +25,7 @@ CREATE TABLE volunteers (
 
 	wants_monthly_information CHAR, # E (email), P (postal mail), N (no)
 	
-	hours_life_percenticle decimal(3,2),
+	hours_life_percenticle decimal(3,2), # not yet implemented
 	hours_ly_percenticle decimal(3,2),		
 	hours_ytd_percenticle decimal(3,2),	
         hours_life decimal(10,2),
@@ -99,7 +97,7 @@ CREATE TABLE notes (
     quality TINYINT, # -1 = bad, 0 = neutral, 1 = good
     uid_added INT, # user ID of he who added note
     uid_modified INT,
-    dt_modified,
+    dt_modified DATETIME,
 
     INDEX (reminder_date),
     INDEX (volunteer_id)
@@ -154,13 +152,18 @@ CREATE TABLE log (
 );
 
 CREATE TABLE relationships (
-	relationship_id NOT NULL AUTO_INCREOMENT PRIMARY KEY,
+	relationship_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
 	volunteer1_id INT NOT NULL,
 	volunteer2_id INT NOT NULL,	
 	
 	rtype int,
+);
 
+CREATE TABLE relationship_types (
+	relationship_type_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	
+	name VARCHAR(40)
 );
 
 CREATE TABLE extended (
