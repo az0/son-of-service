@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.2 2003/10/06 00:33:33 andrewziem Exp $
+ * $Id: welcome.php,v 1.3 2003/10/24 15:44:12 andrewziem Exp $
  *
  */
 
@@ -53,4 +53,17 @@ echo ("<P>Welcome, $username.  You have $reminders reminders waiting.</P>\n");
 product: the program is in an early stage of development.  The primary
 goal now is to identify and implement major features.  Also constructive
 criticism of the overall design is appropriate now.</P>
+
+<P>Much work is already done, as you can see in this demo.</P>
+
+<P>Currently implementing:<P>
+<UL>
+<LI>Easy, web method for importing simple legacy data
+<LI>Better reminder system
+</UL>
+
+<P>To do soon:</P>
+<UL>
+<LI>Categorization of work
+</P>
 

@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.3 2003/10/06 00:33:33 andrewziem Exp $
+ * $Id: index.php,v 1.4 2003/10/24 15:44:12 andrewziem Exp $
  *
  */
 
@@ -183,7 +183,7 @@ function volunteer_delete()
 <input type="checkbox" name="delete_confirm"> Confirm
 
 
-    <?php
+<?php
 
    }
 
@@ -227,7 +227,6 @@ $wants_monthly_information = $db->escape_string($_POST['wants_monthly_informatio
 else
 $wants_monthly_information = 'N';
 
-
 $vid = intval($_POST['vid']);
 
 $sql = "UPDATE volunteers SET " .
@@ -248,16 +247,104 @@ $sql = "UPDATE volunteers SET " .
 	"wants_monthly_information='$wants_monthly_information' ".
 	"WHERE volunteer_id=$vid LIMIT 1";
 
-if ($db->query($sql))
+// update primary volunteer record
+
+$success_primary = FALSE != $db->query($sql);
+
+if (!$success_primary)
 {
-	echo("<P>Volunteer details updated.</P>\n");
-	$volunteer = volunteer_get($vid);
-	volunteer_view_general();
+    process_system_error(_("Error updating primary volunteer record."), array('debug'=>$db->error()));
+}
+
+// gather custom fields
+
+$custom = array();
+
+foreach ($_POST as $key => $value)
+{
+    if (preg_match('/^custom_(\w{1,})$/', $key, $matches))
+    {
+	print_r($matches);
+	$custom[$matches[0]] = array('value' => $value, 'save' => FALSE);	
+    }
+}
+
+// sanitize and validate custom fields
+
+$result_meta = $db->query("SELECT * FROM extended_meta");
+
+if ($result_meta)
+{
+    while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
+    {
+	switch ($row_meta['type'])
+	{
+	    case 'string':
+		if (array_key_exists($row_meta['code'], $custom))
+		{
+		    $custom[$row_meta['code']]['value'] = "'".$db->escape_string(htmlentities($custom[$row_meta['code']['value']))."'";
+		    $custom[$row_meta['code']]['save'] = TRUE;
+		}
+		break;
+	}
+    }
+}
+
+$db->free_result($result_meta);
+
+// save extended data
+
+$sql = "UPDATE extended ";
+$extended_count = 0;
+foreach ($custom as $key => $value)
+{
+    if ($value['save'])
+    {
+	if ($extended_count > 0)
+	{
+	    $sql .= ",";
+	}
+	$sql .= "SET $key = ".$value['value']." ";
+	$extended_count++;
+    }
+
+}
+$sql .= "WHERE volunteer_id = $vid LIMIT 1";
+
+if ($extended_count > 0)
+{
+    $success_extended = FALSE != $db->query($sql);
+
+    if (!$success_extended)
+    {
+	// Maybe the extended record hasn't been created?
+	$result_test = $db->query("SELECT volunteer_id FROM extended WHERE volunteer_id = $vid);
+	if (0 == $db->num_rows($result))
+	{
+	    // Insert a blank record
+	    $db->query("INSERT INTO extended (volunteer_id) VALUES ($vid)");
+	    // Update it
+	    $success_extended = FALSE != $db->query($sql);
+	}
+    }
+    
+    if (!$success_extended)
+    {
+        process_system_error(_("Error updating extended volunteer record."), array('debug'=>$db->error()));    
+    }
 }
 else
 {
-	process_system_error("Error updating volunter details: " .
-		mysql_error());
+    $extended_success = TRUE;
+}
+
+// redisplay volunteer record
+
+if ($success_primary and $success_extended)
+{
+    echo("<P>Volunteer details updated.</P>\n");
+    $volunteer = volunteer_get($vid);
+    volunteer_view_general();
 }
 
 
@@ -362,7 +449,45 @@ $phone_cell = $volunteer['phone_cell'];
    <INPUT type="radio" name="wants_monthly_information" <?php echo(display_position("n", $volunteer["wants_monthly_information"])); ?>>None
    </TD>
  </tr>
+<?php
+// show custom fields
+// to do: SQL_CACHE
 
+$result_ext = $db->query("SELECT * FROM extended WHERE volunteer_id = $vid");
+if ($result_ext)
+{
+    $row_ext = $db->fetcharray($result_ext);
+}
+else 
+{
+    $row_ext = array();
+}
+
+$result_meta = $db->query("SELECT * FROM extended_meta");
+if ($result_meta)
+{
+    while (FALSE != ($row_meta = $db->fetch_array($result_meta)))
+    {
+	echo ("<TR>\n");
+	echo ("<TH>".$row_meta['label']."</TH>\n");		
+	echo ("<TD>");
+	switch ($row_meta['type'])
+	{
+	    case 'string':
+		$attributes = array('length' => $row_meta['databasecolumnsize']);
+		break;
+	    default:
+		process_system_error("Unexpected type in extended_meta");
+		break;
+	}
+	$value = $row_ext[$row_meta['code']];
+	render_form_field($row_meta['type'], 'custom_'.$row_meta['code'], $attributes, $value);
+	echo ("<TD>\n");
+	echo ("</TR>\n");	
+    }
+}
+$db->free_result($result_meta);
+?>
 </table>
 
 <INPUT type="hidden" name="vid" value="<?php echo $vid; ?>">

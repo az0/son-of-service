@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.2 2003/10/24 14:34:29 andrewziem Exp $
+ * $Id: import.php,v 1.3 2003/10/24 15:44:12 andrewziem Exp $
  *
  */
 
@@ -19,6 +19,7 @@ if (preg_match('/import.php/i', $_SERVER['PHP_SELF']))
 // to do
 // - could use a lot of improvements
 // - progress indicator
+// - multiple instances
 
 function import_legacy1()
 {
@@ -106,7 +107,7 @@ function import_legacy2()
 	    if (levenshtein($h, $f) < 2)
 		$selected = ' SELECTED';
 		else $selected = '';
-	    echo ("<OPTION".$selected." value="$i">$h</OPTION>\n");
+	    echo ("<OPTION".$selected." value=\"$i\">$h</OPTION>\n");
 	}
 	echo ("</SELECT>\n");
 	echo ("</TD>\n");
@@ -124,9 +125,11 @@ function import_legacy2()
     
 } /* import_legacy2() */
 
+
 function import_legacy3()
 {
     global $importable_fields;
+    global $db;
     
         
     // gather and validate form input
@@ -135,13 +138,16 @@ function import_legacy3()
     
     foreach ($_POST as $pk=>$pv)
     {
+	// value must be numeric
+	// key must be defined in importable_fields
+	
 	if (is_numeric($pv) and array_search($pk, $importable_fields))
 	{
 	    $import_map[$pv] = intval($pk);
 	}
     }
     
-    if (is_empty($import_map))
+    if (empty($import_map))
     {
 	process_user_error("Please define one or more fields to import.");
 	die();
@@ -165,13 +171,17 @@ function import_legacy3()
 	return;
     }
     
-    // Does import map still make sense with this file?
+    // Sanity check: number of columns >= maximum column mapped
+    
+    $sql_names = array();
     
     $max_column_i = 0;
-    foreach ($import_map as $imk => $impv)
+    
+    foreach ($import_map as $imk => $imv)
     {
 	if ($imk > $max_column_i)
 	    $max_column_i =  $imk;
+	$sql_names[] = $imk;
     }
     
     if ($imk > count($header))
@@ -181,9 +191,72 @@ function import_legacy3()
     }
     
     // Import
+    
+    $lc = 0; // line counter
+    $ic = 0; // import counter
+    
+    while (FALSE != ($row = fgetcsv($f, 1000, ",")))
+    {
+	$lc++;
+	
+	if (count($row) != count($header))
+	{
+	    process_user_error("Number of columns in line $lc does not match number of columns in header.");
+	}
+	else
+	{
+	    $sql_values = array();
+	    
+	    foreach ($sql_names as $n)
+	    {
+		// sanitize file input
+		
+		$sql_values[] = $db->escape_string(htmlentities($row[$import_map[$n]]));
+	    }
+	    
+	    // build SQL INSERT query
+	    
+	    $sql = "INSERT INTO volunteers ";
+	    
+	    $i = 0;
+	    
+	    foreach  ($sql_names as $sv)
+	    {
+		$i++;
+		if (1 == $i)
+		{
+		    $sql .= '(';
+		}	
+		else
+		{
+		    $sql .= ',');
+		}
+		$sql .= $sv;
+	    }
+	    
+	    $sql .= ')';
+	    
+	    $i = 0;
+	    
+	    foreach  ($sql_values as $sv)
+	    {
+		$i++;
+		if (1 == $i)
+		{
+		    $sql .= '(';
+		}	
+		else
+		{
+		    $sql .= ',');
+		}
+		$sql .= "'".$sv."'";
+	    }
 
-
+	    echo $sql;
+	}
+    }
 } /* import_legacy3() */
+
 
 function import_legacy()
 {
@@ -197,8 +270,6 @@ function import_legacy()
 	import_legacy3();
     }
     else
-    
-
     {
 	import_legacy1();
     }
