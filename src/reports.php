@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.10 2004/03/11 03:10:53 andrewziem Exp $
+ * $Id: reports.php,v 1.11 2004/08/28 15:04:58 andrewziem Exp $
  *
  */
 
@@ -48,6 +48,9 @@ if (array_key_exists('report_hours', $_REQUEST))
 else
 if (array_key_exists('report_active_volunteers', $_REQUEST))
     report_active_volunteers();
+else
+if (array_key_exists('report_volunteers_by_skill', $_REQUEST))
+    report_volunteers_by_skill();
 else
 reports_menu();
 
@@ -100,7 +103,22 @@ function report_display($title, $result, $type)
 	    echo ("<TR>\n");
 	    foreach ($fields as $field)
 	    {
-		echo ("<TD>".$row[$field]."</TD>\n");
+		echo ("<TD>");
+		if ('volunteer_id' == $field)
+		{
+		    echo ("<a href=\"../volunteer/?vid=" . $row[$field] . "\">");
+		}
+		if (0 == strlen(trim($row[$field])))
+		{
+		    $row[$field] = '&nbsp';
+		}
+		echo ($row[$field]);
+		if ('volunteer_id' == $field)
+		{
+		    echo ("</a>");
+		}
+		
+		echo ("</TD>\n");
 	    }
 	    echo ("</TR>\n");
 	} elseif ('csv' == $type)
@@ -118,8 +136,6 @@ function report_display($title, $result, $type)
 	
 	echo ("<P><A href=\"$url&download=1\">Download CSV</A>\n");
     }
-    
-    
 } /* report_display() */
 
 function report_hours()
@@ -262,6 +278,78 @@ function report_active_volunteers()
     
 } /* report_active_volunteers() */
 
+function report_volunteers_by_skill()
+// this is fairly similar to just searching for volunteers by a skill
+{
+    global $db;
+    
+    
+    // validate
+    
+    $errors_found = 0;
+    
+    $string_id = intval($_REQUEST['string_id']);
+    if ('any' == $_REQUEST['string_id'])
+    {
+	$string_id = 'any';
+    }
+    else
+    {
+        if (!$string_id > 0)
+        {
+    	    process_user_error(_("Please choose a skill."));
+	    $errors_found++;
+        }
+    }
+        
+    if ($errors_found)
+    {
+	reports_menu();
+	return;
+    }
+    
+    // query
+    
+    if (is_integer($string_id))
+    {
+	// one skill
+        $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, volunteers.email_address as email_address, strings.s as skill " .
+	"FROM volunteers " .
+	"LEFT JOIN volunteer_skills ON volunteers.volunteer_id = volunteer_skills.volunteer_id " .
+	"LEFT JOIN strings ON strings.string_id = volunteer_skills.string_id " .
+	"WHERE volunteer_skills.string_id = $string_id " .
+	"ORDER BY volunteers.volunteer_id";
+    }
+    else
+    {
+	// all skills
+	// todo: how to get multiple skill names in one SQL records?
+	process_system_error("Not yet implemented");
+    }
+    $result = $db->SelectLimit($sql, 30);
+    
+    if (!$result)
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    } elseif (0 == $result->RecordCount())
+    {
+	process_user_notice("No data available for given critiera.");
+    }
+    else
+    {
+	// display
+	if (array_key_exists('download',$_REQUEST))
+	{
+    	    report_display("Volunteers by skill", $result, 'csv');
+	}
+	else
+	{
+    	    report_display("Volunteers by skill", $result, 'html');	    
+	}
+    }
+    
+} /* report_volunteers_by_skill() */
+
 
 function reports_menu()
 {
@@ -311,6 +399,35 @@ function reports_menu()
     echo ("<BR><INPUT type=\"submit\" name=\"report_active_volunteers\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
+
+
+    echo ("<FIELDSET>\n");
+    echo ("<LEGEND>List of volunteers by skill</LEGEND>\n");
+    echo ("<FORM method=\"get\" action=\"reports.php\">\n");
+    $sql = "SELECT * FROM strings WHERE type = 'skill'";
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+	die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+    else
+    {
+	echo ("<SELECT name=\"string_id\">\n");
+	echo ("<OPTION>--Skill</OPTION>\n");
+	echo ("<OPTION value=\"any\">"._("Any")."</OPTION>\n");	
+	while (!$result->EOF)
+	{
+	    $row = $result->fields;
+	    echo ("<OPTION value=\"".$row['string_id']."\">".$row['s']."</OPTION>\n");
+	    $result->MoveNext();
+	}
+	echo ("</SELECT>\n");
+    }
+    echo ("<BR><INPUT type=\"submit\" name=\"report_volunteers_by_skill\" value=\""._("Make report")."\">\n");
+    echo ("</FORM>\n");
+    echo ("</FIELDSET\n");
+     
+   
 
     if (!array_key_exists('download', $_REQUEST))
     {
