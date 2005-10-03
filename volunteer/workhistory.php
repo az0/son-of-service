@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.22 2004/03/11 03:10:53 andrewziem Exp $
+ * $Id: workhistory.php,v 1.23 2005/10/03 20:23:09 andrewziem Exp $
  *
  */
  
@@ -144,13 +144,19 @@ function volunteer_work_history_save($mode)
     {
 	$sql = "INSERT INTO work ".
 	    "(date, hours, volunteer_id, category_id, uid_added, dt_added, dt_modified, uid_modified, memo, quality) ".
-	    "VALUES ('$date', '$hours', $vid, $category_id, ".get_user_id().", now(), uid_added, dt_modified, $memo, $quality)"; 
+	    "VALUES ('$date', '$hours', $vid, $category_id, ".get_user_id().", now(), now(), uid_added, $memo, $quality)"; 
     }
     else
     {
 	$sql = "UPDATE work ".
-	    "SET date = '$date', hours = '$hours', category_id = $category_id, memo = $memo, quality = '$quality', uid_modified = ".get_user_id().", dt_modified = now() ".
-	    "WHERE work_id = $work_id AND volunteer_id = $vid LIMIT 1";
+	"SET date = '$date', " .
+	"hours = '$hours', " .
+	"category_id = $category_id, " .
+	"memo = $memo, " .
+	"quality = '$quality', " .
+	"uid_modified = ".get_user_id().", " .
+	"dt_modified = now() " .
+	"WHERE work_id = $work_id AND volunteer_id = $vid LIMIT 1";
     }
     
     if (!$errors_found)

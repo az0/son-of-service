@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.14 2004/03/12 15:57:32 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.15 2005/10/03 20:23:09 andrewziem Exp $
  *
  */
 
@@ -71,8 +71,8 @@ function volunteer_add()
     $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());      
    
     $sql = 'INSERT INTO volunteers '.
-	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,email_address, dt_added, uid_added) '.
-	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $email_address, now(), ".get_user_id().")";
+	    '(prefix, first,middle,last,organization,street,city,state,postal_code,country,email_address, dt_added, uid_added, dt_modified, uid_modified) '.
+	    "VALUES ($prefix, $first, $middle, $last, $organization, $street, $city, $state, $postal_code, $country, $email_address, now(), ".get_user_id().", now(), uid_added)";
 
     $result = $db->Execute($sql);
 

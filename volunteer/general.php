@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.16 2004/03/12 15:57:33 andrewziem Exp $
+ * $Id: general.php,v 1.17 2005/10/03 20:23:09 andrewziem Exp $
  *
  */
 
@@ -182,7 +182,8 @@ function volunteer_save()
 	"state=$state, " .
 	"postal_code=$postal_code, " .
 	"country=$country, " .	
-	"email_address=$email_address " .
+	"email_address=$email_address, " .
+	"dt_modified = now() " .
 	"WHERE volunteer_id = $vid";
 
     // update primary volunteer record
