@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved. 
+ * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved. 
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.13 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: import.php,v 1.14 2005/10/03 21:25:40 andrewziem Exp $
  *
  */
 
@@ -25,6 +25,9 @@ if (preg_match('/import.php/i', $_SERVER['PHP_SELF']))
 function import_legacy1()
 {
 ?>
+
+<P class="instructionstext">Use this feature to import names and addresses
+from a spreadsheet or other database.</P>
 
 <P class="instructionstext">Specify the filename of a file to upload and
 import.  The file must be a comma-delimited file (CSV) and the first row

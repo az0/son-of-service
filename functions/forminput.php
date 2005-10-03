@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Functions for cleaning and validating source input.
  *
- * $Id: forminput.php,v 1.3 2004/03/03 02:42:51 andrewziem Exp $
+ * $Id: forminput.php,v 1.4 2005/10/03 21:25:40 andrewziem Exp $
  *
  */
 

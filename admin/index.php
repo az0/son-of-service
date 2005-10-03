@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.24 2004/05/01 20:31:46 andrewziem Exp $
+ * $Id: index.php,v 1.25 2005/10/03 21:25:40 andrewziem Exp $
  *
  */
 
@@ -125,6 +125,7 @@ function admin_menu()
  <LI><A href="./?strings=0">Strings: relationship types, skill types, work categories</A>
  <LI><A href="./?add_custom_field=0">Add custom field</A> 
  <LI><A href="./?import_legacy=0">Import legacy data</A>
+ <LI><A href="./?import_ncoa=0">Import USPS National Change of Address (NCOA)</A>
 <!-- <LI>Download database dump in SQL format -->
  <LI>Download mailing list [<A href="./?download_mailing_list&type=postal&who=all">all</A>]</LI>
  <LI><A href="./?system_check=0">System check</A> 
@@ -207,13 +208,23 @@ if (array_key_exists('update_volunteer_stats', $_GET))
     admin_menu();
 }        
 else
-// IMPORT
+// IMPORT LEGACY DATA
 if (array_key_exists('import_legacy', $_REQUEST))
 {
     require_once('import.php');
     import_legacy();
 }        
 else
+// IMPORT NCOA DATA
+if (array_key_exists('import_ncoa', $_REQUEST))
+{
+    require_once('import_ncoa.php');
+    import_ncoa();
+}        
+
+else
+
+
 // CUSTOM FIELDS
 if (array_key_exists('add_custom_field', $_REQUEST))
 {

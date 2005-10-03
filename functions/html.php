@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2004 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.17 2004/03/14 18:44:19 andrewziem Exp $
+ * $Id: html.php,v 1.18 2005/10/03 21:25:40 andrewziem Exp $
  *
  */
 
