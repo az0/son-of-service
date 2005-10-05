@@ -7,7 +7,7 @@
  *
  * Import USPS National Change of Address (NCOA) data.
  *
- * $Id: import_ncoa.php,v 1.1 2005/10/05 15:58:05 andrewziem Exp $
+ * $Id: import_ncoa.php,v 1.2 2005/10/05 19:07:42 andrewziem Exp $
  *
  */
 
@@ -283,7 +283,8 @@ function import_ncoa2()
 			" street = $street , " .
 			" city = $city , " .
 			" state = $state , " .
-			" postal_code = $postal_code ";
+			" postal_code = $postal_code " .
+			" WHERE volunteer_id = $volunteer_id ";
 
 		$sql_notes = "INSERT INTO notes " .
 			" (dt, volunteer_id, message, quality, uid_added, uid_modified, dt_modified) " .
