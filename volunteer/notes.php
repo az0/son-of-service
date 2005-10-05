@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: notes.php,v 1.21 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: notes.php,v 1.22 2005/10/05 15:32:36 andrewziem Exp $
  *
  */
 
@@ -278,7 +278,8 @@ function note_addedit()
 		    "quality = $quality, ".
 		    "reminder_date = '$reminder_date', ".
 		    "acknowledged = 0, " .
-		    "dt_modified = now() " .
+		    "dt_modified = now(), " .
+		    "uid_modified = " . get_user_id() . ", " .
 		    "WHERE note_id = $note_id";
 	}
 	else
