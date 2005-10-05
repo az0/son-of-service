@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.14 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: import.php,v 1.15 2005/10/05 15:33:15 andrewziem Exp $
  *
  */
 
@@ -40,6 +40,7 @@ must contain column heading names.</P>
 <INPUT type="hidden" name="MAX_FILE_SIZE" value="2000000">
 File name <INPUT type="file" name="userfile">
 <INPUT type="submit" value="Send file">
+</FORM>
 <?php
 } /* import_legacy1() */
 
@@ -173,7 +174,7 @@ function import_legacy3()
     if (empty($import_map))
     {
 	process_user_error(_("Please define one or more fields to import."));
-	die();
+	return;
     }
     
     // open file to be imported
@@ -213,7 +214,7 @@ function import_legacy3()
     {
 	//this shouldn't happen
 	process_user_error("The specified import map does not match the import file.");
-	die();
+	return;
     }
     
     // Import
@@ -231,7 +232,7 @@ function import_legacy3()
 	{
 	    // this shouldn't happen
 	    process_user_error("Number of columns in line $lc does not match number of columns in header.");
-	    die();
+	    return;
 	}
 	else
 	{
