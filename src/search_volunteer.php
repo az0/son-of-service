@@ -5,14 +5,15 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.27 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.28 2005/10/07 04:34:16 andrewziem Exp $
  *
  */
 
 
 
-
 // todo: add to found set (vs replace) ?
+// todo: found set management
+// todo: e-mail found set
 // todo: advanced searching (e.g., not, match exact)
 // todo: query manager for saving queries
 // todo: handle multiple tables better
