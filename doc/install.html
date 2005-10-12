@@ -1,75 +1,57 @@
-<HTML>
-<TITLE>Installation: Son of Service</TITLE>
-<BODY>
-
-
-<H2>Requirements</H2>
-<UL>
- <LI><A href="http://www.php.net">PHP</A> (and appropriate PHP module for your RDBMS)
- <LI>RDBMS supported by AdoDB (such a <A href="http://www.mysql.org">MySQL</A>)
- <LI>Web server (such as <A href="http://httpd.apache.org">Apache</A>)
- </UL>
-
-
- 
-<H2>Quick installation procedure</H2>
-
-<P><I>The procedure varies depending on your system.</I></P>
-
-<P>Change directory to your web tree.</P>
-
-<P><CODE>cd /var/www/html</CODE> (or <CODE>/home/httpd/html/</CODE> or wherever).</P>
-
-<P>Unpack <A href="http://sos.sourceforge.net">the latest SOS</A> the
-appropriate command.  Some examples are below.</P>
-
-  <UL>
-   <LI><CODE>tar zxvf sos-0.1.0.tar.gz</CODE> (for .tar.gz)
-   <LI><CODE>tar jxvf sos-0.1.0.tar.bz2</CODE> (for .tar.bz2)
-   <LI><CODE>unzip sos-0.1.0.zip</CODE> (for .zip using Infozip)
-   </UL>
-   
-<P>Initialize the database structure and initial data.  The example
-below is for MySQL using the command line.  Use your favorite, 
-appropriate database client.</P>
-
-   <UL>
-    <LH>MySQL (command line):</LH>
-    <LI><CODE>mysqladmin -u root -p create sos</CODE>
-    <LI><CODE>cd sql</CODE>
-    <LI><CODE>mysql -u root -p sos &lt; mysql-structure.sql</CODE>
-    <LI><CODE>mysql -u root -p sos &lt; mysql-data.sql</CODE>
-    </UL>
-    
-<P>Tip: For security reasons use a separate database account for SOS
-rather than sharing the account for all databases.</P>
-
-<P>Configure SOS settings.  Edit include/config.php with a text
-editor.</P>
-
-<P>Make the directory data writable by your web server.</P>
-
-<UL>
- <LH>Example Linux commands:
- <LI><CODE>chgrp apache data</CODE>
- <LI><CODE>chmod 0770 data</CODE>
- </UL>
-  
-<P>Test with web browser.  Login with user name admin and password
-admin.  Change the default password.</P>
-
-
-<H2>Support</H2>
-
-<P>Visit <A href="http://sos.sourceforge.net">sos.sourceforge.net</A>
-for support.</P>
-
-
-<HR>
-<P>Copyright &copy; 2003-2005 by Andrew Ziem.  All rights reserved.  Provided
-to you under the GNU Free Documentation License.</P>
-
-<P><EM>$Id: install.html,v 1.3 2005/10/03 21:25:40 andrewziem Exp $</EM></P>
-
-</BODY>
-</HTML>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+<meta name="generator" content=
+"HTML Tidy for Linux/x86 (vers 1st December 2004), see www.w3.org">
+<title>Installation: Son of Service</title>
+</head>
+<body>
+<h2>Requirements</h2>
+<ul>
+<li><a href="http://www.php.net">PHP</a> (and appropriate PHP module for your
+RDBMS)</li>
+<li>RDBMS supported by AdoDB (such a <a href=
+"http://www.mysql.org">MySQL</a>)</li>
+<li>Web server (such as <a href="http://httpd.apache.org">Apache</a>)</li>
+</ul>
+<h2>Quick installation procedure</h2>
+<p><i>The procedure varies depending on your system.</i></p>
+<p>Change directory to your web tree.</p>
+<p><code>cd /var/www/html</code> (or <code>/home/httpd/html/</code> or
+wherever).</p>
+<p>Unpack <a href="http://sos.sourceforge.net">the latest SOS</a> the
+appropriate command. Some examples are below.</p>
+<ul>
+<li><code>tar zxvf sos-0.1.0.tar.gz</code> (for .tar.gz)</li>
+<li><code>tar jxvf sos-0.1.0.tar.bz2</code> (for .tar.bz2)</li>
+<li><code>unzip sos-0.1.0.zip</code> (for .zip using Infozip)</li>
+</ul>
+<p>Initialize the database structure and initial data. The example below is for
+MySQL using the command line. Use your favorite, appropriate database client.
+Following are commands for the command-line mysql client:</p>
+<ul>
+<li><code>mysqladmin -u root -p create sos</code></li>
+<li><code>cd sql</code></li>
+<li><code>mysql -u root -p sos &lt; mysql-structure.sql</code></li>
+<li><code>mysql -u root -p sos &lt; mysql-data.sql</code></li>
+</ul>
+<p>Tip: For security reasons use a separate database account for SOS rather
+than sharing the account for all databases.</p>
+<p>Configure SOS settings. Edit include/config.php with a text editor.</p>
+<p>Make the directory data writable by your web server. Following are example
+Linux commands:</p>
+<ul>
+<li><code>chgrp apache data</code></li>
+<li><code>chmod 0770 data</code></li>
+</ul>
+<p>Test with web browser. Login with user name admin and password admin. Change
+the default password.</p>
+<h2>Support</h2>
+<p>Visit <a href="http://sos.sourceforge.net">sos.sourceforge.net</a> for
+support.</p>
+<hr>
+<p>Copyright &copy; 2003-2005 by Andrew Ziem. All rights reserved. Provided to
+you under the GNU Free Documentation License.</p>
+<p><em>$Id: install.html,v 1.4 2005/10/12 03:16:15 andrewziem Exp $</em></p>
+</body>
+</html>
