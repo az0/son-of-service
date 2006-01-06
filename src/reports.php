@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.13 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: reports.php,v 1.14 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
 
@@ -113,7 +113,7 @@ class report_display
 				}
 				if (0 == strlen(trim($row[$field])))
 				{
-		    			$row[$field] = '&nbsp';
+		    			$row[$field] = '&nbsp;';
 				}
 				echo ($row[$field]);
 				if ('volunteer_id' == $field)

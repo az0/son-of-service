@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.18 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: html.php,v 1.19 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
 
@@ -126,12 +126,12 @@ if (preg_match('/\/volunteer\//i', $_SERVER['PHP_SELF']) and (array_key_exists('
    echo ("<DIV class=\"tab_area\">\n");    
    echo ("This volunteer \n");
    echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid\">"._("Summary")."</A>\n");         
-   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=general\">"._("General")."</A>\n");      
-   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=skills\">"._("Skills")."</A>\n");
-   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=availability\">"._("Availability")."</A>\n");      
-   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=workhistory\">"._("Work history")."</A>\n");   
-   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=notes\">"._("Notes")."</A>\n");      
-   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&menu=relationships\">"._("Relationships")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=general\">"._("General")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=skills\">"._("Skills")."</A>\n");
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=availability\">"._("Availability")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=workhistory\">"._("Work history")."</A>\n");   
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=notes\">"._("Notes")."</A>\n");      
+   echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=relationships\">"._("Relationships")."</A>\n");      
    echo ("</DIV>\n");
 
 }
@@ -146,6 +146,8 @@ echo ("<HR style=\"margin-top:0pt\">\n");
 
 function make_html_begin($title, $options)
 {
+    echo ("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"");
+    echo ("   \"http://www.w3.org/TR/html4/loose.dtd\">\n");
     echo ("<HTML>\n");
     echo ("<HEAD>\n");
     echo ("<TITLE>$title</TITLE>");
@@ -259,7 +261,7 @@ function nbsp_if_null($s)
 {
     if (NULL == $s or 0 == strlen($s))
     {
-	return "&nbsp";
+	return "&nbsp;";
     }
     
     return $s;

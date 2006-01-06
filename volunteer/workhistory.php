@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.24 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: workhistory.php,v 1.25 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
  
@@ -393,9 +393,9 @@ if ('add' == $mode)
 else
 {
     echo ("<INPUT type=\"submit\" name=\"button_update_work_history\" value=\""._("Update")."\">\n");
-    echo ("</FORM>\n");
 }
 
+echo ("</FORM>\n");
 }
 
 ?>

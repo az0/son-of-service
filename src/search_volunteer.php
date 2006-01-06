@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.28 2005/10/07 04:34:16 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.29 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
 
@@ -419,9 +419,9 @@ function volunteer_search_display($sql, $offset, $results_per_page)
 
 	    if ($offset + $results_per_page < $total_results)
 	    {
-    		$url = make_url($_REQUEST, array('offset', 'button_search'));
-	        echo ("<A href=\"search_volunteer.php$url&offset=".($offset+$results_per_page)."\">Next</A>\n");
-	        echo ("<A href=\"search_volunteer.php$url&offset=".($total_results - ($total_results % $results_per_page))."\">".gettext("Last")."</A>\n");	    
+    		$url = urlencode(make_url($_REQUEST, array('offset', 'button_search')));
+	        echo ("<A href=\"search_volunteer.php$url&amp;offset=".($offset+$results_per_page)."\">Next</A>\n");
+	        echo ("<A href=\"search_volunteer.php$url&amp;offset=".($total_results - ($total_results % $results_per_page))."\">".gettext("Last")."</A>\n");	    
 	    }
 	    else
 	    {
@@ -442,7 +442,7 @@ function volunteer_search_display($sql, $offset, $results_per_page)
 	    	    echo ("<INPUT type=\"hidden\" name=\"$k\" value=\"$v\">\n");
 		}
 	    }
-	    echo ("<SELECT name=\"sortby\"");
+	    echo ("<SELECT name=\"sortby\">");
 	    foreach ($cm->getNames() as $c)
 	    {
 	        echo ("<OPTION>$c</OPTION>\n");

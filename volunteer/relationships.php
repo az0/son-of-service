@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.20 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: relationships.php,v 1.21 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
 
@@ -33,7 +33,7 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
     {
         $row['volunteer2_name'] = make_volunteer_name($volunteer2_row);
 	
-	echo ("<LI>".$row['volunteer2_name']." [<A href=\"?vid=".$row['volunteer2_id']."\">account</A>, <A href=\"?vid=".$row['volunteer2_id']."&menu=relationships\">relationships</A>], ".$row['rname']."\n");
+	echo ("<LI>".$row['volunteer2_name']." [<A href=\"?vid=".$row['volunteer2_id']."\">account</A>, <A href=\"?vid=".$row['volunteer2_id']."&amp;menu=relationships\">relationships</A>], ".$row['rname']."\n");
 	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $row['volunteer2_id'], NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{
 	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");
@@ -137,7 +137,7 @@ function relationships_view($brief = FALSE)
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	echo ("<UL>\n");
 	$volunteer = volunteer_get($vid, $errstr);
-	echo ("<LH>".make_volunteer_name($volunteer)."</LH>\n");
+	echo ("<lh>".make_volunteer_name($volunteer)."</lh>\n");
 		
 	while (!$result->EOF)
 	{
@@ -335,7 +335,7 @@ function relationship_add()
     
     if ($errors_found)
     {
-	redirect("?vid=$vid&menu=relationships");
+	redirect("?vid=$vid&amp;menu=relationships");
 	return FALSE;
     }    
     
@@ -361,7 +361,7 @@ function relationship_add()
     }
     
     // redirect client to non-POST page
-    redirect("?vid=$vid&menu=relationships");
+    redirect("?vid=$vid&amp;menu=relationships");
     
 } /* relationship_add() */
 
@@ -398,7 +398,7 @@ function relationship_delete()
     
     if ($errors_found)
     {
-        redirect("?vid=$vid&menu=relationships");
+        redirect("?vid=$vid&amp;menu=relationships");
     }
     
     $sql1 = "DELETE FROM relationships WHERE volunteer1_id = $vid1 and volunteer2_id = $vid2";
@@ -423,7 +423,7 @@ function relationship_delete()
 	}
     }
     
-    redirect("?vid=$vid1&menu=relationships");
+    redirect("?vid=$vid1&amp;menu=relationships");
 } /* relationship_delete() */
 
 ?>

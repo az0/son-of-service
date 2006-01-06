@@ -7,7 +7,7 @@
  *
  * General information about Son of Service.
  *
- * $Id: about.php,v 1.5 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: about.php,v 1.6 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
 
@@ -25,7 +25,7 @@ make_nav_begin();
 
 <H2>About Son of Service</H2>
 
-<P>Son of Service, Copyright &copy 2003-2005 Andrew Ziem.</P>
+<P>Son of Service, Copyright &copy; 2003-2005 Andrew Ziem.</P>
 
 <P>SOS comes with ABSOLUTELY NO WARRANTY.  This is free software, and
 you may redistribute it under certain conditions.  For details please

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.25 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: index.php,v 1.26 2006/01/06 22:21:30 andrewziem Exp $
  *
  */
 
@@ -104,8 +104,6 @@ function download_mailing_list()
 	
     }
     
-    // <LI>Download mailing list [<A href="admin.php?download_mailing_list=1&type=postal&who=all">all</A>]</LI>
-    
     // todo: finish
 
 }
@@ -127,7 +125,7 @@ function admin_menu()
  <LI><A href="./?import_legacy=0">Import legacy data</A>
  <LI><A href="./?import_ncoa=0">Import USPS National Change of Address (NCOA)</A>
 <!-- <LI>Download database dump in SQL format -->
- <LI>Download mailing list [<A href="./?download_mailing_list&type=postal&who=all">all</A>]</LI>
+ <LI>Download mailing list [<A href="./?download_mailing_list&amp;type=postal&amp;who=all">all</A>]</LI>
  <LI><A href="./?system_check=0">System check</A> 
  <LI><A href="./?update_volunteer_stats=0">Update volunteer statistics</A> 
 
