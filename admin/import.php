@@ -7,7 +7,7 @@
  *
  * Import legacy data.
  *
- * $Id: import.php,v 1.15 2005/10/05 15:33:15 andrewziem Exp $
+ * $Id: import.php,v 1.16 2006/01/06 22:04:24 andrewziem Exp $
  *
  */
 
@@ -45,7 +45,7 @@ File name <INPUT type="file" name="userfile">
 } /* import_legacy1() */
 
 // 'phone_home', 'phone_work', 'phone_cell'
-$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'postal_code', 'country', 'email_address');
+$importable_fields = array('prefix', 'first', 'middle', 'last', 'suffix', 'organization', 'street', 'city', 'state', 'postal_code', 'country', 'email_address','phone_home','phone_work','phone_cell');
 
 function import_legacy2()
 {
@@ -57,14 +57,10 @@ function import_legacy2()
     
     $_SESSION['import']['dname'] = $dname;
     
-    echo ("<P>Debug: from ". $_FILES['userfile']['tmp_name']. " to $dname</P>");
-    print_r($_FILES);
+//    echo ("<P>Debug: from ". $_FILES['userfile']['tmp_name']. " to $dname</P>");
+    //print_r($_FILES);
     
-    if (@move_uploaded_file($_FILES['userfile']['tmp_name'], $dname))
-    {
-    
-    }
-    else
+    if (!@move_uploaded_file($_FILES['userfile']['tmp_name'], $dname))
     {
 	process_system_error("Unable to move uploaded file.");
 	return;
@@ -155,9 +151,7 @@ function import_legacy3()
         
     // gather and validate form input
     
-    $import_map = array();
-    
-    //    print_r($_POST);
+    $import_map = array(); // user-defined import map; key is sql_name, value is column position in sql
     
     foreach ($_POST as $pk=>$pv)
     {
@@ -197,19 +191,34 @@ function import_legacy3()
     
     // Sanity check: number of columns >= maximum column mapped
     
-    $sql_names = array();
+    $sql_names_volunteers = array(); // value is sql name; key refers to import_map
+    $sql_names_phones = array(); // value is sql name; key refers to import_map
     
     $max_column_i = 0;
     
 //    echo ("import map <PRE>"); print_r($import_map); echo ("</PRE>");
     
+    $i = 0;
+
     foreach ($import_map as $imk => $imv)
     {
 	if ($imk > $max_column_i)
 	    $max_column_i =  $imk;
-	$sql_names[] = $imk;
+	// phone numbers go into separate table, so exclude for now
+	if (0 === strpos($imk, 'phone_'))
+	{
+		$sql_names_phones[$i] = $imk;
+	}
+	else
+	{
+		$sql_names_volunteers[$i] = $imk;
+	}
+	$i++;
     }
-    
+
+//  echo "<pre>sql_names_volunteers\n"; print_r($sql_names_volunteers); echo "</pre>";
+//  echo "<pre>sql_names_phones\n"; print_r($sql_names_phones); echo "</pre>";
+
     if (max($import_map) > count($header))
     {
 	//this shouldn't happen
@@ -222,8 +231,9 @@ function import_legacy3()
     $lc = 0; // line counter
     $ic = 0; // import counter
     
-//    print_r($header);
-    
+    $rs_volunteer = $db->Execute("SELECT * FROM volunteers WHERE 1 = 0");
+    $rs_phone = $db->Execute("SELECT * FROM phone_numbers WHERE 1 = 0");
+
     while (FALSE != ($row = fgetcsv($f, 1000, ",")))
     {
 	$lc++;
@@ -236,54 +246,17 @@ function import_legacy3()
 	}
 	else
 	{
-	    $sql_values = array();
+            $volunteer_record = array(); // associative array where key is SQL name and value is SQL value
 	    
-	    foreach ($sql_names as $n)
+	    foreach ($sql_names_volunteers as $n)
 	    {
-		// sanitize file input
-		$sql_values[] = $db->qstr(htmlentities($row[$import_map[$n] - 1]), get_magic_quotes_gpc());
+		$volunteer_record[$n] = $row[$import_map[$n] - 1];
 	    }
-	    
-	    // build SQL INSERT query
-	    
-	    $sql = "INSERT INTO volunteers ";
-	    
-	    $i = 0;
-	    
-	    foreach  ($sql_names as $sv)
-	    {
-		$i++;
-		if (1 == $i)
-		{
-		    $sql .= '(';
-		}	
-		else
-		{
-		    $sql .= ',';
-		}
-		$sql .= $sv;
-	    }
-	    
-	    $sql .= ') VALUES ';
-	    
-	    $i = 0;
-	    
-	    foreach  ($sql_values as $sv)
-	    {
-		$i++;
-		if (1 == $i)
-		{
-		    $sql .= '(';
-		}	
-		else
-		{
-		    $sql .= ',';
-		}
-		$sql .= "'".$sv."'";
-	    }
-	    
-	    $sql .= ')';
 
+            $sql = $db->GetInsertSQL($rs_volunteer, $volunteer_record);    
+
+//          echo "$sql<br>";
+	
 	    $result = $db->Execute($sql);
 	    
 	    if (!$result)
@@ -293,6 +266,29 @@ function import_legacy3()
 	    else
 	    {
 		$ic++;
+
+//		echo "debug insert id = " . $db->Insert_ID() . "<br>";
+
+		$phone_record = array('volunteer_id' => $db->Insert_ID());
+                foreach ($sql_names_phones as $n)
+	        {
+			$v = $row[$import_map[$n] - 1];
+//			echo "phone $v <br>\n";
+			if (strlen(trim($v)) > 0 and preg_match('/^phone_(.+)$/', $n, $matches))
+			{
+				$phone_record['memo'] = ucfirst($matches[1]);
+				$phone_record['number'] = $v;
+				$sql_phone = $db->GetInsertSQL($rs_phone, $phone_record);
+//				echo "phone $sql_phone <br>\n";
+				$result_phone = $db->Execute($sql_phone);
+
+				if (!$result_phone)
+				{
+					die_message(MSG_SYSTEM_ERROR, "Unable to add phone number: line $lc", __FILE__, __LINE__, $sql_phone);
+				}
+			}
+		}
+		
 	    }
 	}
     }

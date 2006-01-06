@@ -7,7 +7,7 @@
  *
  * Functions for cleaning and validating source input.
  *
- * $Id: forminput.php,v 1.4 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: forminput.php,v 1.5 2006/01/06 22:04:24 andrewziem Exp $
  *
  */
 
@@ -94,10 +94,10 @@ function sos_strip_tags($s)
 {
     global $html_security_level;
     
-    if (3 == $html_security_level or (!$_SESSION['user']['access_admin'] and 2 == $html_security_level))
+    if (3 == $html_security_level or (!$_SESSION['sos_user']['access_admin'] and 2 == $html_security_level))
 	return strip_tags($s);
 	
-    if (1 == $html_security_level or ($_SESSION['user']['access_admin'] and 2 == $html_security_level))
+    if (1 == $html_security_level or ($_SESSION['sos_user']['access_admin'] and 2 == $html_security_level))
 	return strip_tags($s, '<br><b><i><hr><u>');
 	
     assert(FALSE);	

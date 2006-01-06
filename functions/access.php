@@ -7,7 +7,7 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.6 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: access.php,v 1.7 2006/01/06 22:04:24 andrewziem Exp $
  *
  */
 
@@ -69,11 +69,11 @@ function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
     switch ($category)
     {
 	case PC_ADMIN:
-	    return ('1' == $_SESSION['user']['access_admin']);
+	    return ('1' == $_SESSION['sos_user']['access_admin']);
 	    break;
 	
 	case PC_VOLUNTEER:
-	    if (PT_READ == $type or (PT_WRITE == $type and 1 == $_SESSION['user']['access_change_vol']))
+	    if (PT_READ == $type or (PT_WRITE == $type and 1 == $_SESSION['sos_user']['access_change_vol']))
 	    {
 		return TRUE;
 	    }

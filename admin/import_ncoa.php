@@ -7,7 +7,7 @@
  *
  * Import USPS National Change of Address (NCOA) data.
  *
- * $Id: import_ncoa.php,v 1.2 2005/10/05 19:07:42 andrewziem Exp $
+ * $Id: import_ncoa.php,v 1.3 2006/01/06 22:04:24 andrewziem Exp $
  *
  */
 

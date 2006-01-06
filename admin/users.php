@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.20 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: users.php,v 1.21 2006/01/06 22:04:24 andrewziem Exp $
  *
  */
  
@@ -134,11 +134,12 @@ function user_save()
 	    	{
 	    	    // update session info
 		    $_SESSION['u'] = strip_tags($_POST['username']);
-		    $_SESSION['user']['username'] = $username;
-		    $_SESSION['user']['email'] = strip_tags($_POST['email']);
-		    $_SESSION['user']['personalname'] = strip_tags($_POST['personalname']);
-		    $_SESSION['user']['access_change_vol'] = $access_change_vol;
-		    $_SESSION['user']['access_admin'] = $access_admin;	    
+                    $_SESSION['sos_user'] = array();
+		    $_SESSION['sos_user']['username'] = $username;
+		    $_SESSION['sos_user']['email'] = strip_tags($_POST['email']);
+		    $_SESSION['sos_user']['personalname'] = strip_tags($_POST['personalname']);
+		    $_SESSION['sos_user']['access_change_vol'] = $access_change_vol;
+		    $_SESSION['sos_user']['access_admin'] = $access_admin;	    
 		    save_message(MSG_USER_NOTICE, _("The changes for your account are now in effect for this and future sessions."));
         	}
 		else
