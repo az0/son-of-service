@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.21 2006/01/06 22:21:30 andrewziem Exp $
+ * $Id: relationships.php,v 1.22 2006/01/11 05:51:34 andrewziem Exp $
  *
  */
 
@@ -233,7 +233,6 @@ function relationships_add_form()
     echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
     echo (_("Name")." <INPUT type=\"text\" name=\"volunteer2_name\">\n");
     echo ("<INPUT type=\"submit\" value=\""._("Search")."\">\n");
-    echo ("</SELECT>\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
     
