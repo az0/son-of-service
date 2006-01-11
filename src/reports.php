@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.14 2006/01/06 22:21:30 andrewziem Exp $
+ * $Id: reports.php,v 1.15 2006/01/11 05:47:36 andrewziem Exp $
  *
  */
 
@@ -138,7 +138,7 @@ class report_display
 			$url = make_url($_REQUEST, array());
 			// todo: request gives too much
 	
-			echo ("<P><A href=\"$url&download=1\">Download CSV</A>\n");
+			echo ("<P><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A>\n");
     		}
 	}
 }

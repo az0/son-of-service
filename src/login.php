@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.15 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: login.php,v 1.16 2006/01/11 05:47:36 andrewziem Exp $
  *
  */
 
@@ -100,7 +100,7 @@ if (isset($_POST['button_login']))
     $_SESSION['u'] = $_POST['u'];
     $_SESSION['u_auth'] = TRUE;
     $_SESSION['user_id'] = $user['user_id'];
-    $_SESSION['user'] = $user;
+    $_SESSION['sos_user'] = $user;
     
     $r = $db->Execute("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
     
