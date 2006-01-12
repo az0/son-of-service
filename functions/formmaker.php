@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.13 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: formmaker.php,v 1.14 2006/01/12 15:18:41 andrewziem Exp $
  *
  */
 
@@ -54,7 +54,7 @@ function render_form_field($type, $name, $attributes, $value)
 	    }
 	    else 
 	    {
-		$v =" VALUE=\"$value\" ";
+		$v =" VALUE=\"" . htmlentities($value) . "\" ";
 	    }
 	    if (empty($attributes['length']))
 	    {
@@ -90,7 +90,7 @@ function render_form_field($type, $name, $attributes, $value)
 	    $cols = intval($attributes['cols']);
 	    echo ("<TEXTAREA name=\"$name\" rows=\"$rows\" cols=\"$cols\">");
 	    if (0 < strlen(trim($value)))
-		echo $value;
+		echo htmlentities($value);
 	    echo ("</TEXTAREA>\n");
 	    break;
 	    
