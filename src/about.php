@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * General information about Son of Service.
  *
- * $Id: about.php,v 1.6 2006/01/06 22:21:30 andrewziem Exp $
+ * $Id: about.php,v 1.7 2006/01/12 02:00:36 andrewziem Exp $
  *
  */
 
@@ -25,7 +25,7 @@ make_nav_begin();
 
 <H2>About Son of Service</H2>
 
-<P>Son of Service, Copyright &copy; 2003-2005 Andrew Ziem.</P>
+<P>Son of Service, Copyright &copy; 2003-2006 Andrew Ziem.</P>
 
 <P>SOS comes with ABSOLUTELY NO WARRANTY.  This is free software, and
 you may redistribute it under certain conditions.  For details please

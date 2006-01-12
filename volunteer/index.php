@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2005 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.32 2005/10/03 21:25:40 andrewziem Exp $
+ * $Id: index.php,v 1.33 2006/01/12 02:01:25 andrewziem Exp $
  *
  */
 
