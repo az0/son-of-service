@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: general.php,v 1.19 2006/01/12 02:01:25 andrewziem Exp $
+ * $Id: general.php,v 1.20 2006/01/12 15:13:48 andrewziem Exp $
  *
  */
 
@@ -132,60 +132,44 @@ function volunteer_save()
     global $volunteer;
     global $db_cache_timeout;
     
-    
-
     // todo: validate
 
     // sanitize input
-
-    $organization = $db->qstr(htmlentities($_POST['organization']), get_magic_quotes_gpc());
-
-    $prefix = $db->qstr(htmlentities($_POST['prefix']), get_magic_quotes_gpc());
-    $first = $db->qstr(htmlentities($_POST['first']), get_magic_quotes_gpc());
-    $middle = $db->qstr(htmlentities($_POST['middle']), get_magic_quotes_gpc());
-    $last = $db->qstr(htmlentities($_POST['last']), get_magic_quotes_gpc());
-    $suffix = $db->qstr(htmlentities($_POST['suffix']), get_magic_quotes_gpc());
-
-    $street = $db->qstr(htmlentities($_POST['street']), get_magic_quotes_gpc());
-    $city = $db->qstr(htmlentities($_POST['city']), get_magic_quotes_gpc());
-    $state = $db->qstr(htmlentities($_POST['state']), get_magic_quotes_gpc());
-    $postal_code = $db->qstr(htmlentities($_POST['postal_code']), get_magic_quotes_gpc());
-    $country = $db->qstr(htmlentities($_POST['country']), get_magic_quotes_gpc());
-
-    $email_address = $db->qstr(htmlentities($_POST['email_address']), get_magic_quotes_gpc());
     
-    $vid = intval($_POST['vid']);
+    $volunteer_record = array();
+
+    $fields = array('organization', 'prefix', 'first', 'middle', 'last', 'suffix', 'street',
+    	'city', 'state', 'postal_code', 'country', 'email_address');
+	
+    foreach ($fields as $field)
+    {
+	$volunteer_record[$field] = $_POST[$field];  
+    }
+
+    $vid = intval($_POST['vid']);    
+    $volunteer_record['volunteer_id'] = $vid;    
+    
+    $errors_found = 0;    
     
     if (!has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
 	$errors_found++;
 	save_message(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }    
-    
+        
     if ($errors_found)
     {
         redirect("?vid=$vid&menu=general");    
 	return FALSE;
     }
     
-    // todo: portable LIMIT for UPDATE
-
-    $sql = "UPDATE volunteers SET " .
-	"organization=$organization, ".
-	"prefix=$prefix, " .
-	"first=$first, " .
-	"middle=$middle, " .
-	"last=$last, " .
-	"suffix=$suffix, " .
-	"street=$street, " .
-	"city=$city, " .
-	"state=$state, " .
-	"postal_code=$postal_code, " .
-	"country=$country, " .	
-	"email_address=$email_address, " .
-	"dt_modified = now() " .
-	"WHERE volunteer_id = $vid";
-
+    $rs_volunteers = $db->Execute("SELECT * FROM volunteers WHERE volunteer_id = $vid");
+    
+    $volunteer_record['dt_modified'] = $db->sysTimeStamp;
+    $volunteer_record['uid_modified'] = get_user_id();
+    
+    $sql = $db->GetUpdateSQL($rs_volunteers, $volunteer_record);
+    
     // update primary volunteer record
 
     $success_primary = FALSE != $db->Execute($sql);

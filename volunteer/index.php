@@ -7,7 +7,7 @@
  *
  * View, change, and use a volunteer's record.
  *
- * $Id: index.php,v 1.33 2006/01/12 02:01:25 andrewziem Exp $
+ * $Id: index.php,v 1.34 2006/01/12 15:13:48 andrewziem Exp $
  *
  */
 
@@ -43,7 +43,7 @@ if (!$volunteer)
 }
 $volunteer_name = make_volunteer_name($volunteer);
 
-make_html_begin(_("Volunteer account: ").$volunteer_name, array());
+make_html_begin(_("Volunteer account: ").htmlentities($volunteer_name), array());
 
 is_logged_in();
 
