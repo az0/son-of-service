@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.20 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: welcome.php,v 1.21 2006/01/28 21:17:06 andrewziem Exp $
  *
  */
 
@@ -34,10 +34,10 @@ make_html_begin("Welcome", array());
 
 make_nav_begin();
 
-if (isset($_SESSION['user']['personalname']) and $_SESSION['user']['personalname'])
-    $username = $_SESSION['user']['personalname'];
+if (isset($_SESSION['sos_user']['personalname']) and $_SESSION['sos_user']['personalname'])
+    $username = $_SESSION['sos_user']['personalname'];
     else
-    $username = $_SESSION['user']['username'];
+    $username = $_SESSION['sos_user']['username'];
 
 $result = $db->Execute("SELECT note_id FROM notes WHERE acknowledged != 1 and reminder_date <= now() and uid_assigned = ".get_user_id());
 
