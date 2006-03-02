@@ -44,6 +44,10 @@ Linux commands:</p>
 <li><code>chgrp apache data</code></li>
 <li><code>chmod 0770 data</code></li>
 </ul>
+<p>If you use Fedora Core with SELinux, also use this command:</p>
+<ul>
+ <li><code>chcon -R -t httpd_sys_script_rw_t data</code></li>
+ </ul>
 <p>Test with web browser. Login with user name admin and password admin. Change
 the default password.</p>
 <h2>Support</h2>
@@ -52,6 +56,6 @@ support.</p>
 <hr>
 <p>Copyright &copy; 2003-2006 by Andrew Ziem. All rights reserved. Provided to
 you under the GNU Free Documentation License.</p>
-<p><em>$Id: install.html,v 1.5 2006/01/12 02:00:36 andrewziem Exp $</em></p>
+<p><em>$Id: install.html,v 1.6 2006/03/02 03:59:29 andrewziem Exp $</em></p>
 </body>
 </html>
