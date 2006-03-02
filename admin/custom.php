@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.19 2006/01/12 02:00:35 andrewziem Exp $
+ * $Id: custom.php,v 1.20 2006/03/02 03:53:08 andrewziem Exp $
  *
  */
 
@@ -176,7 +176,7 @@ function custom_add_field_form2()
 <CAPTION><?php echo _("Sample"); ?></CAPTION>
 <TABLE border="1">
 <TR>
-<TH class="vert"><?php echo $label;?></TH>
+<TH class="vert"><?php echo htmlentities($label);?></TH>
 <TH><?php render_form_field($fieldtype, 'sample', $attributes, ''); ?></TH>
 </TR>
 </TABLE>
@@ -190,8 +190,8 @@ function custom_add_field_form2()
     {
 	if ($pk != 'stage' and $pk != 'add_custom_field')
 	{
-	    $pk = strip_tags($pk); // security feature
-	    $pv = strip_tags($pv); // security feature
+	    $pk = htmlentities(strip_tags($pk)); // security feature
+	    $pv = htmlentities(strip_tags($pv)); // security feature
 	    echo ("<INPUT type=\"hidden\" name=\"$pk\" value=\"$pv\">\n");
 	}
     }
@@ -354,7 +354,7 @@ function custom_add_field_form3()
 	return FALSE;
     }    
     
-    echo ("<P>Your column $label has been added succesfully.</P>\n");
+    echo ("<P>Your column " . htmlentities($_POST['label']) . " has been added succesfully.</P>\n");
 
 }
 

@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.17 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: table.php,v 1.18 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
 
@@ -100,7 +100,7 @@ class DataTableDisplay
 		    {
 			// display sorting option
 			$url = make_url($_GET, 'orderby');
-			echo ("[<A href=\"$url&orderby=$k&orderdir=asc\">A</A>/<A href=\"$url&orderby=$k&orderdir=desc\">D</A>]");
+			echo ("[<A href=\"$url&amp;orderby=$k&amp;orderdir=asc\">A</A>/<A href=\"$url&amp;orderby=$k&amp;orderdir=desc\">D</A>]");
 		    }
 		    echo ("</TH>\n");
 		}
@@ -182,7 +182,7 @@ class DataTableDisplay
 		    }	    
 		    else
 		    {
-		        $c = $row[$k];
+		        $c = htmlentities($row[$k]);
 		    }
 		    
 		    if (array_key_exists('nl2br', $v) and $v['nl2br'])

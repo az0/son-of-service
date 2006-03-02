@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.23 2006/01/12 02:01:25 andrewziem Exp $
+ * $Id: relationships.php,v 1.24 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
 
@@ -271,7 +271,7 @@ function relationships_add_form()
     	echo ("</FIELDSET>\n");
 	if (0 == $c)
 	{
-	    echo ("<P>No volunteers found for ".strip_tags($needle)."</P>\n");
+	    echo ("<P>No volunteers found for ".htmlentities(strip_tags($needle))."</P>\n");
 	}
     }
 }

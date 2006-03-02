@@ -7,7 +7,7 @@
  *
  * Functions for making form fields.
  *
- * $Id: formmaker.php,v 1.14 2006/01/12 15:18:41 andrewziem Exp $
+ * $Id: formmaker.php,v 1.15 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
 
@@ -161,7 +161,7 @@ class formMaker
 	if (FS_TABLE == $this->style)
 	{
 	    echo ("<TR>\n");
-	    echo ("<TH class=\"vert\">$label</TH>\n");
+	    echo ("<TH class=\"vert\">" . htmlentities($label) . "</TH>\n");
 	    echo ("<TD>\n");
 	}
 	

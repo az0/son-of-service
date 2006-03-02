@@ -7,7 +7,7 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.8 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: access.php,v 1.9 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
 
@@ -65,7 +65,6 @@ function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
     {
 	return FALSE;
     }
-    
     switch ($category)
     {
 	case PC_ADMIN:

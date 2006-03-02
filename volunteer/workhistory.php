@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: workhistory.php,v 1.26 2006/01/12 02:01:25 andrewziem Exp $
+ * $Id: workhistory.php,v 1.27 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
  
@@ -378,7 +378,7 @@ function work_history_addedit($mode)
   </SELECT>
 <tr>
  <TH class="vert"><?php echo ("Memo"); ?></TH>
- <td><TEXTAREA name="memo" cols="45" rows="2"><?php echo $memo;?></TEXTAREA></td>
+ <td><TEXTAREA name="memo" cols="45" rows="2"><?php echo htmlentities($memo);?></TEXTAREA></td>
  </tr>
  
 

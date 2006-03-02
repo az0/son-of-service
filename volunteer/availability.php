@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.15 2006/01/12 02:01:25 andrewziem Exp $
+ * $Id: availability.php,v 1.16 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
  
@@ -130,10 +130,7 @@ function volunteer_view_availability($brief = FALSE)
     
     if (!$brief)
     {    
-        display_messages();
-    
-	echo ("<FORM method=\"post\" action=\".\">\n");
-	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
+        display_messages();    
     }
     
     $sql = "SELECT * FROM availability WHERE volunteer_id = $vid ORDER BY day_of_week";

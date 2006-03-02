@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.20 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: html.php,v 1.21 2006/03/02 03:53:09 andrewziem Exp $
  *
  */
 
@@ -114,7 +114,7 @@ echo ("</DIV>\n");
 
 // todo: make quick search fit aesthetically somewhere
 /*
-echo ("<FORM method=\"post\" action=\"". SOS_PATH . "search_volunteer.php\">\n");
+echo ("<FORM method=\"post\" action=\"". SOS_PATH . "src/search_volunteer.php\">\n");
 echo ("Quick search <INPUT type=\"text=\" name=\"fullname\" size=\"10\">\n");
 echo ("</FORM>\n");
 */
@@ -226,7 +226,7 @@ function make_url($parameters, $exclusion)
 	    }
     	    else
 	    {
-		$url .= '&';
+		$url .= '&amp;';
 	    }
 	    $url .= urlencode("$k").'='.urlencode("$v");
 	    $url_i++;
