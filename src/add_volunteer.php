@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.15 2005/10/03 20:23:09 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.16 2006/08/13 20:14:31 andrewziem Exp $
  *
  */
 
@@ -250,4 +250,3 @@ else
 make_html_end();
 
 ?>
-

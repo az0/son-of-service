@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  * Mangages a user's reminders (special kind of notes).
  *
- * $Id: reminders.php,v 1.10 2004/03/15 00:31:12 andrewziem Exp $
+ * $Id: reminders.php,v 1.11 2006/08/13 20:14:31 andrewziem Exp $
  *
  */
  
