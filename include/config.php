@@ -5,7 +5,7 @@
  * Copyright (C) 2003 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: config.php,v 1.8 2004/03/10 14:35:49 andrewziem Exp $
+ * $Id: config.php,v 1.9 2006/08/13 19:56:17 andrewziem Exp $
  *
  */
 
@@ -13,6 +13,13 @@ if (preg_match('/config.php/i', $_SERVER['PHP_SELF']))
 {
     die('Do not access this page directly.');
 }
+
+//
+//  TO CONFIGURE
+//    This configuration file is in PHP syntax.  To configure,
+//    edit the values on the right side of the equals sign.
+//    To change a string, enclose the characters inside
+//    the quotation marks.
 
 $cfg['ado_path'] = SOS_PATH . 'adodb';
 
