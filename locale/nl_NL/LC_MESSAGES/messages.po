@@ -1,9 +1,10 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Dutch Son of Service Translation
+# Copyright (C) 2006 Rob van Eerd
+# This file is distributed under the same license as the Son of Service package.
+# Rob van Eerd <rob@van-Eerd.net>, 2006.
 #
-#, fuzzy
+# $Id: messages.po,v 1.2 2006/09/10 20:03:12 andrewziem Exp $
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Son of Service Dutch Translation V1.0\n"
@@ -13,970 +14,665 @@ msgstr ""
 "Last-Translator: Rob van Eerd <rob@van-Eerd.net>\n"
 "Language-Team: Dutch <Rob@van-Eerd.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../admin/custom.php:30
 msgid "Add custom field"
 msgstr "Voeg eigen veld toe"
 
-#: ../admin/custom.php:37 ../admin/strings.php:207
 msgid "String"
 msgstr "Tekst"
 
-#: ../admin/custom.php:43
 msgid "Text area"
 msgstr "Tekst gebied"
 
-#: ../admin/custom.php:51 ../volunteer/workhistory.php:248
-#: ../volunteer/workhistory.php:327
 msgid "Date"
 msgstr "Datum"
 
-#: ../admin/custom.php:56
 msgid "Integer"
 msgstr "Geheel getal"
 
-#: ../admin/custom.php:61
 msgid "Decimal"
 msgstr "Decimaal getal"
 
-#: ../admin/custom.php:66
 msgid "Boolean"
 msgstr "Logische waarde"
 
-#: ../admin/custom.php:129
 msgid "You must pick a field type."
 msgstr "Je moet een veld type kiezen"
 
-#: ../admin/custom.php:138 ../admin/custom.php:221 ../admin/strings.php:52
-#: ../volunteer/notes.php:248
 msgid "Too short:"
 msgstr "Te kort:"
 
-#: ../admin/custom.php:138 ../admin/custom.php:221
 msgid "Label"
 msgstr "Naam"
 
-#: ../admin/custom.php:148
 msgid "Length is extreme."
 msgstr "Lengte is uitzonderlijk."
 
-#: ../admin/custom.php:164 ../admin/custom.php:332
-#: ../volunteer/availability.php:94 ../volunteer/index.php:191
-#: ../volunteer/index.php:313 ../volunteer/notes.php:237
-#: ../volunteer/relationships.php:305 ../volunteer/relationships.php:311
-#: ../volunteer/skills.php:204 ../volunteer/workhistory.php:36
 msgid "Bad form input:"
 msgstr "Slechte formulier invoer:"
 
-#: ../admin/custom.php:176
 msgid "Sample"
 msgstr "Voorbeeld:"
 
-#: ../admin/custom.php:185
 msgid "Add this field?"
 msgstr "Dit veld toevoegen?"
 
-#: ../admin/custom.php:278 ../admin/index.php:68 ../admin/strings.php:190
-#: ../admin/strings.php:255 ../admin/strings.php:288 ../admin/strings.php:347
-#: ../admin/users.php:192 ../admin/users.php:266 ../admin/users.php:341
-#: ../functions/db.php:150 ../functions/db.php:177 ../src/add_volunteer.php:96
-#: ../src/reminders.php:53 ../src/reports.php:240 ../src/reports.php:295
-#: ../src/reports.php:370 ../src/reports.php:461 ../src/reports.php:498
-#: ../src/reports.php:534 ../src/search_volunteer.php:317
-#: ../src/search_volunteer.php:555 ../volunteer/availability.php:56
-#: ../volunteer/availability.php:142 ../volunteer/general.php:51
-#: ../volunteer/general.php:304 ../volunteer/index.php:113
-#: ../volunteer/notes.php:47 ../volunteer/notes.php:144
-#: ../volunteer/relationships.php:55 ../volunteer/relationships.php:129
-#: ../volunteer/skills.php:48 ../volunteer/skills.php:98
-#: ../volunteer/skills.php:152 ../volunteer/summary.php:58
-#: ../volunteer/summary.php:97 ../volunteer/workhistory.php:214
-#: ../volunteer/workhistory.php:301 ../volunteer/workhistory.php:352
 msgid "Error querying database."
 msgstr "Fout bij het benaderen van de database"
 
-#: ../admin/custom.php:342 ../admin/import_ncoa.php:307
-#: ../admin/import_ncoa.php:325 ../admin/strings.php:91
-#: ../src/add_volunteer.php:81 ../src/add_volunteer.php:111
-#: ../src/add_volunteer.php:124 ../src/add_volunteer.php:137
-#: ../volunteer/availability.php:106 ../volunteer/notes.php:299
-#: ../volunteer/relationships.php:347 ../volunteer/relationships.php:354
-#: ../volunteer/skills.php:215
 msgid "Error adding data to database."
 msgstr "Fout bij het toevoegen van gegevens aan de database."
 
-#: ../admin/custom.php:351
 msgid "Error altering database structure."
 msgstr "Fout bij het wijzigen van de database structuur."
 
-#: ../admin/custom.php:366 ../admin/import_ncoa.php:357
-#: ../admin/import.php:305 ../admin/index.php:31 ../admin/index.php:58
-#: ../admin/strings.php:36 ../admin/strings.php:172 ../admin/strings.php:237
-#: ../admin/strings.php:330 ../admin/systemcheck.php:50 ../admin/users.php:39
-#: ../admin/users.php:179 ../admin/users.php:255 ../admin/users.php:307
-#: ../src/add_volunteer.php:47 ../volunteer/availability.php:32
-#: ../volunteer/availability.php:82 ../volunteer/availability.php:128
-#: ../volunteer/general.php:157 ../volunteer/index.php:119
-#: ../volunteer/index.php:185 ../volunteer/notes.php:29
-#: ../volunteer/notes.php:229 ../volunteer/notes.php:321
-#: ../volunteer/relationships.php:332 ../volunteer/relationships.php:395
-#: ../volunteer/skills.php:32 ../volunteer/skills.php:72
-#: ../volunteer/skills.php:198 ../volunteer/summary.php:29
-#: ../volunteer/workhistory.php:31 ../volunteer/workhistory.php:96
-#: ../volunteer/workhistory.php:197
 msgid "Insufficient permissions."
 msgstr "Onvoldoende rechten."
 
-#: ../admin/import_ncoa.php:138 ../admin/import.php:85
 msgid "The file you uploaded is not a CSV file."
 msgstr "Het bestand dat je geladen hebt is geen CSV bestand."
 
-#: ../admin/import_ncoa.php:302 ../volunteer/notes.php:295
 msgid "Recorded."
 msgstr "Opgenomen."
 
-#: ../admin/import.php:170
 msgid "Please define one or more fields to import."
 msgstr "Definieer enkele velden om te importeren."
 
-#: ../admin/index.php:43 ../src/add_volunteer.php:238 ../src/login.php:72
-#: ../src/mass.php:33 ../src/reminders.php:31 ../src/reports.php:42
-#: ../src/search_volunteer.php:697 ../src/welcome.php:28
-#: ../volunteer/index.php:31
 msgid "Error establishing database connection."
 msgstr "Fout bij het opzetten van een connectie naar de database."
 
-#: ../admin/index.php:53 ../volunteer/index.php:240
 msgid "You have reached this page incorrectly."
 msgstr "Je hebt deze pagina niet correct benaderd."
 
-#: ../admin/index.php:73
 msgid "No data found."
 msgstr "Geen gegevens gevonden."
 
-#: ../admin/strings.php:18 ../volunteer/relationships.php:217
 msgid "Relationship"
 msgstr "Relatie"
 
-#: ../admin/strings.php:18
 msgid "Work category"
 msgstr "Werk categorie"
 
-#: ../admin/strings.php:18 ../volunteer/skills.php:119
 msgid "Skill"
 msgstr "Vaardigheid"
 
-#: ../admin/strings.php:46
 msgid "Too long:"
 msgstr "Te lang:"
 
-#: ../admin/strings.php:46 ../admin/strings.php:52
 msgid "String name"
 msgstr "Tekst naam"
 
-#: ../admin/strings.php:58
 msgid "Choose a category from the list."
 msgstr "Kies een categorie uit de lijst."
 
-#: ../admin/strings.php:87
 msgid "Saved"
 msgstr "opgeslagen"
 
-#: ../admin/strings.php:87 ../volunteer/index.php:115
 msgid "Added."
 msgstr "Toegevoegd."
 
-#: ../admin/strings.php:114
 msgid "Add a string"
 msgstr "Voeg een tekst toe"
 
-#: ../admin/strings.php:118
 msgid "Edit a string"
 msgstr "Wijzig een tekst"
 
-#: ../admin/strings.php:142 ../volunteer/relationships.php:234
 msgid "Name"
 msgstr "Naam"
 
-#: ../admin/strings.php:150 ../admin/users.php:236
-#: ../volunteer/general.php:117 ../volunteer/notes.php:207
 msgid "Save"
 msgstr "Opslaan"
 
-#: ../admin/strings.php:154 ../admin/users.php:240
-#: ../volunteer/availability.php:237 ../volunteer/notes.php:203
-#: ../volunteer/relationships.php:223 ../volunteer/skills.php:176
-#: ../volunteer/workhistory.php:391
 msgid "Add"
 msgstr "Toevoegen"
 
-#: ../admin/strings.php:194
 msgid "No work categories exist."
 msgstr "Er bestaan geen werk categorien"
 
-#: ../admin/strings.php:198
 msgid "Strings"
 msgstr "Teksten"
 
-#: ../admin/strings.php:205 ../admin/users.php:280 ../src/reminders.php:74
-#: ../src/search_volunteer.php:350 ../volunteer/availability.php:180
-#: ../volunteer/notes.php:83 ../volunteer/skills.php:117
-#: ../volunteer/workhistory.php:247
 msgid "Select"
 msgstr "Selecteer"
 
-#: ../admin/strings.php:206 ../volunteer/workhistory.php:250
-#: ../volunteer/workhistory.php:340
 msgid "Category"
 msgstr "Categorie"
 
-#: ../admin/strings.php:223 ../admin/users.php:291 ../admin/users.php:360
-#: ../src/mass.php:147 ../src/search_volunteer.php:393
-#: ../volunteer/availability.php:196 ../volunteer/notes.php:98
-#: ../volunteer/relationships.php:39 ../volunteer/relationships.php:77
-#: ../volunteer/skills.php:140 ../volunteer/workhistory.php:258
 msgid "Delete"
 msgstr "Verwijderen"
 
-#: ../admin/strings.php:224 ../admin/users.php:292 ../volunteer/notes.php:97
-#: ../volunteer/workhistory.php:259
 msgid "Edit"
 msgstr "Wijzigen"
 
-#: ../admin/strings.php:242 ../admin/strings.php:335
-#: ../volunteer/availability.php:39 ../volunteer/notes.php:130
-#: ../volunteer/workhistory.php:44 ../volunteer/workhistory.php:287
 msgid "You must make a selection."
 msgstr "Je moet een selectie maken."
 
-#: ../admin/strings.php:279
 msgid "Unexpected type from database."
 msgstr "Onverwacht database type."
 
-#: ../admin/strings.php:292
 msgid "Currently in use."
 msgstr "Momenteel in gebruik."
 
-#: ../admin/strings.php:302
 msgid "Removed."
 msgstr "Verwijderd."
 
-#: ../admin/strings.php:306 ../admin/users.php:321
-#: ../functions/delete_volunteer.php:51 ../volunteer/general.php:218
-#: ../volunteer/notes.php:356 ../volunteer/relationships.php:410
-#: ../volunteer/relationships.php:417 ../volunteer/workhistory.php:62
 msgid "Error deleting data from database."
 msgstr "Fout bij het verwijderen van gegevens uit de database."
 
-#: ../admin/systemcheck.php:34
 msgid "True"
 msgstr "Waar"
 
-#: ../admin/systemcheck.php:34
 msgid "False"
 msgstr "Niet waar"
 
-#: ../admin/systemcheck.php:73 ../volunteer/skills.php:18
 msgid "None"
 msgstr "Geen"
 
-#: ../admin/systemcheck.php:142
 msgid "Test name"
 msgstr "Test naam"
 
-#: ../admin/systemcheck.php:143
 msgid "Result"
 msgstr "Resultaat"
 
-#: ../admin/users.php:48
 msgid "Personal name is blank."
 msgstr "Persoonlijke naam is leeg."
 
-#: ../admin/users.php:53
 msgid "User name is too short: 4 or more characters required."
 msgstr "Gebruikersnaam is te kort: er zijn 4 of meer karakters nodig."
 
-#: ../admin/users.php:59
 msgid "Account password is too short: 4 or more characters required."
 msgstr "Gebruikers wachtwoord is te kort: er zijn 4 of meer karakters nodig."
 
-#: ../admin/users.php:66
 msgid "Passwords do not match."
 msgstr "Wachtwoorden komen niet overeen."
 
-#: ../admin/users.php:73
 msgid "This user has administrative privilege."
 msgstr "Deze gebruiker heeft geen beheer rechten."
 
-#: ../admin/users.php:127 ../volunteer/workhistory.php:175
 msgid "Error saving data to database."
 msgstr "Fout bij het opslaan van gegevens in de database."
 
-#: ../admin/users.php:143
 msgid "The changes for your account are now in effect for this and future sessions."
 msgstr "De wijzigingen aan je gebruiker zijn nu actief (ook voor toekomstige sessies)."
 
-#: ../admin/users.php:147
 msgid "The changes will take affect after the next login."
 msgstr "De wijzigingen worden actief als u de volgende keer inlogd."
 
-#: ../admin/users.php:152 ../volunteer/workhistory.php:170
 msgid "Saved."
 msgstr "Opgeslagen."
 
-#: ../admin/users.php:197
 msgid "User not found."
 msgstr "Gebruiker niet gevonden."
 
-#: ../admin/users.php:225 ../admin/users.php:282 ../src/login.php:50
 msgid "User name"
 msgstr "Gebruikersnaam"
 
-#: ../admin/users.php:226 ../src/login.php:54
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: ../admin/users.php:227
 msgid "Verify password"
 msgstr "Verifieer wachtwoord"
 
-#: ../admin/users.php:228
 msgid "Administration privileges"
 msgstr "Beheer rechten"
 
-#: ../admin/users.php:229
 msgid "Change volunteers"
 msgstr "Wijzig vrijwilligers"
 
-#: ../admin/users.php:230 ../admin/users.php:283
 msgid "Personal name"
 msgstr "Persoonlijke naam"
 
-#: ../admin/users.php:231 ../src/add_volunteer.php:218
-#: ../src/search_volunteer.php:390 ../src/search_volunteer.php:546
-#: ../volunteer/general.php:64
 msgid "E-mail"
 msgstr "E-Mail"
 
-#: ../admin/users.php:270
 msgid "No user accounts."
 msgstr "Geen gebruikersnamen"
 
-#: ../admin/users.php:325 ../volunteer/availability.php:62
-#: ../volunteer/relationships.php:421 ../volunteer/skills.php:52
-#: ../volunteer/workhistory.php:69
 msgid "Deleted."
 msgstr "Verwijderd."
 
-#: ../admin/users.php:351
 msgid "Are you sure you want to delete this user?"
 msgstr "Weet u zeker dat u deze gebruiker wilt verwijderen?"
 
-#: ../admin/users.php:361 ../src/mass.php:148 ../volunteer/index.php:222
 msgid "Confirm"
 msgstr "Bevestigen"
 
-#: ../functions/access.php:32
 msgid "You must be logged in to access this page."
 msgstr "iU moet ingelogged zijn om deze pagina te benaderen."
 
-#: ../functions/access.php:33 ../src/login.php:59
 msgid "Log in"
 msgstr "Log in"
 
-#: ../functions/access.php:35
 msgid "Is my system blocking cookies?"
 msgstr "Worden Cookies geblokkeerd oor mijn systeem?"
 
-#: ../functions/access.php:81 ../volunteer/workhistory.php:109
 msgid "Unexpected parameter."
 msgstr "Onverwachte parameter."
 
-#: ../functions/db.php:54
 msgid "Volunteer not found."
 msgstr "Vrijwilliger niet gevonden."
 
-#: ../functions/delete_volunteer.php:27
 msgid "Deleting volunteer..."
 msgstr "Vrijwilliger aan het verwijderen..."
 
-#: ../functions/formmaker.php:124
 msgid "Bad parameter"
 msgstr "Foutieve parameter"
 
-#: ../functions/html.php:98
 msgid "Print"
 msgstr "Afdrukken"
 
-#: ../functions/html.php:102 ../volunteer/relationships.php:235
 msgid "Search"
 msgstr "Zoeken"
 
-#: ../functions/html.php:105
 msgid "Add new volunteer"
 msgstr "Nieuwe vrijwilliger toevoegen"
 
-#: ../functions/html.php:110
 msgid "Admin"
 msgstr "Beheer"
 
-#: ../functions/html.php:112
 msgid "Logout"
 msgstr "Uitloggen"
 
-#: ../functions/html.php:128
 msgid "Summary"
 msgstr "Samenvatting"
 
-#: ../functions/html.php:129
 msgid "General"
 msgstr "Algemeen"
 
-#: ../functions/html.php:130
 msgid "Skills"
 msgstr "Vaardigheden"
 
-#: ../functions/html.php:131 ../src/search_volunteer.php:574
 msgid "Availability"
 msgstr "Beschikbaarheid"
 
-#: ../functions/html.php:132 ../volunteer/workhistory.php:219
 msgid "Work history"
 msgstr "Werk Geschiedenis"
 
-#: ../functions/html.php:133 ../volunteer/notes.php:52
 msgid "Notes"
 msgstr "Opmerkingen"
 
-#: ../functions/html.php:134 ../volunteer/relationships.php:134
 msgid "Relationships"
 msgstr "Relaties"
 
-#: ../functions/stat.php:43
 msgid "Expected integer."
 msgstr "Geheel getal verwacht."
 
-#: ../src/about.php:20
 msgid "About Son of Service"
 msgstr "Over Son of Service"
 
-#: ../src/add_volunteer.php:22
 msgid "Add a volunteer"
 msgstr "Vrijwilliger toevoegen"
 
-#: ../src/add_volunteer.php:41
 msgid "Please enter a longer last name or organization."
 msgstr "Geef een langere achternaam of organisatie in."
 
-#: ../src/add_volunteer.php:105
 msgid "Home"
 msgstr "Thuis"
 
-#: ../src/add_volunteer.php:118
 msgid "Work"
 msgstr "Werk"
 
-#: ../src/add_volunteer.php:131
 msgid "Cell"
 msgstr "Mobiel"
 
-#: ../src/add_volunteer.php:147
 msgid "Added:"
 msgstr "Toegevoegd:"
 
-#: ../src/add_volunteer.php:166 ../volunteer/general.php:35
 msgid "Prefix"
 msgstr "Titel"
 
-#: ../src/add_volunteer.php:170 ../src/search_volunteer.php:514
-#: ../volunteer/general.php:36
 msgid "First name"
 msgstr "Voornaam"
 
-#: ../src/add_volunteer.php:174 ../volunteer/general.php:37
 msgid "Middle name"
 msgstr "Tussenvoegsel"
 
-#: ../src/add_volunteer.php:178 ../src/search_volunteer.php:518
-#: ../volunteer/general.php:38
 msgid "Last name"
 msgstr "Achternaam"
 
-#: ../src/add_volunteer.php:182 ../src/search_volunteer.php:355
-#: ../src/search_volunteer.php:522 ../volunteer/general.php:40
 msgid "Organization"
 msgstr "Organisatie"
 
-#: ../src/add_volunteer.php:186 ../src/search_volunteer.php:526
-#: ../volunteer/general.php:41
 msgid "Street"
 msgstr "Straat"
 
-#: ../src/add_volunteer.php:190 ../src/search_volunteer.php:530
-#: ../volunteer/general.php:42
 msgid "City"
 msgstr "Woonplaats"
 
-#: ../src/add_volunteer.php:194 ../volunteer/general.php:43
 msgid "State/Province"
 msgstr "Provincie"
 
-#: ../src/add_volunteer.php:198 ../src/search_volunteer.php:534
-#: ../volunteer/general.php:44
 msgid "Zip/Postal code"
 msgstr "Postcode"
 
-#: ../src/add_volunteer.php:202 ../src/search_volunteer.php:538
-#: ../volunteer/general.php:45
 msgid "Country"
 msgstr "Land"
 
-#: ../src/add_volunteer.php:206
 msgid "Home phone"
 msgstr "Prive telefoonnr."
 
-#: ../src/add_volunteer.php:210
 msgid "Work phone"
 msgstr "Zakelijk telefoonnr."
 
-#: ../src/add_volunteer.php:214
 msgid "Cell phone"
 msgstr "Mobiel telefoonnr."
 
-#: ../src/cookie_probe.php:34
 msgid "Your system rejected the cookie."
 msgstr "Uw systeem weigerde de cookie."
 
-#: ../src/cookie_probe.php:42
 msgid "Your system's cookies are normal."
 msgstr "De cookies van uw systeem zijn normaal."
 
-#: ../src/cookie_probe.php:46
 msgid "Your system rejected modification of existing cookie."
 msgstr "Uw systeem weigerde een bestaande cookie aan te passen."
 
-#: ../src/login.php:37
 msgid "Login"
 msgstr "Log in"
 
-#: ../src/login.php:93
 msgid "Invalid user name or password."
 msgstr "Ongeldige gebruikersnaam of wachtwoord."
 
-#: ../src/mass.php:45 ../src/mass.php:170
 msgid "Your e-mail address appears invalid: "
 msgstr "Uw E-Mail adres lijkt niet correct:"
 
-#: ../src/mass.php:50
 msgid "At least one recipient required."
 msgstr "Minstens een ontvanger noodzakelijk."
 
-#: ../src/mass.php:85
 msgid "Error sending e-mail message."
 msgstr "Fout bij het versturen van een E-Mail bericht."
 
-#: ../src/mass.php:89
 msgid "Message sent successfully."
 msgstr "Bericht succesvol verstuurd."
 
-#: ../src/mass.php:112
 msgid "Select one or more volunteers from the list."
 msgstr "Selecteer een of meerdere vrijwilligers uit de lijst."
 
-#: ../src/mass.php:126
 msgid "Are you sure you want to permanently delete these volunteers?"
 msgstr "Weet u zeker dat u deze vrijwilligers definitief wilt verwijderen?"
 
-#: ../src/mass.php:164
 msgid "Your e-mail address must be set in  user settings."
 msgstr "Uw E-Mail adres moet opgeslagen zijn in uw gebruikers instellingen."
 
-#: ../src/mass.php:194
 msgid "Error in volunteer_get: "
 msgstr "Fout bij het ophalen van de vrijwilliger informatie:"
 
-#: ../src/mass.php:199
 msgid "Volunteer does not have an e-mail address: "
 msgstr "Vrijwilliger heft geen E-Mail adres: "
 
-#: ../src/mass.php:205
 msgid "Volunteer's e-mail address appears invalid: "
 msgstr "Het E-Mail adres van deze vrijwilliger lijkt niet correct: "
 
-#: ../src/mass.php:244
 msgid "Send"
 msgstr "Versturen"
 
-#: ../src/reminders.php:57
 msgid "No reminders."
 msgstr "Geen herinneringen."
 
-#: ../src/reminders.php:69 ../src/reminders.php:156
 msgid "Reminders"
 msgstr "Herinnneringen"
 
-#: ../src/reminders.php:75 ../volunteer/notes.php:85
-#: ../volunteer/notes.php:178
 msgid "Reminder date"
 msgstr "Datum Herinnering"
 
-#: ../src/reminders.php:77
 msgid "Creation date"
 msgstr "Aanmaak datum"
 
-#: ../src/reminders.php:81 ../volunteer/notes.php:90
-#: ../volunteer/notes.php:172 ../volunteer/notes.php:248
 msgid "Message"
 msgstr "Boodschap"
 
-#: ../src/reminders.php:104
 msgid "Acknowledge"
 msgstr "Bevestigen"
 
-#: ../src/reminders.php:124 ../volunteer/notes.php:336
 msgid "Select one or more options."
 msgstr "Selecteer en of meerdere opties."
 
-#: ../src/reminders.php:146 ../volunteer/general.php:229
 msgid "Error updating data in database."
 msgstr "Fout bij het bijwerken van de gegevens in de database."
 
-#: ../src/reports.php:33 ../src/reports.php:482
 msgid "Reports"
 msgstr "Rapporten"
 
-#: ../src/reports.php:255
 msgid "Aggregate hours"
 msgstr "Uren optellen"
 
-#: ../src/reports.php:334
 msgid "Please choose a skill."
 msgstr "Kies een vaardigheid."
 
-#: ../src/reports.php:401
 msgid "Volunteers by skill"
 msgstr "Vrijwilligers per vaardigheid"
 
-#: ../src/reports.php:489
 msgid "Day"
 msgstr "Dag"
 
-#: ../src/reports.php:490
 msgid "Week"
 msgstr "Week"
 
-#: ../src/reports.php:491
 msgid "Month"
 msgstr "Maand"
 
-#: ../src/reports.php:492
 msgid "Year"
 msgstr "Jaar"
 
-#: ../src/reports.php:504 ../src/reports.php:540
 msgid "Any"
 msgstr "Elke"
 
-#: ../src/reports.php:513 ../src/reports.php:522 ../src/reports.php:549
 msgid "Make report"
 msgstr "Genereer rapport"
 
-#: ../src/search_volunteer.php:326
 msgid "Found zero volunteers matching your description."
 msgstr "Geen vrijwilligers gevonden bij deze beschrijving."
 
-#: ../src/search_volunteer.php:351 ../src/search_volunteer.php:411
-#: ../src/search_volunteer.php:416
 msgid "First"
 msgstr "Eerste"
 
-#: ../src/search_volunteer.php:353 ../src/search_volunteer.php:424
-#: ../src/search_volunteer.php:429
 msgid "Last"
 msgstr "Laatste"
 
-#: ../src/search_volunteer.php:412 ../src/search_volunteer.php:417
 msgid "Previous"
 msgstr "Vorige"
 
-#: ../src/search_volunteer.php:428
 msgid "Next"
 msgstr "Volgende"
 
-#: ../src/search_volunteer.php:451
 msgid "Sort"
 msgstr "Sorteren"
 
-#: ../src/search_volunteer.php:542
 msgid "Phone number"
 msgstr "Telefoon nummer"
 
-#: ../src/search_volunteer.php:577 ../volunteer/availability.php:185
 msgid "Day of week"
 msgstr "Dag van de week"
 
-#: ../src/search_volunteer.php:581 ../src/search_volunteer.php:595
 msgid "--Select"
 msgstr "--Selecteer"
 
-#: ../src/search_volunteer.php:591
 msgid "Time of day"
 msgstr "Tijd"
 
-#: ../src/search_volunteer.php:596 ../volunteer/availability.php:183
-#: ../volunteer/availability.php:223 ../volunteer/availability.php:231
 msgid "Morning"
 msgstr "Morgen"
 
-#: ../src/search_volunteer.php:597 ../volunteer/availability.php:183
-#: ../volunteer/availability.php:224 ../volunteer/availability.php:232
 msgid "Afternoon"
 msgstr "Middag"
 
-#: ../src/search_volunteer.php:598 ../volunteer/availability.php:183
-#: ../volunteer/availability.php:225 ../volunteer/availability.php:233
 msgid "Evening"
 msgstr "Avond"
 
-#: ../src/search_volunteer.php:599 ../volunteer/availability.php:183
-#: ../volunteer/availability.php:226 ../volunteer/availability.php:234
 msgid "Night"
 msgstr "Nacht"
 
-#: ../src/search_volunteer.php:608
 msgid "Results"
 msgstr "Resultaten"
 
-#: ../src/search_volunteer.php:611
 msgid "Sort by"
 msgstr "Sorteren op"
 
-#: ../src/search_volunteer.php:625
 msgid "Per page"
 msgstr "Per pagina"
 
-#: ../src/search_volunteer.php:633
 msgid "Unlimited"
 msgstr "Onbeperkt"
 
-#: ../src/search_volunteer.php:666
 msgid "Doesn't matter"
 msgstr "Maakt niet uit"
 
-#: ../src/search_volunteer.php:667 ../volunteer/skills.php:18
 msgid "Amateur"
 msgstr "Amateur"
 
-#: ../src/search_volunteer.php:668 ../volunteer/skills.php:18
 msgid "Some"
 msgstr "Sommige"
 
-#: ../src/search_volunteer.php:669
 msgid "Professional"
 msgstr "Beroeps"
 
-#: ../src/search_volunteer.php:670 ../volunteer/skills.php:18
 msgid "Expert"
 msgstr "Expert"
 
-#: ../volunteer/availability.php:154 ../volunteer/notes.php:58
-#: ../volunteer/relationships.php:156 ../volunteer/skills.php:108
-#: ../volunteer/skills.php:156 ../volunteer/workhistory.php:226
-#: ../volunteer/workhistory.php:356
 msgid "None found."
 msgstr "Geen gevonden."
 
-#: ../volunteer/availability.php:186
 msgid "Start"
 msgstr "Start"
 
-#: ../volunteer/availability.php:187
 msgid "End"
 msgstr "Einde"
 
-#: ../volunteer/general.php:39
 msgid "Suffix"
 msgstr "Toevoeging"
 
-#: ../volunteer/general.php:59
 msgid "Phone #"
 msgstr "Tel.Nr."
 
-#: ../volunteer/general.php:60
 msgid "Memo: Phone #"
 msgstr "Memo: Tel.Nr."
 
-#: ../volunteer/general.php:118
 msgid "Add phone number"
 msgstr "Voeg telefoon nummer toe"
 
-#: ../volunteer/general.php:119
 msgid "Delete volunteer"
 msgstr "Verwijder vrijwilliger"
 
-#: ../volunteer/general.php:179
 msgid "Error updating primary volunteer record."
 msgstr "Fout bij het bijwerken van het primaire vrijwilliger record."
 
-#: ../volunteer/general.php:340
 msgid "Error updating extended volunteer record."
 msgstr "Fout bij het bijwerken van een extra vrijwilliger record."
 
-#: ../volunteer/general.php:353
 msgid "Updated."
 msgstr "Bijgewerkt."
 
-#: ../volunteer/index.php:46
 msgid "Volunteer account: "
 msgstr "Vrijwilliger gebruiker:"
 
-#: ../volunteer/notes.php:84
 msgid "Time"
 msgstr "Tijd"
 
-#: ../volunteer/notes.php:86
 msgid "Added by"
 msgstr "Toegevoegd door"
 
-#: ../volunteer/notes.php:87 ../volunteer/notes.php:198
 msgid "Assigned to"
 msgstr "Toegekend aan"
 
-#: ../volunteer/notes.php:88 ../volunteer/notes.php:177
-#: ../volunteer/workhistory.php:251 ../volunteer/workhistory.php:372
 msgid "Quality"
 msgstr "Kwaliteit"
 
-#: ../volunteer/notes.php:126
 msgid "Edit note"
 msgstr "Wijzig notitie"
 
-#: ../volunteer/notes.php:137 ../volunteer/workhistory.php:294
 msgid "You may only edit one at a time."
 msgstr "Je mag er maar een per keer wijzigen."
 
-#: ../volunteer/notes.php:158
 msgid "Add note"
 msgstr "Voeg notitie toe"
 
-#: ../volunteer/notes.php:174 ../volunteer/workhistory.php:375
 msgid "Negative"
 msgstr "Negatief"
 
-#: ../volunteer/notes.php:175 ../volunteer/workhistory.php:376
 msgid "Neutral"
 msgstr "Neutraal"
 
-#: ../volunteer/notes.php:176 ../volunteer/workhistory.php:377
 msgid "Positive"
 msgstr "Positief"
 
-#: ../volunteer/notes.php:186
 msgid "Unable to get list of users from database."
 msgstr "Niet in staat een lijst met gebruikers uit de database te halen."
 
-#: ../volunteer/notes.php:191
 msgid "Nobody"
 msgstr "Niemand"
 
-#: ../volunteer/notes.php:242 ../volunteer/workhistory.php:136
 msgid "Use the date format YYYY-MM-DD or MM/DD/YYYY."
 msgstr "Gebruik het datum-formaat JJJJ-MM-DD of MM/DD/JJJJ."
 
-#: ../volunteer/relationships.php:167
 msgid "Maximum depth"
 msgstr "Maximale diepte"
 
-#: ../volunteer/relationships.php:179
 msgid "Go"
 msgstr "Uitvoeren"
 
-#: ../volunteer/relationships.php:198
 msgid "Add relationship"
 msgstr "Toevoegen relatie"
 
-#: ../volunteer/relationships.php:213
 msgid "Quick add"
 msgstr "Snel toevoegen"
 
-#: ../volunteer/relationships.php:216
 msgid "Volunteer ID"
 msgstr "Vrijwilliger ID"
 
-#: ../volunteer/relationships.php:244
 msgid "Search results"
 msgstr "Zoek resultaten"
 
-#: ../volunteer/relationships.php:319 ../volunteer/relationships.php:325
 msgid "volunteer_get(): "
 msgstr "Ophalen vrijwilliger"
 
-#: ../volunteer/relationships.php:358
 msgid "Added relationship."
 msgstr "Relatie toegevoegd."
 
-#: ../volunteer/relationships.php:388
 msgid "Input missing."
 msgstr "Invoer ontbreekt."
 
-#: ../volunteer/skills.php:103
 msgid "Skills, interests"
 msgstr "Vaardigheden, interesses"
 
-#: ../volunteer/skills.php:120
 msgid "Level"
 msgstr "Niveau"
 
-#: ../volunteer/skills.php:160
 msgid "Add new skill"
 msgstr "Voeg nieuwe vaardigheid toe"
 
-#: ../volunteer/summary.php:64
 msgid "Phone:"
 msgstr "Telefoon:"
 
-#: ../volunteer/summary.php:85
 msgid "Hours: Lifetime"
 msgstr "Uren: Sinds aanvang"
 
-#: ../volunteer/summary.php:86
 msgid "Hours: Year to date"
 msgstr "Uren: Dit jaar (tot nu toe)"
 
-#: ../volunteer/summary.php:87
 msgid "Hours: Last year"
 msgstr "Uren: Afgelopen jaar"
 
-#: ../volunteer/workhistory.php:115
 msgid "Add a number to the Hours Credit of Work field."
 msgstr "Voeg een aantal gewerkte uren toe."
 
-#: ../volunteer/workhistory.php:125
 msgid "Please add more hours to the Hours Credit of Work field."
 msgstr "Voeg meer uren toe aan het gewerkte aantal uren."
 
-#: ../volunteer/workhistory.php:135
 msgid "You must give a date."
 msgstr "Voer een datum in."
 
-#: ../volunteer/workhistory.php:249 ../volunteer/workhistory.php:336
 msgid "Hours"
 msgstr "Uren"
 
-#: ../volunteer/workhistory.php:252
 msgid "Memo"
 msgstr "Omschrijving"
 
-#: ../volunteer/workhistory.php:316
 msgid "Add work history"
 msgstr "Voeg werk geschiedenis toe"
 
-#: ../volunteer/workhistory.php:316
 msgid "Edit work history"
 msgstr "Bewerk werk geschiedenis"
 
-#: ../volunteer/workhistory.php:395
 msgid "Update"
 msgstr "Bijwerken"
