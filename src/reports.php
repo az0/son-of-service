@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.16 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: reports.php,v 1.17 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -56,7 +56,7 @@ else
 reports_menu();
 
 
-$steps = array('Day', 'Week', 'Month', 'Year');
+$steps = array(_('Day'), _('Week'), _('Month'), _('Year'));
 
 
 class report_display
@@ -182,9 +182,9 @@ function report_hours()
     
     $errors_found = 0;
     
-    if (!in_array($_REQUEST['step'], array('Day', 'Week', 'Month', 'Year')))
+    if (!in_array($_REQUEST['step'], $steps))
     {
-	process_user_error("Please select a step for this report.");
+	process_user_error(_("Please select a step for this report."));
 	//print_r($_POST);
 	$errors_found++;
     }
@@ -218,7 +218,7 @@ function report_hours()
 	    
 	    
 	 default:
-	    process_system_error("Unexpected step ".$_REQUEST['step']);
+	    process_system_error(_("Unexpected step:") . ' ' . $_REQUEST['step']);
 	    break;
 	    
     }
@@ -273,7 +273,8 @@ function report_active_volunteers()
     
     if (!$d1 or !$d2)
     {
-	process_user_error("Please enter a valid date in the format YYYY-MM-DD or MM/DD/YYYY.");
+	//fixme: user should be able to use his own locale's format
+	process_user_error(_("Please enter a valid date in the format YYYY-MM-DD or MM/DD/YYYY."));
     }
         
     if ($errors_found)
@@ -482,7 +483,7 @@ function reports_menu()
     echo ("<H2>"._("Reports")."</H2>\n");
 
     echo ("<FIELDSET>\n");
-    echo ("<LEGEND>Aggregate hours</LEGEND>\n");
+    echo ("<LEGEND>" ._("Aggregate hours") . "</LEGEND>\n");
     echo ("<FORM method=\"get\" action=\"reports.php\">\n");
     echo ("<SELECT name=\"step\">\n");
     echo ("<OPTION>--Step</OPTION>\n");
@@ -515,7 +516,7 @@ function reports_menu()
     echo ("</FIELDSET>\n");
 
     echo ("<FIELDSET>\n");
-    echo ("<LEGEND>Most active volunteers</LEGEND>\n");
+    echo ("<LEGEND>" ._("Most active volunteers"). "</LEGEND>\n");
     echo ("<FORM method=\"get\" action=\"reports.php\">\n");
     echo ("Beginning <INPUT type=\"text\" name=\"beginning_date\" value=\"2000-01-01\" size=\"10\">\n");
     echo ("Ending <INPUT type=\"text\" name=\"ending_date\" value=\"".date('Y-m-d')."\" size=\"10\">\n");
@@ -525,7 +526,7 @@ function reports_menu()
 
 
     echo ("<FIELDSET>\n");
-    echo ("<LEGEND>List of volunteers by skill</LEGEND>\n");
+    echo ("<LEGEND>" . _("List of volunteers by skill") ."</LEGEND>\n");
     echo ("<FORM method=\"get\" action=\"reports.php\">\n");
     $sql = "SELECT * FROM strings WHERE type = 'skill'";
     $result = $db->Execute($sql);

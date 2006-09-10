@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: login.php,v 1.17 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: login.php,v 1.18 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -38,73 +38,91 @@ make_html_begin(_("Login"), NULL);
 
 function request_login()
 {
-        
-    echo ("<H3>Son of Service: Volunteer management database</H3>\n");
+	global $languages;
 
-    echo ("<P>Please log in using the user name and password provided by the volunteer coordinator.</P>\n");
+	echo ("<h3>Son of Service: ". _("Volunteer management database") ."</h3>\n");
+
+	echo ("<p>" . _("Please log in using the user name and password provided by the volunteer coordinator.") . "</p>\n");
     
-    // fix me: return to refering page
-    echo ("<FORM method=\"post\"  action=\"login.php\">\n");
-    echo ("<TABLE border=\"0\">\n");
-    echo ("<TR>\n");
-    echo ("<TD>" . _("User name") . "</TD>\n");
-    echo ("<TD><INPUT name=\"u\" type=\"text\" size=\"40\"></TD>\n");
-    echo ("</TR>\n");
-    echo ("<TR>\n");
-    echo ("<TD>" . _("Password") . "</TD>\n");
-    echo ("<TD><INPUT name=\"p\" type=\"password\" size=\"40\"></TD>\n");
-    echo ("</TR>\n");
-    echo ("</TABLE>\n");
+	// fix me: return to refering page
+	echo ("<FORM method=\"post\"  action=\"login.php\">\n");
+	echo ("<TABLE border=\"0\">\n");
+	echo ("<TR>\n");
+	echo ("<TD>" . _("User name") . "</TD>\n");
+	echo ("<TD><INPUT name=\"u\" type=\"text\" size=\"40\"></TD>\n");
+	echo ("</TR>\n");
+	echo ("<TR>\n");
+	echo ("<TD>" . _("Password") . "</TD>\n");
+	echo ("<TD><INPUT name=\"p\" type=\"password\" size=\"40\"></TD>\n");
+	echo ("</TR>\n");
+	echo ("</TABLE>\n");
+
+	echo _("Language:");
+	echo (" <select name=\"language\">\n");
+	echo ("<option>" . _("Default") . "\n");
+	foreach ($languages as $code => $language)
+	{
+		if (array_key_exists('ALIAS', $language))
+			continue;
+		echo ("<option value=\"$code\">" . $language['NAME'] . "\n");
+	}
+	echo ("</select>\n");
+	echo ("<br>\n");
     
-    echo ("<INPUT value=\""._("Log in")."\" type=\"submit\" name=\"button_login\">\n");
+	echo ("<INPUT value=\""._("Log in")."\" type=\"submit\" name=\"button_login\">\n");
     
-    echo ("</FORM>\n");
+	echo ("</FORM>\n");
 }
 
 
 if (isset($_POST['button_login']))
 {
-    global $db;
+	global $db;
 
-    $db = connect_db();
-    if ($db->_connectionID == '')
-    {
-        die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
-    }
+	if (array_key_exists('language', $_POST) and is_valid_language($_POST['language']))
+		$_SESSION['sos_language'] = $_POST['language'];
+
+	set_up_language();
+
+	$db = connect_db();
+	if ($db->_connectionID == '')
+	{
+		die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);
+	}
     
-    // Security: Do not allow variable poisoning
-    unset($uid); 
+	// Security: Do not allow variable poisoning
+	unset($uid); 
     
-    $username = $db->qstr($_POST['u'],get_magic_quotes_gpc());
-    $password = $db->qstr(md5($_POST['p']),get_magic_quotes_gpc());
+	$username = $db->qstr($_POST['u'],get_magic_quotes_gpc());
+	$password = $db->qstr(md5($_POST['p']),get_magic_quotes_gpc());
         
-    $sql = "SELECT * FROM users WHERE username = $username and password = $password";
+	$sql = "SELECT * FROM users WHERE username = $username and password = $password";
     
-    $result = $db->Execute($sql);
+	$result = $db->Execute($sql);
 	
-    if ($result and 1 == $result->RecordCount())
-    {
-	$user = $result->fields;
-	$uid = $user['user_id'];
-    }    
-    else
-    {
-	sleep(3);
-	process_user_error(_("Invalid user name or password."), "Is your caps lock key on?");
-	request_login();
-	exit();
-    }
+	if ($result and 1 == $result->RecordCount())
+	{
+		$user = $result->fields;
+		$uid = $user['user_id'];
+	}    
+	else
+	{
+		sleep(3);
+		process_user_error(_("Invalid user name or password."), _("Is your caps lock key on?"));
+		request_login();
+		exit();
+	}
 	
-    unset($user['password']);
+	unset($user['password']);
     
-    $_SESSION['u'] = $_POST['u'];
-    $_SESSION['u_auth'] = TRUE;
-    $_SESSION['user_id'] = $user['user_id'];
-    $_SESSION['sos_user'] = $user;
+	$_SESSION['u'] = $_POST['u'];
+	$_SESSION['u_auth'] = TRUE;
+	$_SESSION['user_id'] = $user['user_id'];
+	$_SESSION['sos_user'] = $user;
     
-    $r = $db->Execute("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
+	$r = $db->Execute("UPDATE users SET lastlogin = now() where user_id = $uid LIMIT 1");
     
-    redirect('welcome.php');
+	redirect('welcome.php');
 	}
 else
 {

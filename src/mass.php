@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: mass.php,v 1.12 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: mass.php,v 1.13 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -40,9 +40,9 @@ if (array_key_exists('button_email_volunteers', $_POST))
 else if (array_key_exists('send_email', $_POST))
 {
 
-    if (!validate_email($_SESSION['user']['email']))
+    if (!validate_email($_SESSION['sos_user']['email']))
     {
-	save_message(MSG_USER_WARNING, _("Your e-mail address appears invalid: "). htmlentities($_SESSION['user']['email']));
+	save_message(MSG_USER_WARNING, _("Your e-mail address appears invalid: "). htmlentities($_SESSION['sos_user']['email']));
     }
     
     if (0 == strlen(trim($_POST['mailto'])))
@@ -56,8 +56,8 @@ else if (array_key_exists('send_email', $_POST))
     
     $mail->IsSMTP();
     $mail->Host = $smtp_hostname;
-    $mail->From = $_SESSION['user']['email'];
-    $mail->FromName = $_SESSION['user']['personalname'];
+    $mail->From = $_SESSION['sos_user']['email'];
+    $mail->FromName = $_SESSION['sos_user']['personalname'];
 
     if (strchr($_POST['mailto'], ','))
     {    
@@ -73,7 +73,7 @@ else if (array_key_exists('send_email', $_POST))
 
     if (array_key_exists('cc_myself', $_POST) and 1 == $_POST['cc_myself'])
     {
-	$mail->AddCC ($_SESSION['user']['email']);
+	$mail->AddCC ($_SESSION['sos_user']['email']);
     }
 
     
@@ -159,15 +159,15 @@ else
 function email_volunteers_form()
 {
 
-    if (0 == strlen($_SESSION['user']['email']))
+    if (0 == strlen($_SESSION['sos_user']['email']))
     {
-	process_user_error(_("Your e-mail address must be set in  user settings."));
+	process_user_error(_("Your e-mail address must be set in user settings."));
 	return FALSE;
     }
 
-    if (!validate_email($_SESSION['user']['email']))
+    if (!validate_email($_SESSION['sos_user']['email']))
     {
-	process_user_warning(_("Your e-mail address appears invalid: "). $_SESSION['user']['email']);
+	process_user_warning(_("Your e-mail address appears invalid: "). $_SESSION['sos_user']['email']);
     }
 
     // collect volunteer IDs from form
@@ -225,7 +225,7 @@ function email_volunteers_form()
     echo ("</TR>\n");
     echo ("<TR>\n");    
     echo ("<TH class=\"vert\">From</TH>\n");
-    echo ("<TD><INPUT type=\"text\" name=\"mailfrom\" value=\"".$_SESSION['user']['email']."\" DISABLED></TD>\n");
+    echo ("<TD><INPUT type=\"text\" name=\"mailfrom\" value=\"".$_SESSION['sos_user']['email']."\" DISABLED></TD>\n");
     echo ("</TR>\n");
     echo ("<TR>\n");
     echo ("<TH class=\"vert\">Subject</TH>\n");

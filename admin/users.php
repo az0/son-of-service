@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.22 2006/01/12 02:00:35 andrewziem Exp $
+ * $Id: users.php,v 1.23 2006/09/10 22:24:45 andrewziem Exp $
  *
  */
  
@@ -212,7 +212,7 @@ function user_addedit_form()
 	}
 	
 	echo ("<FIELDSET>\n");
-	echo ("<LEGEND>Add new user</LEGEND>\n");
+	echo ("<LEGEND>" . _("Add new user") . "</LEGEND>\n");
 	echo ("<P class=\"instructionstext\">A user administrates the volunteer database.  He may view and change volunteers' accounts.</P>\n");
 	// form defaults
 	$form_values = array('access_change_vol' => 1, 'access_admin' => 0);
@@ -255,7 +255,7 @@ function users_list()
 	message_die(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
     }
     
-    echo ("<H2>List of users</H2>\n");
+    echo "<h2>" . _("List of users") . "</h2>\n";
     
     $sql = "SELECT * FROM users";
     

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: relationships.php,v 1.24 2006/03/02 03:53:09 andrewziem Exp $
+ * $Id: relationships.php,v 1.25 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -33,7 +33,10 @@ function show_relationship_leaf($vid, $row, $remaining_depth, $ignore_vids, $bri
     {
         $row['volunteer2_name'] = make_volunteer_name($volunteer2_row);
 	
-	echo ("<LI>".$row['volunteer2_name']." [<A href=\"?vid=".$row['volunteer2_id']."\">account</A>, <A href=\"?vid=".$row['volunteer2_id']."&amp;menu=relationships\">relationships</A>], ".$row['rname']."\n");
+	echo "<li>" . $row['volunteer2_name'] . " [<a href=\"?vid=" . 
+		$row['volunteer2_id'] . "\">". _("account") ."</a>, <a href=\"?vid=" .
+		$row['volunteer2_id'] . "&amp;menu=relationships\">" . _("relationships") .
+		"</a>], " . $row['rname']."\n";
 	if (!$brief and has_permission(PC_VOLUNTEER, PT_WRITE, $row['volunteer2_id'], NULL) and has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
 	{
 	    echo ("<INPUT type=\"submit\" name=\"delete_relationship_".$vid."_".$row['volunteer2_id']."\" value=\""._("Delete")."\">\n");

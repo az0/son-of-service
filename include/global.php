@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: global.php,v 1.7 2006/08/13 20:14:31 andrewziem Exp $
+ * $Id: global.php,v 1.8 2006/09/10 22:24:45 andrewziem Exp $
  *
  */
 
@@ -26,7 +26,8 @@ define('MSG_USER_ERROR', 256);
 define('MSG_USER_WARNING', 512);
 define('MSG_USER_NOTICE', 1024);
 
-$daysofweek = array(1 => 'Sunday' , 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');	
+$daysofweek = array(1 => _('Sunday') , _('Monday'), _('Tuesday'), 
+	_('Wednesday'), _('Thursday'), _('Friday'), _('Saturday'));	
 
 // $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
 

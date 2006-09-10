@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: config.php,v 1.10 2006/08/13 20:14:31 andrewziem Exp $
+ * $Id: config.php,v 1.11 2006/09/10 22:24:45 andrewziem Exp $
  *
  */
 
@@ -31,6 +31,11 @@ $cfg['dbname'] = 'sos';
 $cfg['dbpersist'] = TRUE;	//default: persistant connections on (true)
 
 $smtp_hostname = 'localhost';
+
+// default language (for cases where language cannot be detected)
+//  examples: en_US, nl_NL, es_BR
+$default_language = 'en_US';
+$default_language = 'nl_NL';
 
 // html_security_level
 // 1: HTML stripped from most form input for maximum security

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: availability.php,v 1.16 2006/03/02 03:53:09 andrewziem Exp $
+ * $Id: availability.php,v 1.17 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
  
@@ -144,7 +144,7 @@ function volunteer_view_availability($brief = FALSE)
 
     if (!$brief or $result->RecordCount() > 0)
     {
-	echo ("<H3>Availability</H3>\n");
+	echo ("<h3>". _("Availability") ."</h3>\n");
     }	
     
     if (0 == $result->RecordCount())
@@ -209,7 +209,7 @@ function volunteer_availability_add_form()
     
     if (has_permission(PC_VOLUNTEER, PT_WRITE, $vid, NULL))
     {
-	echo ("<H4>Add new availability</H4>\n");
+	echo ("<h4>" . _("Add new availability") ."</h4>\n");
 	echo ("<FORM method=\"post\" action=\".\">\n");
 	echo ("<INPUT type=\"hidden\" name=\"vid\" value=\"$vid\">\n");
 	echo ("<SELECT name=\"day_of_week\">\n");

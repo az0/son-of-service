@@ -6,7 +6,7 @@
  * Licensed under the GNU General Public License.  See COPYING for details.
  * 
  *
- * $Id: welcome.php,v 1.21 2006/01/28 21:17:06 andrewziem Exp $
+ * $Id: welcome.php,v 1.22 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -43,7 +43,7 @@ $result = $db->Execute("SELECT note_id FROM notes WHERE acknowledged != 1 and re
 
 $reminders = $result->RecordCount();
 
-echo ("<P>Welcome, $username.  You have <A href=\"reminders.php\">$reminders reminder". (1 == $reminders ? "" : "s") ."</A> waiting.</P>\n");
+echo ("<p>" . _("Number of reminders waiting:") . (0 == $reminders ? "0" : "<a href=\"reminders.php\">$reminders</a>") ."</p>\n");
 
 
 

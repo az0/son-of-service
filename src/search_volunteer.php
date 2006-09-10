@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.30 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.31 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -35,7 +35,7 @@ require_once (SOS_PATH . 'include/global.php');
 require_once (SOS_PATH . 'functions/html.php');
 require_once (SOS_PATH . 'functions/table.php');
 
-make_html_begin('Search for volunteers', array());
+make_html_begin(_('Search for volunteers'), array());
 
 is_logged_in();
 
@@ -508,7 +508,7 @@ section.</P>
 <TD valign="top">
 <TABLE border="0" style="margin:6pt">
 <tr>
- <th colspan="2">Personal Information</th>
+ <th colspan="2"><?php echo _("Personal Information"); ?></th>
 </tr>
 <tr>
  <th class="vert"><?php echo _("First name"); ?></th>

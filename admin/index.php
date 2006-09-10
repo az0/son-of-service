@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.27 2006/01/12 02:00:35 andrewziem Exp $
+ * $Id: index.php,v 1.28 2006/09/10 22:24:45 andrewziem Exp $
  *
  */
 
@@ -21,7 +21,7 @@ require_once (SOS_PATH . 'functions/html.php');
 
 if (!array_key_exists('download_mailing_list',$_GET))
 {
-    make_html_begin("Administrative menu", array());
+    make_html_begin(_("Administrative menu"), array());
 }
 
 is_logged_in();
@@ -114,23 +114,19 @@ function download_mailing_list()
 
 function admin_menu()
 {
-?>
-<H3>Administrative menu</H3>
-
-
-<UL>
- <LI><A href="./?users=0">User accounts</A>
- <LI><A href="./?strings=0">Strings: relationship types, skill types, work categories</A>
- <LI><A href="./?add_custom_field=0">Add custom field</A> 
- <LI><A href="./?import_legacy=0">Import legacy data</A>
- <LI><A href="./?import_ncoa=0">Import USPS National Change of Address (NCOA)</A>
-<!-- <LI>Download database dump in SQL format -->
- <LI>Download mailing list [<A href="./?download_mailing_list&amp;type=postal&amp;who=all">all</A>]</LI>
- <LI><A href="./?system_check=0">System check</A> 
- <LI><A href="./?update_volunteer_stats=0">Update volunteer statistics</A> 
-
- </UL>
-<?php
+	echo "<h3>" . _("Administrative menu") . "</h3>\n";
+	echo "<ul>\n";
+	echo "<li><a href=\"./?users=0\">" . _("User accounts") . "</a>\n";
+	echo "<li><a href=\"./?strings=0\">" . _("Strings: relationship types, skill types, work categories"). "</a>\n";
+	echo "<li><a href=\"./?add_custom_field=0\">" . _("Add custom field") . "</a>\n";
+	echo "<li><a href=\"./?import_legacy=0\">" . _("Import legacy data") . "</a>\n";
+	echo "<li><a href=\"./?import_ncoa=0\">" . _("Import USPS National Change of Address (NCOA)") . "</a>\n";
+	//fixme: Download database dump in SQL format
+	echo "<li>" . _("Download mailing list") .
+		" [<a href=\"./?download_mailing_list&amp;type=postal&amp;who=all\">" . _("All") . "</a>]\n";
+	echo "<li><a href=\"./?system_check=0\">". _("System check") ."</a>\n";
+	echo "<li><a href=\"./?update_volunteer_stats=0\">" . _("Update volunteer statistics") . "</a>\n";
+	echo "</ul>\n";
 
 } /* admin_menu */
 

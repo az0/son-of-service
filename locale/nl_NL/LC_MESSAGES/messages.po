@@ -3,19 +3,50 @@
 # This file is distributed under the same license as the Son of Service package.
 # Rob van Eerd <rob@van-Eerd.net>, 2006.
 #
-# $Id: messages.po,v 1.2 2006/09/10 20:03:12 andrewziem Exp $
+# $Id: messages.po,v 1.3 2006/09/10 22:24:45 andrewziem Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Son of Service Dutch Translation V1.0\n"
-"Report-Msgid-Bugs-To: Rob van Eerd\n"
-"POT-Creation-Date: 2006-09-10 07:59-0600\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-09-10 15:20-0600\n"
 "PO-Revision-Date: 2006-09-10 16:42+1\n"
 "Last-Translator: Rob van Eerd <rob@van-Eerd.net>\n"
 "Language-Team: Dutch <Rob@van-Eerd.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+msgid "Computers-Repair"
+msgstr ""
+
+msgid "Computers-Typing"
+msgstr ""
+
+msgid "Cooking"
+msgstr ""
+
+#, fuzzy
+msgid "Driving"
+msgstr "Tekst"
+
+msgid "Electrician"
+msgstr ""
+
+msgid "Graphic designer"
+msgstr ""
+
+#, fuzzy
+msgid "Mentoring"
+msgstr "Morgen"
+
+#, fuzzy
+msgid "Plumber"
+msgstr "Telefoon nummer"
+
+#, fuzzy
+msgid "Telephones"
+msgstr "Mobiel telefoonnr."
 
 msgid "Add custom field"
 msgstr "Voeg eigen veld toe"
@@ -194,8 +225,11 @@ msgstr "Deze gebruiker heeft geen beheer rechten."
 msgid "Error saving data to database."
 msgstr "Fout bij het opslaan van gegevens in de database."
 
-msgid "The changes for your account are now in effect for this and future sessions."
-msgstr "De wijzigingen aan je gebruiker zijn nu actief (ook voor toekomstige sessies)."
+msgid ""
+"The changes for your account are now in effect for this and future sessions."
+msgstr ""
+"De wijzigingen aan je gebruiker zijn nu actief (ook voor toekomstige "
+"sessies)."
 
 msgid "The changes will take affect after the next login."
 msgstr "De wijzigingen worden actief als u de volgende keer inlogd."
@@ -268,6 +302,9 @@ msgstr "Zoeken"
 
 msgid "Add new volunteer"
 msgstr "Nieuwe vrijwilliger toevoegen"
+
+msgid "Reports"
+msgstr "Rapporten"
 
 msgid "Admin"
 msgstr "Beheer"
@@ -371,6 +408,21 @@ msgstr "Uw systeem weigerde een bestaande cookie aan te passen."
 msgid "Login"
 msgstr "Log in"
 
+msgid "Volunteer management database"
+msgstr ""
+
+msgid ""
+"Please log in using the user name and password provided by the volunteer "
+"coordinator."
+msgstr ""
+
+msgid "Language: "
+msgstr ""
+
+#, fuzzy
+msgid "Default"
+msgstr "Verwijderen"
+
 msgid "Invalid user name or password."
 msgstr "Ongeldige gebruikersnaam of wachtwoord."
 
@@ -431,9 +483,6 @@ msgstr "Selecteer en of meerdere opties."
 msgid "Error updating data in database."
 msgstr "Fout bij het bijwerken van de gegevens in de database."
 
-msgid "Reports"
-msgstr "Rapporten"
-
 msgid "Aggregate hours"
 msgstr "Uren optellen"
 
@@ -478,6 +527,10 @@ msgstr "Volgende"
 
 msgid "Sort"
 msgstr "Sorteren"
+
+#, fuzzy
+msgid "Personal Information"
+msgstr "Persoonlijke naam"
 
 msgid "Phone number"
 msgstr "Telefoon nummer"
@@ -529,6 +582,9 @@ msgstr "Beroeps"
 
 msgid "Expert"
 msgstr "Expert"
+
+msgid "Number of reminders waiting:"
+msgstr ""
 
 msgid "None found."
 msgstr "Geen gevonden."

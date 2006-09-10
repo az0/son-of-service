@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.21 2006/03/02 03:53:09 andrewziem Exp $
+ * $Id: html.php,v 1.22 2006/09/10 22:24:45 andrewziem Exp $
  *
  */
 
@@ -18,6 +18,7 @@ if (preg_match('/html.php/i', $_SERVER['PHP_SELF']))
 }
 
 require_once(SOS_PATH . 'functions/access.php');
+require_once(SOS_PATH . 'functions/functions.php');
 
 
 function display_message($type, $message, $file, $line, $sql, $sql_error)
@@ -104,7 +105,7 @@ if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
 {
     echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
 }
-echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/reports.php\">".("Reports")."</A>\n");
+echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/reports.php\">"._("Reports")."</A>\n");
 
 if (has_permission(PC_ADMIN, PT_READ, NULL, NULL))
     echo ("<A class=\"tab\" href=\"". SOS_PATH ."admin/\">"._("Admin")."</A>\n");
@@ -146,16 +147,18 @@ echo ("<HR style=\"margin-top:0pt\">\n");
 
 function make_html_begin($title, $options)
 {
-    echo ("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"");
-    echo ("   \"http://www.w3.org/TR/html4/loose.dtd\">\n");
-    echo ("<HTML>\n");
-    echo ("<HEAD>\n");
-    echo ("<TITLE>$title</TITLE>");
-    echo ("<STYLE type=\"text/css\" media=\"screen\">\n");
-    echo ("<!--   @import url(". SOS_PATH. "sos.css);    --></STYLE>\n");
-    echo ("<META name=\"robots\" content=\"noindex,nofollow\">\n");    
-    echo ("</HEAD>\n");
-    echo ("<BODY>\n");
+	set_up_language(NULL);
+
+	echo ("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\"");
+	echo ("   \"http://www.w3.org/TR/html4/loose.dtd\">\n");
+	echo ("<HTML>\n");
+	echo ("<HEAD>\n");
+	echo ("<TITLE>$title</TITLE>");
+	echo ("<STYLE type=\"text/css\" media=\"screen\">\n");
+	echo ("<!--   @import url(". SOS_PATH. "sos.css);    --></STYLE>\n");
+	echo ("<META name=\"robots\" content=\"noindex,nofollow\">\n");    
+	echo ("</HEAD>\n");
+	echo ("<BODY>\n");
 }
 
 

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.10 2006/01/12 02:00:36 andrewziem Exp $
+ * $Id: functions.php,v 1.11 2006/09/10 22:24:45 andrewziem Exp $
  *
  */
 
@@ -146,5 +146,98 @@ function sqldatetime_to_local($sql_datetime)
     
     return (strftime("%c", $unixdate));    
 }
+
+/**
+ * is_valid_language($language)
+ *
+ * Checks whether the language code is valid (contains
+ * valid, safe characters).
+ *
+ * @param string language code (e.g. en, en_US, es_BR)
+ * @return boolean
+ *
+ */
+function is_valid_language($language)
+{
+	return (is_string($language) and strlen($language) > 1 
+		and preg_match('/^[a-zA-Z_]{2,5}$/', $language));
+}
+
+/**
+ * set_up_language($override)
+ *
+ * First, try to detect language from headers sent by web browser.
+ * Second, try to find a supported language.  Third, use the
+ * language.
+ *
+ * @param string or NULL override language as string or NULL indicating no override
+ * @return none
+ */
+function set_up_language($override)
+{
+	global $default_language;
+	global $languages;
+
+	$user_languages = array(); // languages in order of preference
+
+	// override
+	if (is_valid_language($override))
+		$user_languages[] = $override;
+
+	// session
+	if (array_key_exists('sos_language', $_SESSION) and is_valid_language($_SESSION['sos_language']))
+	{
+		$user_languages[] = $_SESSION['sos_language'];
+	}
+
+	// detect languages from headers sent by web browser
+	if (array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER))
+	{
+		$browser_languages = split('[,;]', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+		foreach ($browser_languages as $bl)
+		{
+			if (is_valid_language($bl))
+				$user_languages[] = $bl;
+		}
+	}
+
+	// fallbacks	
+	$user_languages[] = $default_language;
+	$user_languages[] = 'en';
+	$user_languages[] = 'en_US';
+
+	// find a supported language
+	foreach ($user_languages as $language)
+	{
+		// check for an alias
+		if (array_key_exists($language, $languages) and array_key_exists('ALIAS', $languages[$language]))
+			$language = $languages[$language]['ALIAS'];
+
+		// try the path
+		if ($language == 'en_US' ||
+			file_exists(SOS_PATH . "locale/$language/LC_MESSAGES/messages.mo"))
+		{
+			setlocale(LC_MESSAGES, $language);
+			break;
+		}
+	}
+
+	// setup domain
+	bindtextdomain('messages', SOS_PATH . 'locale');
+	textdomain('messages');
+
+	// setup browser character set
+	// fixme:  header(Content-Type: text/html; charset=' . $charset)
+}
+
+
+/* available languages */
+
+$languages['en_US']['NAME'] = 'English';
+$languages['en']['ALIAS'] = 'en_US';
+$languages['en_GB']['ALIAS'] = 'en_US';
+
+$languages['nl_NL']['NAME'] = 'Dutch';
+$languages['nl']['ALIAS'] = 'nl_NL';
 
 ?>

@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.16 2006/08/13 20:14:31 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.17 2006/09/10 22:24:46 andrewziem Exp $
  *
  */
 
@@ -25,7 +25,7 @@ is_logged_in();
 
 make_nav_begin();
 
-echo ("<H3>Add a volunteer</H3>\n");
+echo "<h3>" . _("Add a volunteer") . "</h3>\n";
 
 function volunteer_add()
 {
@@ -222,7 +222,7 @@ function volunteer_add_form()
 
 </table>
 <input type="submit" name="button_add_volunteer" value="<?php echo _("Add");?>">
-<input type="reset" value="Erase form">
+<input type="reset" value="<?php echo _("Erase form"); ?>">
 
 </form>
 <?php
