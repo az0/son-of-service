@@ -1,0 +1,11 @@
+#
+#
+# $Id: xgetpo,v 1.1 2006/09/10 21:26:38 andrewziem Exp $
+#
+
+# common options
+XGETTEXT_OPTIONS="--keyword=_ --default-domain=sonofservice --no-location -C --output=sonofservice.pot"
+
+# make .po files
+xgettext $XGETTEXT_OPTIONS  \
+	./independent_strings.txt ../{admin,functions,include,src,volunteer}/*.php ../*.php

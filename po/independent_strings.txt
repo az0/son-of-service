@@ -1,0 +1,27 @@
+<?php
+
+/*
+ * Son of Service
+ * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
+ * Licensed under the GNU General Public License.  See COPYING for details.
+ * 
+ * This file stores strings that are not in the code;
+ *
+ *
+ * $Id: independent_strings.txt,v 1.1 2006/09/10 21:26:38 andrewziem Exp $
+ *
+ */
+
+
+/* in sample SQL data */
+_("Computers-Repair");
+_("Computers-Typing");
+_("Cooking");
+_("Driving");
+_("Electrician");
+_("Graphic designer");
+_("Mentoring");
+_("Plumber");
+_("Telephones");
+
+?>
