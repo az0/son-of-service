@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.11 2006/09/10 22:24:45 andrewziem Exp $
+ * $Id: functions.php,v 1.12 2007/04/09 21:14:42 andrewziem Exp $
  *
  */
 
@@ -173,7 +173,7 @@ function is_valid_language($language)
  * @param string or NULL override language as string or NULL indicating no override
  * @return none
  */
-function set_up_language($override)
+function set_up_language($override = NULL)
 {
 	global $default_language;
 	global $languages;
