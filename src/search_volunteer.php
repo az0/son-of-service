@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.31 2006/09/10 22:24:46 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.32 2007/04/09 21:18:36 andrewziem Exp $
  *
  */
 
@@ -419,7 +419,7 @@ function volunteer_search_display($sql, $offset, $results_per_page)
 
 	    if ($offset + $results_per_page < $total_results)
 	    {
-    		$url = urlencode(make_url($_REQUEST, array('offset', 'button_search')));
+    		$url = make_url($_REQUEST, array('offset', 'button_search'));
 	        echo ("<A href=\"search_volunteer.php$url&amp;offset=".($offset+$results_per_page)."\">Next</A>\n");
 	        echo ("<A href=\"search_volunteer.php$url&amp;offset=".($total_results - ($total_results % $results_per_page))."\">".gettext("Last")."</A>\n");	    
 	    }
