@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: search_volunteer.php,v 1.32 2007/04/09 21:18:36 andrewziem Exp $
+ * $Id: search_volunteer.php,v 1.33 2007/04/09 21:23:51 andrewziem Exp $
  *
  */
 
@@ -134,9 +134,9 @@ $cm->setColumnLink('organization', SOS_PATH  . "volunteer/?vid=#volunteer_id#");
 $cm->addColumn('street');
 $cm->addColumn('city');
 $cm->addColumn('state');
-$cm->addColumn('postal_code');
+$cm->addColumn('postal_code', TRUE);
 $cm->addColumn('country');
-$cm->addColumn('hours_life');
+$cm->addColumn('hours_life', TRUE);
 
 function search_add($form_name, $column, &$where)
 // Adds a field to the search SQL and enables the field's display.
