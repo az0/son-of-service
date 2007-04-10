@@ -3,13 +3,13 @@
 # This file is distributed under the same license as the Son of Service package.
 # Rob van Eerd <rob@van-Eerd.net>, 2006.
 #
-# $Id: messages.po,v 1.3 2006/09/10 22:24:45 andrewziem Exp $
+# $Id: messages.po,v 1.4 2007/04/10 03:59:42 andrewziem Exp $
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Son of Service Dutch Translation V1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-09-10 15:20-0600\n"
+"POT-Creation-Date: 2006-09-10 16:29-0600\n"
 "PO-Revision-Date: 2006-09-10 16:42+1\n"
 "Last-Translator: Rob van Eerd <rob@van-Eerd.net>\n"
 "Language-Team: Dutch <Rob@van-Eerd.net>\n"
@@ -47,6 +47,29 @@ msgstr "Telefoon nummer"
 #, fuzzy
 msgid "Telephones"
 msgstr "Mobiel telefoonnr."
+
+msgid "Family"
+msgstr ""
+
+#, fuzzy
+msgid "Friend"
+msgstr "Versturen"
+
+msgid "Coworker"
+msgstr ""
+
+msgid "Professional"
+msgstr "Beroeps"
+
+#, fuzzy
+msgid "Answering telephones"
+msgstr "Mobiel telefoonnr."
+
+msgid "Landscaping"
+msgstr ""
+
+msgid "Outbound calling"
+msgstr ""
 
 msgid "Add custom field"
 msgstr "Voeg eigen veld toe"
@@ -111,6 +134,10 @@ msgstr "Opgenomen."
 msgid "Please define one or more fields to import."
 msgstr "Definieer enkele velden om te importeren."
 
+#, fuzzy
+msgid "Administrative menu"
+msgstr "Beheer rechten"
+
 msgid "Error establishing database connection."
 msgstr "Fout bij het opzetten van een connectie naar de database."
 
@@ -119,6 +146,31 @@ msgstr "Je hebt deze pagina niet correct benaderd."
 
 msgid "No data found."
 msgstr "Geen gegevens gevonden."
+
+#, fuzzy
+msgid "User accounts"
+msgstr "Geen gebruikersnamen"
+
+msgid "Strings: relationship types, skill types, work categories"
+msgstr ""
+
+msgid "Import legacy data"
+msgstr ""
+
+msgid "Import USPS National Change of Address (NCOA)"
+msgstr ""
+
+msgid "Download mailing list"
+msgstr ""
+
+msgid "All"
+msgstr ""
+
+msgid "System check"
+msgstr ""
+
+msgid "Update volunteer statistics"
+msgstr ""
 
 msgid "Relationship"
 msgstr "Relatie"
@@ -240,6 +292,10 @@ msgstr "Opgeslagen."
 msgid "User not found."
 msgstr "Gebruiker niet gevonden."
 
+#, fuzzy
+msgid "Add new user"
+msgstr "Nieuwe vrijwilliger toevoegen"
+
 msgid "User name"
 msgstr "Gebruikersnaam"
 
@@ -260,6 +316,9 @@ msgstr "Persoonlijke naam"
 
 msgid "E-mail"
 msgstr "E-Mail"
+
+msgid "List of users"
+msgstr ""
 
 msgid "No user accounts."
 msgstr "Geen gebruikersnamen"
@@ -416,7 +475,7 @@ msgid ""
 "coordinator."
 msgstr ""
 
-msgid "Language: "
+msgid "Language:"
 msgstr ""
 
 #, fuzzy
@@ -425,6 +484,9 @@ msgstr "Verwijderen"
 
 msgid "Invalid user name or password."
 msgstr "Ongeldige gebruikersnaam of wachtwoord."
+
+msgid "Is your caps lock key on?"
+msgstr ""
 
 msgid "Your e-mail address appears invalid: "
 msgstr "Uw E-Mail adres lijkt niet correct:"
@@ -444,7 +506,8 @@ msgstr "Selecteer een of meerdere vrijwilligers uit de lijst."
 msgid "Are you sure you want to permanently delete these volunteers?"
 msgstr "Weet u zeker dat u deze vrijwilligers definitief wilt verwijderen?"
 
-msgid "Your e-mail address must be set in  user settings."
+#, fuzzy
+msgid "Your e-mail address must be set in user settings."
 msgstr "Uw E-Mail adres moet opgeslagen zijn in uw gebruikers instellingen."
 
 msgid "Error in volunteer_get: "
@@ -483,8 +546,19 @@ msgstr "Selecteer en of meerdere opties."
 msgid "Error updating data in database."
 msgstr "Fout bij het bijwerken van de gegevens in de database."
 
+msgid "Please select a step for this report."
+msgstr ""
+
+#, fuzzy
+msgid "Unexpected step:"
+msgstr "Onverwachte parameter."
+
 msgid "Aggregate hours"
 msgstr "Uren optellen"
+
+#, fuzzy
+msgid "Please enter a valid date in the format YYYY-MM-DD or MM/DD/YYYY."
+msgstr "Gebruik het datum-formaat JJJJ-MM-DD of MM/DD/JJJJ."
 
 msgid "Please choose a skill."
 msgstr "Kies een vaardigheid."
@@ -509,6 +583,14 @@ msgstr "Elke"
 
 msgid "Make report"
 msgstr "Genereer rapport"
+
+#, fuzzy
+msgid "Most active volunteers"
+msgstr "Wijzig vrijwilligers"
+
+#, fuzzy
+msgid "List of volunteers by skill"
+msgstr "Vrijwilligers per vaardigheid"
 
 msgid "Found zero volunteers matching your description."
 msgstr "Geen vrijwilligers gevonden bij deze beschrijving."
@@ -577,9 +659,6 @@ msgstr "Amateur"
 msgid "Some"
 msgstr "Sommige"
 
-msgid "Professional"
-msgstr "Beroeps"
-
 msgid "Expert"
 msgstr "Expert"
 
@@ -594,6 +673,10 @@ msgstr "Start"
 
 msgid "End"
 msgstr "Einde"
+
+#, fuzzy
+msgid "Add new availability"
+msgstr "Beschikbaarheid"
 
 msgid "Suffix"
 msgstr "Toevoeging"
@@ -660,6 +743,13 @@ msgstr "Niemand"
 
 msgid "Use the date format YYYY-MM-DD or MM/DD/YYYY."
 msgstr "Gebruik het datum-formaat JJJJ-MM-DD of MM/DD/JJJJ."
+
+msgid "account"
+msgstr ""
+
+#, fuzzy
+msgid "relationships"
+msgstr "Relaties"
 
 msgid "Maximum depth"
 msgstr "Maximale diepte"
