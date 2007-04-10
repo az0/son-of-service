@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.  
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: users.php,v 1.23 2006/09/10 22:24:45 andrewziem Exp $
+ * $Id: users.php,v 1.24 2007/04/10 04:06:53 andrewziem Exp $
  *
  */
  
@@ -54,7 +54,7 @@ function user_save()
        $errors_found++;
     }
 
-    if (!$mode_update and (!isset($_POST['password1']) or 4 >= strlen($_POST['password1'])))
+    if (!$mode_update and (!isset($_POST['password1']) or 4 > strlen($_POST['password1'])))
     {
 	save_message(MSG_USER_ERROR, _("Account password is too short: 4 or more characters required."));
 	$errors_found++;
@@ -179,9 +179,9 @@ function user_addedit_form()
 	    message_die(MSG_SYSTEM_ERROR, _("Insufficient permissions."), __FILE__, __LINE__);
 	}
     
-	echo ("<H2>Edit user</H2>\n");
+	echo ("<H2>" . _("Edit user") . "</H2>\n");
 
-	echo ("<P class=\"instructiontext\">Leave the password fields blank to retain the old password.</P>\n");
+	echo ("<P class=\"instructionstext\">" . _("Leave the password fields blank to retain the old password.") . "</P>\n");
 
 	$sql = "SELECT * FROM users WHERE user_id = $user_id";
 	        
@@ -198,8 +198,6 @@ function user_addedit_form()
 	    return FALSE;
 	}
 	
-	unset($result['password']);
-	
 	$form_values = $result->fields;
     }	
     else
@@ -213,7 +211,7 @@ function user_addedit_form()
 	
 	echo ("<FIELDSET>\n");
 	echo ("<LEGEND>" . _("Add new user") . "</LEGEND>\n");
-	echo ("<P class=\"instructionstext\">A user administrates the volunteer database.  He may view and change volunteers' accounts.</P>\n");
+	echo ("<P class=\"instructionstext\">" . _("A user administrates the volunteer database.  He may view and change volunteers' accounts.") . "</P>\n");
 	// form defaults
 	$form_values = array('access_change_vol' => 1, 'access_admin' => 0);
 	$form_values['email'] = $form_values['username'] = $form_values['personalname'] = "";
