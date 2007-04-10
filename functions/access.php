@@ -7,7 +7,7 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.9 2006/03/02 03:53:09 andrewziem Exp $
+ * $Id: access.php,v 1.10 2007/04/10 03:57:21 andrewziem Exp $
  *
  */
 
@@ -24,18 +24,17 @@
 
 function is_logged_in($or_die = TRUE)
 {
-    if (isset($_SESSION['u']))
-	return TRUE;
+	if (isset($_SESSION['u']))
+		return TRUE;
 	
-    if ($or_die)
-    {
-	echo(_("You must be logged in to access this page."));
-	echo("</P><A href=\"" . SOS_PATH . "\">" . _("Log in") . "</A>.</P>\n");
-	process_user_notice("<P>You may get this error if your system is blocking cookie</A>s.  Try enabling cookies.</P>\n");
-	echo("<P><A href=\"".SOS_PATH."src/cookie_probe.php\">"._("Is my system blocking cookies?")."</A></P>\n");	
-	exit();
-    }
-
+	if ($or_die)
+	{
+		echo(_("You must be logged in to access this page."));
+		echo("</P><A href=\"" . SOS_PATH . "\">" . _("Log in") . "</A>.</P>\n");
+		process_user_notice("<P>You may get this error if your system is blocking cookie</A>s.  Try enabling cookies.</P>\n");
+		echo("<P><A href=\"".SOS_PATH."src/cookie_probe.php\">"._("Is my system blocking cookies?")."</A></P>\n");
+		exit();
+	}
 } /* is_logged_in() */
 
 
@@ -68,8 +67,14 @@ function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
     switch ($category)
     {
 	case PC_ADMIN:
-	    return ('1' == $_SESSION['sos_user']['access_admin']);
-	    break;
+		if (chr(1)  == $_SESSION['sos_user']['access_admin'])
+		{
+			//fixme: strange bug
+			save_message(MSG_SYSTEM_ERROR, _("Sorry.  You are experiencing the strange access_admin = chr(1) bug."));
+			return TRUE;
+		}
+		return ('1' == $_SESSION['sos_user']['access_admin']);
+		break;
 	
 	case PC_VOLUNTEER:
 	    if (PT_READ == $type or (PT_WRITE == $type and 1 == $_SESSION['sos_user']['access_change_vol']))
