@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.12 2007/04/09 21:14:42 andrewziem Exp $
+ * $Id: functions.php,v 1.13 2007/04/10 03:56:21 andrewziem Exp $
  *
  */
 
@@ -220,6 +220,14 @@ function set_up_language($override = NULL)
 			setlocale(LC_MESSAGES, $language);
 			break;
 		}
+	}
+
+	if (!extension_loaded('gettext'))
+	{
+		if ((bool)ini_get( "safe_mode" ))
+			return FALSE;
+		$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
+		dl($prefix . 'gettext.' . PHP_SHLIB_SUFFIX);
 	}
 
 	// setup domain
