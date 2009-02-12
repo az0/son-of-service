@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.22 2006/09/10 22:24:45 andrewziem Exp $
+ * $Id: html.php,v 1.23 2009/02/12 02:58:10 andrewziem Exp $
  *
  */
 
@@ -82,9 +82,9 @@ function display_messages()
 	{
 	    display_message($msg['type'], $msg['message'], $msg['file'], $msg['line'], 
 		$msg['sql'], $msg['sql_error']);
-	    unset($_SESSION['messages'][$key]);
 	}	
-	
+
+	$_SESSION['messages'] = array();
 	echo ("</DIV>\n");    
     }
 
