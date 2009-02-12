@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.13 2007/04/10 03:56:21 andrewziem Exp $
+ * $Id: functions.php,v 1.14 2009/02/12 02:41:24 andrewziem Exp $
  *
  */
 
@@ -36,10 +36,13 @@ function save_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
     global $db;
 
     assert (is_int($type));
+    $error = "";
+    if (NULL != $db)
+        $error = $db->ErrorMsg();
     $message = array('type' => $type, 'message' => $message, 'file' => $file, 
-	'line' => $line, 'sql' => $sql, 'sql_error' => $db->ErrorMsg());
+        'line' => $line, 'sql' => $sql, 'sql_error' => $error);
     $_SESSION['messages'][] = $message;
-    
+
     // todo: log error message here if applicable (refer to configurable log level)
 }
 
