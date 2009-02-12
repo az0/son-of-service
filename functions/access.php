@@ -7,7 +7,7 @@
  * 
  * Handles user permissions and access control restrictions.
  *
- * $Id: access.php,v 1.10 2007/04/10 03:57:21 andrewziem Exp $
+ * $Id: access.php,v 1.11 2009/02/12 03:09:44 andrewziem Exp $
  *
  */
 
@@ -67,12 +67,6 @@ function has_permission($category, $type, $volunteer_id = NULL, $user_id = NULL)
     switch ($category)
     {
 	case PC_ADMIN:
-		if (chr(1)  == $_SESSION['sos_user']['access_admin'])
-		{
-			//fixme: strange bug
-			save_message(MSG_SYSTEM_ERROR, _("Sorry.  You are experiencing the strange access_admin = chr(1) bug."));
-			return TRUE;
-		}
 		return ('1' == $_SESSION['sos_user']['access_admin']);
 		break;
 	

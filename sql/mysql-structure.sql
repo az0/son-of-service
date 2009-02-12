@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.24 2006/01/12 02:00:36 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.25 2009/02/12 03:09:44 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -153,8 +153,8 @@ CREATE TABLE users (
         memo text,
         last_login datetime, # YYYY-MM-DD HH:MM:SS format
 
-        access_admin bit, # change users, export/import files, etc.
-        access_change_vol bit, # change volunteers
+        access_admin char(1), # change users, export/import files, etc.
+        access_change_vol char(1), # change volunteers
 
 	INDEX (username(5)),
 	INDEX (password(5))
