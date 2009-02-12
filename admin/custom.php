@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.20 2006/03/02 03:53:08 andrewziem Exp $
+ * $Id: custom.php,v 1.21 2009/02/12 04:11:20 andrewziem Exp $
  *
  */
 

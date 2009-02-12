@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Probes user's system for acceptance of cookie.
  *
- * $Id: cookie_probe.php,v 1.2 2006/08/13 20:14:31 andrewziem Exp $
+ * $Id: cookie_probe.php,v 1.3 2009/02/12 04:11:20 andrewziem Exp $
  *
  */
 

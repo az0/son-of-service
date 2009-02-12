@@ -1,11 +1,11 @@
 #
 # Son of Service
-# Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
+# Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
 # Licensed under the GNU General Public License.  See COPYING for details.
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.25 2009/02/12 03:09:44 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.26 2009/02/12 04:11:20 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
