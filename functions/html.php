@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.23 2009/02/12 02:58:10 andrewziem Exp $
+ * $Id: html.php,v 1.24 2009/02/12 03:50:19 andrewziem Exp $
  *
  */
 
@@ -170,6 +170,7 @@ if (is_logged_in(FALSE))
 ?>
 <HR>
 <P><A href="<?php echo SOS_PATH; ?>src/about.php">Son of Service</A></P>
+<a rel="external nofollow" href="http://sourceforge.net/donate/index.php?group_id=91083"><img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support Son of Service" /> </a>
 <?php
 }
 ?>    
