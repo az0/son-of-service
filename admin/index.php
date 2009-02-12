@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: index.php,v 1.28 2006/09/10 22:24:45 andrewziem Exp $
+ * $Id: index.php,v 1.29 2009/02/12 02:47:44 andrewziem Exp $
  *
  */
 
@@ -228,6 +228,7 @@ if (array_key_exists('add_custom_field', $_REQUEST))
 else 
 // MENU
 {
+    display_messages();
     admin_menu();
 }
 
