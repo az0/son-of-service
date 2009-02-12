@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: systemcheck.php,v 1.8 2006/01/12 02:00:35 andrewziem Exp $
+ * $Id: systemcheck.php,v 1.9 2009/02/12 03:55:57 andrewziem Exp $
  *
  */
 
@@ -109,7 +109,7 @@ function system_check()
     $c['title'] = 'Client: Supports JavaScript';
     if (ini_get('browscap'))
     {
-	$browser = get_browser();
+	$browser = get_browser(NULL, TRUE);
 	$c['result'] = $browser['javascript'];
 	$c['pass'] = $browser['javascript'] == TRUE;
     }
