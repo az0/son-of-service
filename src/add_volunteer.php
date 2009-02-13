@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: add_volunteer.php,v 1.18 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: add_volunteer.php,v 1.19 2009/02/13 03:52:15 andrewziem Exp $
  *
  */
 
@@ -222,7 +222,6 @@ function volunteer_add_form()
 
 </table>
 <input type="submit" name="button_add_volunteer" value="<?php echo _("Add");?>">
-<input type="reset" value="<?php echo _("Erase form"); ?>">
 
 </form>
 <?php
