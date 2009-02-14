@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.15 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: functions.php,v 1.16 2009/02/14 03:09:45 andrewziem Exp $
  *
  */
 
@@ -118,16 +118,19 @@ function redirect($url)
 function sqldate_to_local($sql_date)
 {
     global $db;
-    
-    
+
+
     $unixdate = $db->Unixdate($sql_date);
     if (0 == $unixdate)
     {
-	return "";    
+       return "";
     }
-    
-    // todo: localize    
-    return (strftime("%D", $unixdate));    
+
+    // todo: localize
+    $ret = strftime("%D", $unixdate);
+    if (0 == strlen($ret))
+        $ret = date('n/j/Y g:i a', $unixdate);
+    return $ret;
 }
 
 /**
@@ -139,15 +142,18 @@ function sqldate_to_local($sql_date)
 function sqldatetime_to_local($sql_datetime)
 {
     global $db;
-    
-    
+
+
     $unixdate = $db->UnixTimeStamp($sql_datetime);
     if (0 == $unixdate)
     {
-	return "";    
+        return "";
     }
-    
-    return (strftime("%c", $unixdate));    
+
+    $ret = strftime("%c", $unixdate);
+    if (0 == strlen($ret))
+        $ret = date('n/j/Y g:i a', $unixdate);
+    return $ret;
 }
 
 /**
