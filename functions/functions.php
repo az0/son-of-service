@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.16 2009/02/14 03:09:45 andrewziem Exp $
+ * $Id: functions.php,v 1.17 2009/02/14 03:14:43 andrewziem Exp $
  *
  */
 
@@ -129,7 +129,7 @@ function sqldate_to_local($sql_date)
     // todo: localize
     $ret = strftime("%D", $unixdate);
     if (0 == strlen($ret))
-        $ret = date('n/j/Y g:i a', $unixdate);
+        $ret = date('n/j/Y', $unixdate);
     return $ret;
 }
 
