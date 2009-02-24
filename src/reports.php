@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.18 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: reports.php,v 1.19 2009/02/24 15:25:37 andrewziem Exp $
  *
  */
 
@@ -42,7 +42,7 @@ if (!$db)
     die_message(MSG_SYSTEM_ERROR, _("Error establishing database connection."), __FILE__, __LINE__);    
 }
 
-
+$steps = array(_('Day'), _('Week'), _('Month'), _('Year'));
 
 if (array_key_exists('report_hours', $_REQUEST))
     report_hours();
@@ -54,9 +54,6 @@ if (array_key_exists('report_volunteers_by_skill', $_REQUEST))
     report_volunteers_by_skill();
 else
 reports_menu();
-
-
-$steps = array(_('Day'), _('Week'), _('Month'), _('Year'));
 
 
 class report_display
