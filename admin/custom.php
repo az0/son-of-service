@@ -7,7 +7,7 @@
  *
  * Administration of custom data fields.
  *
- * $Id: custom.php,v 1.21 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: custom.php,v 1.22 2009/02/24 15:31:22 andrewziem Exp $
  *
  */
 
@@ -58,29 +58,14 @@ function custom_add_field_form1()
 </FIELDSET>
 
 <FIELDSET>
-<CAPTION><?php echo _("Decimal");?></CAPTION>
-<BR><INPUT type="radio" name="fieldtype" value="decimal" disabled>Decimal [not available]
-</FIELDSET>
-
-<FIELDSET>
-<CAPTION><?php echo _("Boolean");?></CAPTION>
-<BR><INPUT type="radio" name="fieldtype" value="boolean" disabled>Boolean: yes or no
-</FIELDSET>
-
-<FIELDSET>
-<CAPTION>Multiple choice</CAPTION>
-<BR><INPUT type="radio" name="fieldtype" value="radio">Radio: choose one, mutually exclusive option from a list
-<BR><INPUT type="radio" name="fieldtype" value="checkbox" disabled>Check box: none, one, or more choices from a list
-<BR>Number of choices <INPUT type="text" name="mc_quantity">
-</FIELDSET>
-
-
-<FIELDSET>
 <CAPTION>Not yet available</CAPTION>
-<BR><INPUT type="radio" name="fieldtype" value="radio" disabled>Multiple choice: exactly one choice from list
+<BR><INPUT type="radio" name="fieldtype" value="decimal" disabled>Decimal
+<BR><INPUT type="radio" name="fieldtype" value="boolean" disabled>Boolean: yes or no
 <BR><INPUT type="radio" name="fieldtype" value="file" disabled>File: a word processing document, image, or any other file
-</FIELDSET>
-
+<BR><INPUT type="radio" name="fieldtype" value="radio" disabled>Multiple choice: exactly one choice from list
+<BR><INPUT type="radio" name="fieldtype" value="radio" disabled>Radio: choose one, mutually exclusive option from a list
+<BR><INPUT type="radio" name="fieldtype" value="checkbox" disabled>Check box: none, one, or more choices from a list
+<BR>Number of choices in list <INPUT type="text" name="mc_quantity">
 </FIELDSET>
 
 <FIELDSET>
