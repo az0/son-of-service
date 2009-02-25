@@ -7,7 +7,7 @@
  *
  * General information about Son of Service.
  *
- * $Id: about.php,v 1.8 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: about.php,v 1.9 2009/02/25 02:10:08 andrewziem Exp $
  *
  */
 
@@ -34,6 +34,9 @@ Public License version 2</A>.</P>
 
 <P>For more information see the <A href="http://sos.sourceforge.net">SOS web site</A>.</P>
 
+<p>Your donations say "thank you" and encourage future development.
+<br><a rel="external nofollow" href="http://sourceforge.net/donate/index.php?group_id=91083"><img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support Son of Service" /> </a>
+</p>
 
 <?php
 
