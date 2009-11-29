@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: summary.php,v 1.16 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: summary.php,v 1.17 2009/11/29 17:19:52 andrewziem Exp $
  *
  */
 
@@ -50,6 +50,14 @@ function volunteer_summary()
     {
 	$contact_card .= $address;
     }
+
+    // Google Maps
+    $map_address = $volunteer['street'] . ' ' . $address;
+    if (strlen(trim($map_address))>2)
+    {
+	$contact_card .= "<a target=\"_blank\" href=\"http://maps.google.com/maps?q=" . urlencode($map_address) . "\">(Map)</a>\n";
+    }
+
     // get phone numbers
     $sql = "SELECT number, memo FROM phone_numbers WHERE volunteer_id = $vid";
     $phone_result = $db->Execute($sql);
