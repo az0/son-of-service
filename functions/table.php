@@ -7,7 +7,7 @@
  *
  * Generates an HTML table from a set of data.
  *
- * $Id: table.php,v 1.19 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: table.php,v 1.20 2009/11/29 17:24:28 andrewziem Exp $
  *
  */
 
@@ -275,13 +275,13 @@ class DataTablePager extends DataTableDisplay
 	if ($this->offset > 0)
 	{
 	    // first, previous exist
-	    echo ("<A href=\"$url&offset=0\">|&lt;</A> ");
+	    echo ("<A title=\"" . _("First") . "\" href=\"$url&offset=0\">|&lt;</A> ");
 	    $previous = $this->offset - $this->rows_per_page;
 	    if ($previous < 0)
 	    {
 		$previous = 0;	
 	    }
-	    echo ("<A href=\"$url&offset=$previous\">&lt;&lt;</A> ");	    
+	    echo ("<A title=\"" . _("Previous") . "\" href=\"$url&offset=$previous\">&lt;&lt;</A> ");	    
 
 	}
 	else
@@ -295,9 +295,9 @@ class DataTablePager extends DataTableDisplay
 	if ($this->offset + $this->rows_per_page < $this->db_result->RecordCount())
 	{
 	    // next
-	    echo ("<A href=\"$url&offset=".($this->offset + $this->rows_per_page)."\">&gt&gt;</A> ");
+	    echo ("<A title=\"" . _("Next") . "\" href=\"$url&offset=".($this->offset + $this->rows_per_page)."\">&gt&gt;</A> ");
 	    // last
-	    echo ("<A href=\"$url&offset=".($this->db_result->RecordCount() - ($this->db_result->RecordCount() % $this->rows_per_page))."\">&gt;|</A> ");	    
+	    echo ("<A title=\"" . _("Last") . "\" href=\"$url&offset=".($this->db_result->RecordCount() - ($this->db_result->RecordCount() % $this->rows_per_page))."\">&gt;|</A> ");	    
 	
 	}
 	else
