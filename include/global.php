@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: global.php,v 1.9 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: global.php,v 1.10 2010/05/07 01:55:31 andrewziem Exp $
  *
  */
 
@@ -25,6 +25,20 @@ define('MSG_SYSTEM_NOTICE', 8);
 define('MSG_USER_ERROR', 256);
 define('MSG_USER_WARNING', 512);
 define('MSG_USER_NOTICE', 1024);
+
+if (!extension_loaded('gettext'))
+{
+    function _($s)
+    {
+        return $s;
+    }
+
+    function gettext($s)
+    {
+        echo $s;
+    }
+}
+
 
 $daysofweek = array(1 => _('Sunday') , _('Monday'), _('Tuesday'), 
 	_('Wednesday'), _('Thursday'), _('Friday'), _('Saturday'));	
@@ -52,23 +66,6 @@ if (version_compare(phpversion(),'4.1.0','<'))
     // todo: define array_key_exists for old PHP compatibility
 }
 
-// todo: define _ and gettext for those without
-
-if (!extension_loaded('gettext'))
-{
-    // cheap replacements
-    // todo: implement full replacement
-    
-    function _($s)
-    {
-        return $s;
-    }
-
-    function gettext($s)
-    {
-        echo $s;
-    }
-}
 
 function process_user_error($text)
 // deprecated
