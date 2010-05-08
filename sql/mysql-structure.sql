@@ -5,7 +5,7 @@
 #
 # MySQL data structures
 #
-# $Id: mysql-structure.sql,v 1.26 2009/02/12 04:11:20 andrewziem Exp $
+# $Id: mysql-structure.sql,v 1.27 2010/05/08 02:54:54 andrewziem Exp $
 #
 
 CREATE TABLE volunteers (
@@ -13,34 +13,33 @@ CREATE TABLE volunteers (
 	
 	entity_type CHAR NOT NULL DEFAULT 'I', # I=individual, G=group, O=organization
 	
-	organization varchar(60) NOT NULL,
+	organization varchar(60) NOT NULL DEFAULT '',
 
-	prefix varchar(20) NOT NULL,
-        first varchar(20) NOT NULL,
-        middle varchar(20) NOT NULL,
-        last varchar(40) NOT NULL,
-	suffix varchar(10) NOT NULL,
+	prefix varchar(20) NOT NULL DEFAULT '',
+        first varchar(20) NOT NULL DEFAULT '',
+        middle varchar(20) NOT NULL DEFAULT '',
+        last varchar(40) NOT NULL DEFAULT '',
+	suffix varchar(10) NOT NULL DEFAULT '',
 
-        street varchar(40) NOT NULL,
-        city varchar(30) NOT NULL,
-        state varchar(10) NOT NULL, # or province
-        postal_code varchar(10) NOT NULL,
-	country varchar(30) NOT NULL,
+        street varchar(40) NOT NULL DEFAULT '',
+        city varchar(30) NOT NULL DEFAULT '',
+        state varchar(10) NOT NULL DEFAULT '', # or province
+        postal_code varchar(10) NOT NULL DEFAULT '',
+	country varchar(30) NOT NULL DEFAULT '',
 
-        email_address varchar(45) NOT NULL,
+        email_address varchar(45) NOT NULL DEFAULT '',
 
         hours_life decimal(10,2),
-        hours_ly decimal(10,2),	
-        hours_ytd decimal(10,2),	
-	hours_life_percentile decimal(3,2), # not yet implemented
-	hours_ly_percentile decimal(3,2),		
-	hours_ytd_percentile decimal(3,2),	
+        hours_ly decimal(10,2),
+        hours_ytd decimal(10,2),
+	hours_ly_percentile decimal(3,2),
+	hours_ytd_percentile decimal(3,2),
         first_volunteered date,
 
         dt_added datetime,
 	uid_added int,
 	dt_modified datetime,
-	uid_modified int,	
+	uid_modified int,
 	
 	INDEX(first),
 	INDEX(last),
@@ -164,7 +163,7 @@ CREATE TABLE relationships (
 	relationship_id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	
 	volunteer1_id INT NOT NULL,
-	volunteer2_id INT NOT NULL,	
+	volunteer2_id INT NOT NULL,
 	
 	string_id INT,
 	
