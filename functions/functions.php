@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.17 2009/02/14 03:14:43 andrewziem Exp $
+ * $Id: functions.php,v 1.18 2010/05/08 03:07:16 andrewziem Exp $
  *
  */
 
@@ -236,12 +236,15 @@ function set_up_language($override = NULL)
 		if ((bool)ini_get( "safe_mode" ))
 			return FALSE;
 		$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-		dl($prefix . 'gettext.' . PHP_SHLIB_SUFFIX);
+		@dl($prefix . 'gettext.' . PHP_SHLIB_SUFFIX);
 	}
 
-	// setup domain
-	bindtextdomain('messages', SOS_PATH . 'locale');
-	textdomain('messages');
+	if (extension_loaded('gettext'))
+	{
+		// setup domain
+		bindtextdomain('messages', SOS_PATH . 'locale');
+		textdomain('messages');
+	}
 
 	// setup browser character set
 	// fixme:  header(Content-Type: text/html; charset=' . $charset)
