@@ -2,12 +2,12 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
  * Generates artificial volunteers for testing.
  *
- * $Id: randomvolunteer.php,v 1.5 2009/02/12 04:11:20 andrewziem Exp $
+ * $Id: randomvolunteer.php,v 1.6 2011/12/19 04:35:46 andrewziem Exp $
  *
  */
 
@@ -71,9 +71,9 @@ define ('SOS_PATH', '../');
 
 if ($use_db)
 {
-    require_once(SOS_PATH . 'include/config.php');    
+    require_once(SOS_PATH . 'include/config.php');
     require_once(SOS_PATH . 'functions/db.php');
-    
+
     echo ("Connecting to database.\n");
     $db = connect_db();
 
@@ -83,9 +83,9 @@ if ($use_db)
     }
 }
 
-list($usec, $sec) = explode(' ', microtime());       
-$s= (float) $sec + ((float) $usec * 100000);     
-mt_srand($s); 
+list($usec, $sec) = explode(' ', microtime());
+$s= (float) $sec + ((float) $usec * 100000);
+mt_srand($s);
 
 while ($num_volunteers)
 {
@@ -95,34 +95,35 @@ while ($num_volunteers)
     usleep(mt_rand(1,50000));
     $sql = "INSERT INTO volunteers (first, last, street, email_address) VALUES ('$first', '$last', '$street', '$first.$last@doesnotexist.com')";
     if ($print)
-	echo ($sql."\n");
+        echo ($sql."\n");
     if ($use_db)
     {
-	$result = $db->Execute($sql);
-	if (!$result)
-	{
-	    echo ("Fatal error: ".$db->ErrorMsg());
-	    die();
-	}
-	$id = $db->Insert_ID();
-	
-	echo "id = $id\n";
-	
-	if ($id)
-	{
-	    // fake work history
-	    $t = time() - mt_rand(1, 60*60*24*365*5);
-	    for ($i = mt_rand(1,100); $i > 1; $i--)
-	    {
-		$d = date('Y-m-d', $t + mt_rand(1, 60*60*24*365));
-		$result = $db->Execute("INSERT INTO work (date, hours, volunteer_id) VALUES ('$d', ".mt_rand(1,5).", $id)");
-		if (!$result)
-		{
-		    die("Error inserting data into database: ".$db->ErrorMsg());
-		}
-	    }
-	}
-    }	
+        $result = $db->Execute($sql);
+        if (!$result)
+        {
+            echo ("Fatal error: ".$db->ErrorMsg());
+            die();
+        }
+        $id = $db->Insert_ID();
+        echo "id = $id\n";
+        if ($id)
+        {
+            // fake work history
+            $t = time() - mt_rand(1, 60*60*24*365*5);
+            for ($i = mt_rand(1,100); $i > 1; $i--)
+            {
+
+                $d = date('Y-m-d', $t + mt_rand(1, 60*60*24*365));
+                $hours = mt_rand(1,5);
+                $category_id = mt_rand(14,16);
+                $result = $db->Execute("INSERT INTO work (date, hours, volunteer_id, category_id) VALUES ('$d', $hours, $id, $category_id)");
+                if (!$result)
+                {
+                    die("Error inserting data into database: ".$db->ErrorMsg());
+                }
+            }
+        }
+    }
 
     $num_volunteers--;
 }
