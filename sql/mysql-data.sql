@@ -22,7 +22,7 @@ INSERT into users (username, password, access_admin, access_change_vol) VALUES (
 # for demo purposes below
 INSERT INTO volunteers (first, last) VALUES ('C.', 'Lewis');
 INSERT INTO volunteers (first, last) VALUES ('Simon', 'Peter');
-INSERT INTO work (volunteer_id, date, hours, category_id, 14) VALUES (1, now(), 10);
-INSERT INTO work (volunteer_id, date, hours, category_id, 15) VALUES (1, '2011-05-11', '3.2');
-INSERT INTO work (volunteer_id, date, hours, category_id, 16) VALUES (1, '2011-05-12', '8');
+INSERT INTO work (volunteer_id, date, hours, category_id) VALUES (1, now(), 10, 14);
+INSERT INTO work (volunteer_id, date, hours, category_id) VALUES (1, '2011-05-11', 3.2, 15);
+INSERT INTO work (volunteer_id, date, hours, category_id) VALUES (1, '2011-05-12', 8, 16);
 INSERT INTO notes (volunteer_id, uid_assigned, dt, reminder_date, message, acknowledged) VALUES (1, 1, now(), now(), 'Don\'t forget to change admin\'s password.\n\n  For support see http://sos.sourceforge.net', 0);
