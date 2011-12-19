@@ -7,7 +7,7 @@
  *
  * Generates artificial volunteers for testing.
  *
- * $Id: randomvolunteer.php,v 1.6 2011/12/19 04:35:46 andrewziem Exp $
+ * $Id: randomvolunteer.php,v 1.7 2011/12/19 04:48:33 andrewziem Exp $
  *
  */
 
@@ -116,7 +116,8 @@ while ($num_volunteers)
                 $d = date('Y-m-d', $t + mt_rand(1, 60*60*24*365));
                 $hours = mt_rand(1,5);
                 $category_id = mt_rand(14,16);
-                $result = $db->Execute("INSERT INTO work (date, hours, volunteer_id, category_id) VALUES ('$d', $hours, $id, $category_id)");
+                $sql = "INSERT INTO work (date, hours, volunteer_id, category_id) VALUES ('$d', $hours, $id, $category_id);";
+                $result = $db->Execute($sql);
                 if (!$result)
                 {
                     die("Error inserting data into database: ".$db->ErrorMsg());
