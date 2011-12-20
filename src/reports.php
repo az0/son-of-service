@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2006 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.21 2011/12/18 04:59:43 andrewziem Exp $
+ * $Id: reports.php,v 1.22 2011/12/20 04:46:01 andrewziem Exp $
  *
  */
 
@@ -52,6 +52,8 @@ if (array_key_exists('report_active_volunteers', $_REQUEST))
 else
 if (array_key_exists('report_volunteers_by_skill', $_REQUEST))
     report_volunteers_by_skill();
+if (array_key_exists('report_volunteers_hours_by_work_activity', $_REQUEST))
+    report_volunteers_hours_by_work_activity();
 else
 reports_menu();
 
@@ -127,10 +129,10 @@ class report_display
     {
             if ($this->type == 'html')
             {
-            echo ("</TABLE>\n");
-            $url = make_url($_REQUEST, array());
-            // todo: request gives too much
-            echo ("<P><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A>\n");
+                echo ("</TABLE>\n");
+                $url = make_url($_REQUEST, array());
+                // todo: request gives too much
+                echo ("<P><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A>\n");
             }
     }
 }
@@ -292,7 +294,7 @@ function report_volunteers_by_skill()
         if (!$string_id > 0)
         {
             process_user_error(_("Please choose a skill."));
-        $errors_found++;
+            $errors_found++;
         }
     }
     if ($errors_found)
@@ -418,6 +420,51 @@ function report_volunteers_by_skill()
 } /* report_volunteers_by_skill() */
 
 
+function report_volunteers_hours_by_work_activity()
+{
+    global $db;
+    // validate
+    $errors_found = 0;
+    $date_start = sanitize_date($_REQUEST['beginning_date']);
+    $date_end = sanitize_date($_REQUEST['ending_date']);    
+    if (!$date_start or !$date_end)
+    {
+        //fixme: user should be able to use his own locale's format
+        process_user_error(_("Please enter a valid date in the format YYYY-MM-DD or MM/DD/YYYY."));
+    }
+    if ($errors_found)
+    {
+        reports_menu();
+        return;
+    }
+    // query
+    $sql = <<<EOD
+SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, Coalesce(category.s, 'None') as Work_Category, sum(hours) as Hours
+FROM volunteers
+LEFT JOIN work ON work.volunteer_id = volunteers.volunteer_id
+        AND "$date_start" <= work.date <= "$date_end"
+LEFT JOIN strings as category on category.string_id = work.category_id
+GROUP BY volunteers.volunteer_id, work.category_id
+ORDER BY volunteers.volunteer_id;
+EOD;
+
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+    elseif (0 == $result->RecordCount())
+    {
+        process_user_notice("No data available for given critiera.");
+    }
+    else
+    {
+        // no errors, so display report
+        report_display(_("Volunteer hours by work activity"), $result, 'html');
+    }
+} /* report_volunteers_hours_by_work_activity() */
+
+
 function reports_menu()
 {
     global $db;
@@ -484,13 +531,23 @@ function reports_menu()
         {
             $row = $result->fields;
             echo ("<OPTION value=\"".$row['string_id']."\">".$row['s']."</OPTION>\n");
-        $result->MoveNext();
+            $result->MoveNext();
         }
         echo ("</SELECT>\n");
     }
     echo ("<BR><INPUT type=\"submit\" name=\"report_volunteers_by_skill\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
-    echo ("</FIELDSET\n");
+    echo ("</FIELDSET>\n");
+
+
+    echo ("<FIELDSET>\n");
+    echo ("<LEGEND>" . _("Volunteer hours by work activity") ."</LEGEND>\n");
+    echo ("<FORM method=\"get\" action=\"reports.php\">\n");
+    echo ("Beginning <INPUT type=\"text\" name=\"beginning_date\" value=\"2000-01-01\" size=\"10\">\n");
+    echo ("Ending <INPUT type=\"text\" name=\"ending_date\" value=\"".date('Y-m-d')."\" size=\"10\">\n");
+    echo ("<BR><INPUT type=\"submit\" name=\"report_volunteers_hours_by_work_activity\" value=\""._("Make report")."\">\n");
+    echo ("</FORM>\n");
+    echo ("</FIELDSET>\n");
 
     if (!array_key_exists('download', $_REQUEST))
     {
