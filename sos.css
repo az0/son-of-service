@@ -1,10 +1,10 @@
 BODY {
  background-color: #FFFFFF;
- color: #00000;
+ color: #000;
 }
 
 P, TD, H1, H2, H3, H4, H5 {
- color: #00000;
+ color: #000;
  font-family: "Times New Roman", Times, serif;
 }
 
@@ -27,7 +27,7 @@ table.clear {
 TD
 {
  border-color: #333300;
- border-style: thin;
+ border-style: solid;
  padding: 2pt;
 }
 
