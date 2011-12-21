@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.22 2011/12/20 04:46:01 andrewziem Exp $
+ * $Id: reports.php,v 1.23 2011/12/21 04:33:43 andrewziem Exp $
  *
  */
 
@@ -132,7 +132,7 @@ class report_display
                 echo ("</TABLE>\n");
                 $url = make_url($_REQUEST, array());
                 // todo: request gives too much
-                echo ("<P><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A>\n");
+                echo ("<P class=\"noprint\"><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A></P>\n");
             }
     }
 }
