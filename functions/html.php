@@ -7,7 +7,7 @@
  *
  * Functions related to HTML, HTTP, and URLs.
  *
- * $Id: html.php,v 1.27 2011/12/21 04:16:25 andrewziem Exp $
+ * $Id: html.php,v 1.28 2011/12/21 04:32:25 andrewziem Exp $
  *
  */
 
@@ -85,7 +85,7 @@ function make_nav_begin()
         echo ("<INPUT type=\"button\" value=\""._("Print")."\" onClick=\"window.print();\">\n");
         return;
     }
-    echo ("<div class=\"tab_area\">\n");
+    echo ("<div class=\"tab_area noprint\">\n");
     echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/search_volunteer.php\">"._("Search")."</A>\n");
     if (has_permission(PC_VOLUNTEER, PT_WRITE, NULL, NULL))
         echo ("<A class=\"tab\" href=\"". SOS_PATH . "src/add_volunteer.php\">"._("Add new volunteer")."</A>\n");
@@ -107,7 +107,7 @@ echo ("</FORM>\n");
     {
         $vid = $_REQUEST['vid'];
 
-       echo ("<DIV class=\"tab_area\">\n");
+       echo ("<DIV class=\"tab_area noprint\">\n");
        echo ("This volunteer \n");
        echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid\">"._("Summary")."</A>\n");         
        echo ("<A class=\"tab\" href=\"". SOS_PATH . "volunteer/?vid=$vid&amp;menu=general\">"._("General")."</A>\n");      
@@ -120,7 +120,7 @@ echo ("</FORM>\n");
 
     }
 
-    echo ("<HR style=\"margin-top:0pt\">\n");
+    echo ("<HR style=\"margin-top:0pt\" class=\"noprint\">\n");
 
 } /* make_nav_begin() */
 
@@ -134,9 +134,13 @@ function make_html_begin($title, $options)
     echo ("   \"http://www.w3.org/TR/html4/loose.dtd\">\n");
     echo ("<HTML>\n");
     echo ("<HEAD>\n");
-    echo ("<TITLE>$title</TITLE>");
+    echo ("<TITLE>$title</TITLE>\n");
     echo ("<STYLE type=\"text/css\" media=\"screen\">\n");
-    echo ("<!--   @import url(". SOS_PATH. "sos.css);    --></STYLE>\n");
+    echo ("<!--   @import url(". SOS_PATH. "sos.css);  -->  \n");
+    echo ("</STYLE>\n");
+    echo ("<STYLE type=\"text/css\" media=\"print\">\n");
+    echo ("  <!--  .noprint {display:none}  -->\n");
+    echo ("</STYLE>\n");
     echo ("<META name=\"robots\" content=\"noindex,nofollow\">\n");    
     echo ("</HEAD>\n");
     echo ("<BODY>\n");
