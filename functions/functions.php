@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.19 2011/12/21 03:39:29 andrewziem Exp $
+ * $Id: functions.php,v 1.20 2011/12/21 03:51:49 andrewziem Exp $
  *
  */
 
@@ -161,14 +161,14 @@ function sqldatetime_to_local($sql_datetime)
  * Checks whether the language code is valid (contains
  * valid, safe characters).
  *
- * @param string language code (e.g. en, en_US, es_BR)
+ * @param string language code (e.g. en, en_US, es_BR, es-ar)
  * @return boolean
  *
  */
 function is_valid_language($language)
 {
     return (is_string($language) and strlen($language) > 1 
-        and preg_match('/^[a-zA-Z_]{2,5}$/', $language));
+        and preg_match('/^[a-zA-Z_-]{2,5}$/', $language));
 }
 
 /**
@@ -201,7 +201,7 @@ function set_up_language($override = NULL)
     // detect languages from headers sent by web browser
     if (array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER))
     {
-        $browser_languages = split('[,;]', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        $browser_languages = preg_split('/[,;]/', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
         foreach ($browser_languages as $bl)
         {
             if (is_valid_language($bl))
