@@ -2,10 +2,10 @@
 
 /*
  * Son of Service
- * Copyright (C) 2003-2009 by Andrew Ziem.  All rights reserved.
+ * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: functions.php,v 1.18 2010/05/08 03:07:16 andrewziem Exp $
+ * $Id: functions.php,v 1.19 2011/12/21 03:39:29 andrewziem Exp $
  *
  */
 
@@ -59,26 +59,25 @@ function die_message($type, $message, $file = NULL, $line = NULL, $sql = NULL)
     assert (is_int($type));
     display_message($type, $message, $file, $line, $sql, $db->ErrorMsg());
     die();
-    
     // todo: log error message here if applicable (refer to configurable log level)
 }
 
 /**
  * make_volunteer_name($row)
- * 
+ *
  * name, e.g. John Smith (Smith Inc.)
  *
  * @param string row an array containing first, middle, last, organization
  * @return string name of t 
- */ 
+ */
 function make_volunteer_name($row)
 {
     if (!is_array($row))
-	return FALSE;
+    return FALSE;
     $name = trim($row['first'].' '.$row['middle'].' '.$row['last']);
     if (!empty($row['organization']))
-	$name .= ' ('.$row['organization'].')';
-    return $name;	
+    $name .= ' ('.$row['organization'].')';
+    return $name;   
 }
 
 /**
@@ -91,14 +90,14 @@ function get_user_id()
 {
     if (!array_key_exists('user_id', $_SESSION))
     {
-	die_message(MSG_SYSTEM_ERROR, 'user_id missing in SESSION', __FILE__, __LINE__);
+    die_message(MSG_SYSTEM_ERROR, 'user_id missing in SESSION', __FILE__, __LINE__);
     }
     return (intval($_SESSION['user_id']));
 }
 
 /**
  * redirect($url)
- * 
+ *
  * @param string url url
  * @return void
  */
@@ -168,8 +167,8 @@ function sqldatetime_to_local($sql_datetime)
  */
 function is_valid_language($language)
 {
-	return (is_string($language) and strlen($language) > 1 
-		and preg_match('/^[a-zA-Z_]{2,5}$/', $language));
+    return (is_string($language) and strlen($language) > 1 
+        and preg_match('/^[a-zA-Z_]{2,5}$/', $language));
 }
 
 /**
@@ -184,70 +183,70 @@ function is_valid_language($language)
  */
 function set_up_language($override = NULL)
 {
-	global $default_language;
-	global $languages;
+    global $default_language;
+    global $languages;
 
-	$user_languages = array(); // languages in order of preference
+    $user_languages = array(); // languages in order of preference
 
-	// override
-	if (is_valid_language($override))
-		$user_languages[] = $override;
+    // override
+    if (is_valid_language($override))
+        $user_languages[] = $override;
 
-	// session
-	if (array_key_exists('sos_language', $_SESSION) and is_valid_language($_SESSION['sos_language']))
-	{
-		$user_languages[] = $_SESSION['sos_language'];
-	}
+    // session
+    if (array_key_exists('sos_language', $_SESSION) and is_valid_language($_SESSION['sos_language']))
+    {
+        $user_languages[] = $_SESSION['sos_language'];
+    }
 
-	// detect languages from headers sent by web browser
-	if (array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER))
-	{
-		$browser_languages = split('[,;]', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-		foreach ($browser_languages as $bl)
-		{
-			if (is_valid_language($bl))
-				$user_languages[] = $bl;
-		}
-	}
+    // detect languages from headers sent by web browser
+    if (array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER))
+    {
+        $browser_languages = split('[,;]', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        foreach ($browser_languages as $bl)
+        {
+            if (is_valid_language($bl))
+                $user_languages[] = $bl;
+        }
+    }
 
-	// fallbacks	
-	$user_languages[] = $default_language;
-	$user_languages[] = 'en';
-	$user_languages[] = 'en_US';
+    // fallbacks
+    $user_languages[] = $default_language;
+    $user_languages[] = 'en';
+    $user_languages[] = 'en_US';
 
-	// find a supported language
-	foreach ($user_languages as $language)
-	{
-		// check for an alias
-		if (array_key_exists($language, $languages) and array_key_exists('ALIAS', $languages[$language]))
-			$language = $languages[$language]['ALIAS'];
+    // find a supported language
+    foreach ($user_languages as $language)
+    {
+        // check for an alias
+        if (array_key_exists($language, $languages) and array_key_exists('ALIAS', $languages[$language]))
+            $language = $languages[$language]['ALIAS'];
 
-		// try the path
-		if ($language == 'en_US' ||
-			file_exists(SOS_PATH . "locale/$language/LC_MESSAGES/messages.mo"))
-		{
-			setlocale(LC_MESSAGES, $language);
-			break;
-		}
-	}
+        // try the path
+        if ($language == 'en_US' ||
+            file_exists(SOS_PATH . "locale/$language/LC_MESSAGES/messages.mo"))
+        {
+            setlocale(LC_MESSAGES, $language);
+            break;
+        }
+    }
 
-	if (!extension_loaded('gettext'))
-	{
-		if ((bool)ini_get( "safe_mode" ))
-			return FALSE;
-		$prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
-		@dl($prefix . 'gettext.' . PHP_SHLIB_SUFFIX);
-	}
+    if (!extension_loaded('gettext'))
+    {
+        if ((bool)ini_get( "safe_mode" ))
+            return FALSE;
+        $prefix = (PHP_SHLIB_SUFFIX === 'dll') ? 'php_' : '';
+        @dl($prefix . 'gettext.' . PHP_SHLIB_SUFFIX);
+    }
 
-	if (extension_loaded('gettext'))
-	{
-		// setup domain
-		bindtextdomain('messages', SOS_PATH . 'locale');
-		textdomain('messages');
-	}
+    if (extension_loaded('gettext'))
+    {
+        // setup domain
+        bindtextdomain('messages', SOS_PATH . 'locale');
+        textdomain('messages');
+    }
 
-	// setup browser character set
-	// fixme:  header(Content-Type: text/html; charset=' . $charset)
+    // setup browser character set
+    // fixme:  header(Content-Type: text/html; charset=' . $charset)
 }
 
 
