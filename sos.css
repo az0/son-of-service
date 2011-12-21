@@ -26,8 +26,7 @@ table.clear {
 
 TD
 {
- border-color: #333300;
- border-style: solid;
+ border: none;
  padding: 2pt;
 }
 
