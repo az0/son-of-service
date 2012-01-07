@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.23 2011/12/21 04:33:43 andrewziem Exp $
+ * $Id: reports.php,v 1.24 2012/01/07 01:51:28 andrewziem Exp $
  *
  */
 
@@ -65,11 +65,12 @@ class report_display
     var $fields;
     var $writer;
 
-    function report_display($title, $type, $fields)
+    function report_display($title, $type, $fields, $offer_csv = TRUE)
     {
         $this->title = $title;
         $this->type = $type;
         $this->fields = $fields;
+        $this->offer_csv = $offer_csv;
     }
 
     function begin($result)
@@ -79,7 +80,8 @@ class report_display
         if ('html' == $this->type)
         {
             echo ("<TABLE border=\"1\">\n");
-            echo ("<CAPTION>" . $this->title . "</CAPTION>\n");
+            if ($this->title)
+                echo ("<CAPTION>" . $this->title . "</CAPTION>\n");
             echo ("<TR>\n");
             foreach ($this->fields as $field)
                     echo ("<TH>$field</TH>\n");
@@ -92,7 +94,6 @@ class report_display
             header("Content-type: text/csv");
             $this->writer = new textDbWriter('csv');
             $this->writer->setFieldNames($this->fields);
-            //$writer->open();
         }
     }
     function add_row($row)
@@ -132,7 +133,8 @@ class report_display
                 echo ("</TABLE>\n");
                 $url = make_url($_REQUEST, array());
                 // todo: request gives too much
-                echo ("<P class=\"noprint\"><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A></P>\n");
+                if ($this->offer_csv)
+                    echo ("<P class=\"noprint\"><A href=\"" . $_SERVER['PHP_SELF'] . "$url&amp;download=1\">Download CSV</A></P>\n");
             }
     }
 }
@@ -253,7 +255,7 @@ function report_active_volunteers()
     }
     // query
     $d1 = str_replace('-','', $d1);
-    $d2 = str_replace('-','', $d2);    
+    $d2 = str_replace('-','', $d2);
     $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, sum(hours) as Total_Hours FROM work LEFT JOIN volunteers ON work.volunteer_id = volunteers.volunteer_id WHERE work.date between $d1 and $d2 GROUP BY volunteer_id ORDER BY Total_Hours DESC";
     $result = $db->SelectLimit($sql, 30);
     if (!$result)
@@ -460,7 +462,42 @@ EOD;
     else
     {
         // no errors, so display report
-        report_display(_("Volunteer hours by work activity"), $result, 'html');
+
+        // do not use report_display() because we need a subtotal
+        echo "<style type=\"text/css\">table { margin-bottom: 1em; page-break-after:always }</style>\n";
+        echo "<h1>". _("Volunteer hours by work activity")."</h1>\n";
+        $fields = array('volunteer_id', 'Work_Category', 'Hours');
+        $report = new report_display($result->fields['Volunteer_Name'], 'html', $fields, FALSE);
+        $report->begin($result);
+        $subtotal_hours = 0;
+        $last_row = NULL;
+        while (!$result->EOF)
+        {
+            $row = $result->fields;
+            if ($last_row and $last_row['volunteer_id'] != $row['volunteer_id'])
+            {
+                $last_row['Work_Category'] = _("Total");
+                $last_row['Hours'] = $subtotal_hours;
+                $report->add_row($last_row);
+                $report->close();
+                $report = new report_display($row['Volunteer_Name'], 'html', $fields, FALSE);
+                $report->begin($result);
+                $subtotal_hours = $hours = $row['Hours'];
+            }
+            else
+                $subtotal_hours += $row['Hours'];
+            $report->add_row($row);
+            $result->MoveNext();
+            $last_row = $row;
+        }
+        //final person's total
+        $last_row['Work_Category'] = _("Total");
+        $last_row['Hours'] = $subtotal_hours;
+        $report->add_row($last_row);
+        $subtotal_hours = $row['Hours'];
+
+        $report->close();
+
     }
 } /* report_volunteers_hours_by_work_activity() */
 
