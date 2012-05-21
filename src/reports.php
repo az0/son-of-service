@@ -5,7 +5,7 @@
  * Copyright (C) 2003-2011 by Andrew Ziem.  All rights reserved.
  * Licensed under the GNU General Public License.  See COPYING for details.
  *
- * $Id: reports.php,v 1.24 2012/01/07 01:51:28 andrewziem Exp $
+ * $Id: reports.php,v 1.25 2012/05/21 21:48:20 andrewziem Exp $
  *
  */
 
@@ -54,6 +54,8 @@ if (array_key_exists('report_volunteers_by_skill', $_REQUEST))
     report_volunteers_by_skill();
 if (array_key_exists('report_volunteers_hours_by_work_activity', $_REQUEST))
     report_volunteers_hours_by_work_activity();
+if (array_key_exists('report_activity_detail_by_volunteer', $_REQUEST))
+    report_activity_detail_by_volunteer();
 else
 reports_menu();
 
@@ -139,9 +141,8 @@ class report_display
     }
 }
 
-function report_display($title, $result, $type)
+function report_display($title, $result, $type, $offer_csv = TRUE)
 // type = 'html', 'csv'
-// todo: add XML
 {
     $nfields = $result->FieldCount();
     $fields = array();
@@ -150,7 +151,7 @@ function report_display($title, $result, $type)
         $fld = $result->FetchField($n);
         $fields[]  .= $fld->name;
     }
-    $report = new report_display($title, $type, $fields);
+    $report = new report_display($title, $type, $fields, $offer_csv);
     $report->begin($result);
     while (!$result->EOF)
     {
@@ -321,7 +322,7 @@ function report_volunteers_by_skill()
         $sql = "SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name, volunteers.email_address as Email_Address " .
     "FROM volunteers " .
     "LEFT JOIN volunteer_skills ON volunteers.volunteer_id = volunteer_skills.volunteer_id " .
-    "GROUP BY volunteer_id ".   
+    "GROUP BY volunteer_id ".
     "ORDER BY volunteers.volunteer_id";
     }
     $result = $db->SelectLimit($sql, 30);
@@ -428,7 +429,7 @@ function report_volunteers_hours_by_work_activity()
     // validate
     $errors_found = 0;
     $date_start = sanitize_date($_REQUEST['beginning_date']);
-    $date_end = sanitize_date($_REQUEST['ending_date']);    
+    $date_end = sanitize_date($_REQUEST['ending_date']);
     if (!$date_start or !$date_end)
     {
         //fixme: user should be able to use his own locale's format
@@ -500,6 +501,139 @@ EOD;
 
     }
 } /* report_volunteers_hours_by_work_activity() */
+
+
+/* The function report_activity_detail_by_volunteer_volunteer() calls this function once for each activity */
+function report_activity_detail_by_volunteer_activity($vid, $category_name, $category_id, $date_start, $date_end)
+{
+    global $db;
+
+    $sql = <<<EOD
+SELECT
+    work.date as Date,
+    work.hours as Hours,
+    work.memo as Memo
+FROM
+    work
+    JOIN strings AS category ON
+        category.string_id = work.category_id
+WHERE
+        work.volunteer_id = $vid
+        AND "$date_start" <= work.date <= "$date_end"
+        AND work.category_id = $category_id
+ORDER BY
+    work.date
+EOD;
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+
+    report_display($category_name, $result, 'html', FALSE);
+
+    /* Count the hours for this activity */
+    $sql = "SELECT SUM(work.hours) AS hours FROM work WHERE volunteer_id = $vid AND \"$date_start\" <= work.date <= \"$date_end\" AND work.category_id = $category_id";
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+
+    $row = $result->fields;
+    $activity_hours = $row['hours'];
+
+    /* Show hours */
+    echo ("<p>Total hours for " . htmlentities($category_name) . ": $activity_hours </p>");
+
+    return $activity_hours;
+}
+
+/* The report_activity_detail_by_volunteer() report calls this function once for each volunteer. */
+/* This function enumerates the activities and calls another function. */
+function report_activity_detail_by_volunteer_volunteer($vid, $date_start, $date_end)
+{
+    global $db;
+
+    $total_hours = 0;
+    $sql = <<<EOD
+SELECT DISTINCT category.s as Work_Category, work.category_id
+FROM work
+JOIN strings AS category ON category.string_id = work.category_id
+WHERE
+        work.volunteer_id = $vid
+        AND "$date_start" <= work.date <= "$date_end"
+ORDER BY category.s
+EOD;
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+
+    while (!$result->EOF)
+    {
+        // for each work category, call another function to show the detail
+        $row = $result->fields;
+        $category_name = $row['Work_Category'];
+        $category_id = $row['category_id'];
+        $activity_hours = report_activity_detail_by_volunteer_activity($vid, $category_name, $category_id, $date_start, $date_end);
+        $total_hours += $activity_hours;
+        $result->MoveNext();
+    }
+
+    return $total_hours;
+}
+
+function report_activity_detail_by_volunteer()
+{
+    global $db;
+    // validate
+    $errors_found = 0;
+    $date_start = sanitize_date($_REQUEST['beginning_date']);
+    $date_end = sanitize_date($_REQUEST['ending_date']);
+    if (!$date_start or !$date_end)
+    {
+        process_user_error(_("Please enter a valid date in the format YYYY-MM-DD or MM/DD/YYYY."));
+    }
+    if ($errors_found)
+    {
+        reports_menu();
+        return;
+    }
+    // query
+    $sql = <<<EOD
+SELECT volunteers.volunteer_id, concat_ws(' ',volunteers.first, volunteers.middle, volunteers.last, volunteers.organization) as Volunteer_Name
+FROM volunteers
+ORDER BY volunteers.volunteer_id;
+EOD;
+
+    $result = $db->Execute($sql);
+    if (!$result)
+    {
+        die_message(MSG_SYSTEM_ERROR, _("Error querying database."), __FILE__, __LINE__, $sql);
+    }
+    elseif (0 == $result->RecordCount())
+    {
+        process_user_notice("No data available for given critiera.");
+        return;
+    }
+    // no errors, so display report
+
+    echo "<style type=\"text/css\">div.volunteer_report { margin-bottom: 1em; page-break-after:always }</style>\n";
+    echo "<h1>". _("Activity detail by volunteer")."</h1>\n";
+    while (!$result->EOF)
+    {
+        $row = $result->fields;
+        $vid = $row['volunteer_id'];
+        $volunteer_name = $row['Volunteer_Name'];
+        echo "<div class=\"volunteer_report\"><h2>" . htmlentities($volunteer_name) . "</h2>";
+        $total_hours = report_activity_detail_by_volunteer_volunteer($vid, $date_start, $date_end);
+        echo "<p>Grand total of hours: " . $total_hours . "</p>";
+        echo "</div>";
+        $result->MoveNext();
+    }
+} /* report_activity_detail_by_volunteer() */
 
 
 function reports_menu()
@@ -583,6 +717,15 @@ function reports_menu()
     echo ("Beginning <INPUT type=\"text\" name=\"beginning_date\" value=\"2000-01-01\" size=\"10\">\n");
     echo ("Ending <INPUT type=\"text\" name=\"ending_date\" value=\"".date('Y-m-d')."\" size=\"10\">\n");
     echo ("<BR><INPUT type=\"submit\" name=\"report_volunteers_hours_by_work_activity\" value=\""._("Make report")."\">\n");
+    echo ("</FORM>\n");
+    echo ("</FIELDSET>\n");
+
+    echo ("<FIELDSET>\n");
+    echo ("<LEGEND>" . _("Activity detail by volunteer") ."</LEGEND>\n");
+    echo ("<FORM method=\"get\" action=\"reports.php\">\n");
+    echo ("Beginning <INPUT type=\"text\" name=\"beginning_date\" value=\"2000-01-01\" size=\"10\">\n");
+    echo ("Ending <INPUT type=\"text\" name=\"ending_date\" value=\"".date('Y-m-d')."\" size=\"10\">\n");
+    echo ("<BR><INPUT type=\"submit\" name=\"report_activity_detail_by_volunteer\" value=\""._("Make report")."\">\n");
     echo ("</FORM>\n");
     echo ("</FIELDSET>\n");
 
