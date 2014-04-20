@@ -3,5 +3,4 @@ php_flag magic_quotes_gpc off
 php_flag allow_call_time_pass_reference off
 php_flag safe_mode on
 php_flag allow_url_fopen off
-php_value open_basedir .
 #php_value session.save_path ./data
