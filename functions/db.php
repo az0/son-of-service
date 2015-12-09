@@ -80,7 +80,7 @@ function connect_db ()
 	//check for database type
 	if ('mysql' == $cfg['dbtype'])
 	{
-		$db = &NewADOConnection('mysql');
+		$db = NewADOConnection('mysql');
 
 		// toggle persistant connections
 		if (TRUE == $cfg['dbpersist'])
